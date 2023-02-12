@@ -2,6 +2,8 @@ import {
   type EnhancedMenu,
   type EnhancedMenuItem,
   useIsHomePath,
+  urlPathname,
+  isCurrentPath,
 } from '~/lib/utils';
 import {
   Drawer,
@@ -20,13 +22,24 @@ import {
   CartLoading,
   Link,
 } from '~/components';
-import {useParams, Form, Await, useMatches} from '@remix-run/react';
+import {
+  useParams,
+  Form,
+  Await,
+  useMatches,
+  useLocation,
+} from '@remix-run/react';
 import {useWindowScroll} from 'react-use';
 import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
+import {Fragment, Suspense, useEffect, useMemo, useState} from 'react';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 import type {LayoutData} from '../root';
+import {QueryRoot} from '@shopify/hydrogen/storefront-api-types';
+import cart from '../../public/cart-icon.svg';
+import search from '../../public/search-icon.svg';
+import account from '../../public/account-icon.svg';
+import globe from '../../public/globe-icon.svg';
 
 export function Layout({
   children,
@@ -44,8 +57,9 @@ export function Layout({
           </a>
         </div>
         <Header
-          title={layout?.shop.name ?? 'Hydrogen'}
           menu={layout?.headerMenu}
+          filter={layout?.filterMenu}
+          shop={layout?.shop}
         />
         <main role="main" id="mainContent" className="flex-grow">
           {children}
@@ -56,7 +70,15 @@ export function Layout({
   );
 }
 
-function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
+function Header({
+  filter,
+  menu,
+  shop,
+}: {
+  filter: EnhancedMenu;
+  menu: EnhancedMenu;
+  shop: QueryRoot['shop'];
+}) {
   const isHome = useIsHomePath();
 
   const {
@@ -82,18 +104,21 @@ function Header({title, menu}: {title: string; menu?: EnhancedMenu}) {
   return (
     <>
       <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
-      {menu && (
+      {/* {menu && (
         <MenuDrawer isOpen={isMenuOpen} onClose={closeMenu} menu={menu} />
-      )}
+      )} */}
+      {/* <DesktopNav shop={shop} menu={menu} filter={filter} />
+      <MobileNav shop={shop} menu={menu} filter={filter} /> */}
       <DesktopHeader
-        isHome={isHome}
-        title={title}
+        filter={filter}
         menu={menu}
+        shop={shop}
         openCart={openCart}
       />
       <MobileHeader
-        isHome={isHome}
-        title={title}
+        filter={filter}
+        menu={menu}
+        shop={shop}
         openCart={openCart}
         openMenu={openMenu}
       />
@@ -117,210 +142,368 @@ function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
   );
 }
 
-export function MenuDrawer({
-  isOpen,
-  onClose,
-  menu,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  menu: EnhancedMenu;
-}) {
-  return (
-    <Drawer open={isOpen} onClose={onClose} openFrom="left" heading="Menu">
-      <div className="grid">
-        <MenuMobileNav menu={menu} onClose={onClose} />
-      </div>
-    </Drawer>
-  );
-}
+// export function MenuDrawer({
+//   isOpen,
+//   onClose,
+//   menu,
+// }: {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   menu: EnhancedMenu;
+// }) {
+//   return (
+//     <Drawer open={isOpen} onClose={onClose} openFrom="left" heading="Menu">
+//       <div className="grid">
+//         <MenuMobileNav menu={menu} filter={filter} onClose={onClose} />
+//       </div>
+//     </Drawer>
+//   );
+// }
 
 function MenuMobileNav({
+  shop,
+  filter,
   menu,
   onClose,
 }: {
+  shop: QueryRoot['shop'];
+  filter: EnhancedMenu;
   menu: EnhancedMenu;
   onClose: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const {pathname} = useLocation();
+
   return (
-    <nav className="grid gap-4 p-6 sm:gap-6 sm:px-12 sm:py-8">
-      {/* Top level menu items */}
-      {(menu?.items || []).map((item) => (
-        <span key={item.id} className="block">
-          <Link
-            to={item.to}
-            target={item.target}
-            onClick={onClose}
-            className={({isActive}) =>
-              isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
-            }
+    <nav className="md:hidden">
+      <header
+        role="banner"
+        className="h-10 flex items-center mx-auto border-black border-b"
+      >
+        <button
+          onClick={() => setOpen((isOpen) => !isOpen)}
+          type="button"
+          data-collapse-toggle="navbar-default"
+          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
+          aria-controls="navbar-default"
+          aria-expanded="false"
+        >
+          <span className="sr-only">Open main menu</span>
+          <svg
+            className="w-6 h-6"
+            aria-hidden="true"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <Text as="span" size="copy">
-              {item.title}
-            </Text>
-          </Link>
-        </span>
-      ))}
+            <path
+              fillRule="evenodd"
+              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
+        </button>
+        <Link
+          className="text-xl text-[#ED1C24] font-semibold border-black border-r flex-1 h-full items-center flex justify-center"
+          to="/"
+        >
+          {shop.name}
+        </Link>
+        <div className="flex h-full items-center">
+          <div className="border-black border-r h-full flex items-center justify-center w-10">
+            <img
+              className="inline mx-1"
+              src={search}
+              width="16"
+              height="16"
+              alt="search-icon"
+            />
+          </div>
+          <div className="border-black border-r h-full flex items-center justify-center w-10">
+            <img
+              className="inline mx-1"
+              src={cart}
+              width="16"
+              height="16"
+              alt="cart-icon"
+            />
+          </div>
+        </div>
+        {open ? (
+          <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
+            {menu?.items.map((menuItem) => (
+              <Fragment key={menuItem.id}>
+                {menuItem?.title === 'Shop' ? (
+                  <div
+                    key={menuItem.id}
+                    className={`${
+                      isCurrentPath(pathname, menuItem?.url)
+                        ? 'font-semibold'
+                        : 'font-medium'
+                    } flex border-b py-2`}
+                  >
+                    <Link
+                      onClick={() => setOpen(false)}
+                      className="font-bold px-2"
+                      to={urlPathname(menuItem.url)}
+                    >
+                      {menuItem.title}
+                    </Link>
+                    <div className="flex-1 ml-12">
+                      {filter?.items.map((item) => (
+                        <Link
+                          onClick={() => setOpen(false)}
+                          key={item.id}
+                          className={`${
+                            isCurrentPath(pathname, item?.url)
+                              ? 'font-semibold'
+                              : 'font-medium'
+                          } block whitespace-nowrap mb-2`}
+                          to={urlPathname(item.url)}
+                        >
+                          {item.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    className="font-bold px-2 flex items-center h-10 border-b"
+                    to={urlPathname(menuItem.url)}
+                  >
+                    {menuItem.title}
+                  </Link>
+                )}
+              </Fragment>
+            ))}
+          </ul>
+        ) : null}
+      </header>
     </nav>
   );
 }
 
 function MobileHeader({
-  title,
-  isHome,
+  shop,
+  filter,
+  menu,
   openCart,
   openMenu,
 }: {
-  title: string;
-  isHome: boolean;
+  shop: QueryRoot['shop'];
+  filter: EnhancedMenu;
+  menu: EnhancedMenu;
   openCart: () => void;
   openMenu: () => void;
 }) {
   // useHeaderStyleFix(containerStyle, setContainerStyle, isHome);
+  const [open, setOpen] = useState(false);
+  const {pathname} = useLocation();
 
   const params = useParams();
 
   return (
-    <header
-      role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } flex lg:hidden items-center h-nav sticky backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8`}
-    >
-      <div className="flex items-center justify-start w-full gap-4">
-        <button
-          onClick={openMenu}
-          className="relative flex items-center justify-center w-8 h-8"
-        >
-          <IconMenu />
-        </button>
-        <Form
-          method="get"
-          action={params.lang ? `/${params.lang}/search` : '/search'}
-          className="items-center gap-2 sm:flex"
-        >
-          <button
-            type="submit"
-            className="relative flex items-center justify-center w-8 h-8"
-          >
-            <IconSearch />
-          </button>
-          <Input
-            className={
-              isHome
-                ? 'focus:border-contrast/20 dark:focus:border-primary/20'
-                : 'focus:border-primary/20'
-            }
-            type="search"
-            variant="minisearch"
-            placeholder="Search"
-            name="q"
-          />
-        </Form>
-      </div>
-
-      <Link
-        className="flex items-center self-stretch leading-[3rem] md:leading-[4rem] justify-center flex-grow w-full h-full"
-        to="/"
+    <nav className="md:hidden">
+      <header
+        role="banner"
+        className="h-10 flex items-center mx-auto border-black border-b"
       >
-        <Heading className="font-bold text-center" as={isHome ? 'h1' : 'h2'}>
-          {title}
-        </Heading>
-      </Link>
-
-      <div className="flex items-center justify-end w-full gap-4">
-        <Link
-          to="/account"
-          className="relative flex items-center justify-center w-8 h-8"
+        <button
+          onClick={() => setOpen((isOpen) => !isOpen)}
+          type="button"
+          data-collapse-toggle="navbar-default"
+          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
+          aria-controls="navbar-default"
+          aria-expanded="false"
         >
-          <IconAccount />
+          <span className="sr-only">Open main menu</span>
+          <svg
+            className="w-6 h-6"
+            aria-hidden="true"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
+        </button>
+        <Link
+          className="text-xl text-[#ED1C24] font-semibold border-black border-r flex-1 h-full items-center flex justify-center"
+          to="/"
+        >
+          {shop.name}
         </Link>
-        <CartCount isHome={isHome} openCart={openCart} />
-      </div>
-    </header>
+        <div className="flex h-full items-center">
+          <div className="border-black border-r h-full flex items-center justify-center w-10">
+            <img
+              className="inline mx-1"
+              src={search}
+              width="16"
+              height="16"
+              alt="search-icon"
+            />
+          </div>
+          <div className="border-black border-r h-full flex items-center justify-center w-10">
+            <img
+              className="inline mx-1"
+              src={cart}
+              width="16"
+              height="16"
+              alt="cart-icon"
+            />
+          </div>
+        </div>
+        {open ? (
+          <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
+            {menu?.items.map((menuItem) => (
+              <Fragment key={menuItem.id}>
+                {menuItem?.title === 'Shop' ? (
+                  <div
+                    key={menuItem.id}
+                    className={`${
+                      isCurrentPath(pathname, menuItem?.url)
+                        ? 'font-semibold'
+                        : 'font-medium'
+                    } flex border-b py-2`}
+                  >
+                    <Link
+                      onClick={() => setOpen(false)}
+                      className="font-bold px-2"
+                      to={urlPathname(menuItem.url)}
+                    >
+                      {menuItem.title}
+                    </Link>
+                    <div className="flex-1 ml-12">
+                      {filter?.items.map((item) => (
+                        <Link
+                          onClick={() => setOpen(false)}
+                          key={item.id}
+                          className={`${
+                            isCurrentPath(pathname, item?.url)
+                              ? 'font-semibold'
+                              : 'font-medium'
+                          } block whitespace-nowrap mb-2`}
+                          to={urlPathname(item.url)}
+                        >
+                          {item.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    onClick={() => setOpen(false)}
+                    className="font-bold px-2 flex items-center h-10 border-b"
+                    to={urlPathname(menuItem.url)}
+                  >
+                    {menuItem.title}
+                  </Link>
+                )}
+              </Fragment>
+            ))}
+          </ul>
+        ) : null}
+      </header>
+    </nav>
   );
 }
 
 function DesktopHeader({
-  isHome,
+  shop,
+  filter,
   menu,
   openCart,
-  title,
 }: {
-  isHome: boolean;
+  shop: QueryRoot['shop'];
+  filter: EnhancedMenu;
+  menu: EnhancedMenu;
   openCart: () => void;
-  menu?: EnhancedMenu;
-  title: string;
 }) {
+  const {pathname} = useLocation();
   const params = useParams();
   const {y} = useWindowScroll();
+
   return (
-    <header
-      role="banner"
-      className={`${
-        isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
-      } ${
-        !isHome && y > 50 && ' shadow-lightHeader'
-      } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
-    >
-      <div className="flex gap-12">
-        <Link className="font-bold" to="/" prefetch="intent">
-          {title}
+    <nav className="hidden md:block">
+      {/* <Modal /> */}
+      {/* {openCart && <CartDetails />} */}
+      <header
+        role="banner"
+        className="h-10 px-2 flex items-center justify-between flex-wrap mx-auto"
+      >
+        <Link className="text-2xl text-[#ED1C24] font-semibold" to="/">
+          {shop.name}
         </Link>
-        <nav className="flex gap-8">
-          {/* Top level menu items */}
-          {(menu?.items || []).map((item) => (
+        <div>
+          {menu?.items.map((menuItem) => (
             <Link
-              key={item.id}
-              to={item.to}
-              target={item.target}
-              prefetch="intent"
-              className={({isActive}) =>
-                isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
-              }
+              key={`desktop-${menuItem.id}`}
+              className={`mx-1 text-black ${
+                isCurrentPath(pathname, menuItem?.url)
+                  ? 'font-semibold'
+                  : 'font-medium'
+              }`}
+              to={urlPathname(menuItem.url)}
             >
-              {item.title}
+              {menuItem.title}
             </Link>
           ))}
-        </nav>
-      </div>
-      <div className="flex items-center gap-1">
-        <Form
-          method="get"
-          action={params.lang ? `/${params.lang}/search` : '/search'}
-          className="flex items-center gap-2"
-        >
-          <Input
-            className={
-              isHome
-                ? 'focus:border-contrast/20 dark:focus:border-primary/20'
-                : 'focus:border-primary/20'
-            }
-            type="search"
-            variant="minisearch"
-            placeholder="Search"
-            name="q"
+          <img
+            onClick={() => setModal('newsletter')}
+            className="inline mx-1 hover:cursor-pointer"
+            src={search}
+            width="16"
+            height="16"
+            alt="search-icon"
           />
-          <button
-            type="submit"
-            className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+          <img
+            onClick={() => setModal('location')}
+            className="inline mx-1 hover:cursor-pointer"
+            src={globe}
+            width="16"
+            height="16"
+            alt="globe-icon"
+          />
+          <img
+            onClick={() => navigate('/account/register')}
+            className="inline mx-1 hover:cursor-pointer"
+            src={account}
+            width="16"
+            height="16"
+            alt="account-icon"
+          />
+          <img
+            onClick={openCart}
+            className="inline mx-1 hover:cursor-pointer"
+            src={cart}
+            width="16"
+            height="16"
+            alt="cart-icon"
+          />
+        </div>
+      </header>
+
+      <div className="border-y px-2 flex items-center justify-between w-full overflow-x-auto flex-nowrap">
+        {filter?.items.map((item) => (
+          <Link
+            key={`desktop-${item.id}`}
+            className={`${
+              isCurrentPath(pathname, item?.url)
+                ? 'font-semibold'
+                : 'font-medium'
+            } h-10 px-2 flex items-center whitespace-nowrap first:pl-0 last:pr-0 text-black`}
+            to={urlPathname(item.url)}
           >
-            <IconSearch />
-          </button>
-        </Form>
-        <Link
-          to="/account"
-          className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
-        >
-          <IconAccount />
-        </Link>
-        <CartCount isHome={isHome} openCart={openCart} />
+            {item.title}
+          </Link>
+        ))}
       </div>
-    </header>
+    </nav>
   );
 }
 

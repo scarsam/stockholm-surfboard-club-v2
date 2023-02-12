@@ -3,7 +3,17 @@ import type {
   MenuItem,
   Menu,
   MoneyV2,
+  Maybe,
 } from '@shopify/hydrogen/storefront-api-types';
+
+export const isCurrentPath = (currentPath: string, url?: string | null) => {
+  if (!url) return false;
+
+  return currentPath === new URL(url).pathname;
+};
+
+export const urlPathname = (url?: string | Maybe<string>) =>
+  url ? new URL(url).pathname : '/';
 
 // @ts-expect-error types not available
 import typographicBase from 'typographic-base';

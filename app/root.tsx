@@ -167,6 +167,7 @@ const LAYOUT_QUERY = `#graphql
   query layoutMenus(
     $language: LanguageCode
     $headerMenuHandle: String!
+    $filterMenuHandle: String!
     $footerMenuHandle: String!
   ) @inContext(language: $language) {
     shop {
@@ -183,7 +184,7 @@ const LAYOUT_QUERY = `#graphql
         }
       }
     }
-    filter :menu(handle: $filterMenuHandle) {
+    filterMenu :menu(handle: $filterMenuHandle) {
       id
       items {
         ...MenuItem
@@ -250,11 +251,15 @@ async function getLayoutData({storefront}: AppLoadContext) {
     ? parseMenu(data.headerMenu, customPrefixes)
     : undefined;
 
+  const filterMenu = data?.filterMenu
+    ? parseMenu(data.filterMenu, customPrefixes)
+    : undefined;
+
   const footerMenu = data?.footerMenu
     ? parseMenu(data.footerMenu, customPrefixes)
     : undefined;
 
-  return {shop: data.shop, headerMenu, footerMenu};
+  return {shop: data.shop, filterMenu, headerMenu, footerMenu};
 }
 
 const CART_QUERY = `#graphql
