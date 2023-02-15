@@ -40,6 +40,7 @@ import cart from '../../public/cart-icon.svg';
 import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import globe from '../../public/globe-icon.svg';
+import {useModal} from './Modals/useModal';
 
 export function Layout({
   children,
@@ -48,8 +49,11 @@ export function Layout({
   children: React.ReactNode;
   layout: LayoutData;
 }) {
+  const {Modal, setModal} = useModal();
+
   return (
     <>
+      <Modal />
       <div className="flex flex-col min-h-screen antialiased bg-white">
         <div className="">
           <a href="#mainContent" className="sr-only">
@@ -57,6 +61,7 @@ export function Layout({
           </a>
         </div>
         <Header
+          setModal={setModal}
           menu={layout?.headerMenu}
           filter={layout?.filterMenu}
           shop={layout?.shop}
@@ -74,10 +79,14 @@ function Header({
   filter,
   menu,
   shop,
+  setModal,
 }: {
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
+  setModal: React.Dispatch<
+    React.SetStateAction<'location' | 'newsletter' | undefined>
+  >;
 }) {
   const isHome = useIsHomePath();
 
@@ -104,24 +113,26 @@ function Header({
   return (
     <>
       <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
-      {/* {menu && (
-        <MenuDrawer isOpen={isMenuOpen} onClose={closeMenu} menu={menu} />
-      )} */}
-      {/* <DesktopNav shop={shop} menu={menu} filter={filter} />
-      <MobileNav shop={shop} menu={menu} filter={filter} /> */}
+      {menu && (
+        <MenuDrawer
+          isOpen={isMenuOpen}
+          onClose={closeMenu}
+          openCart={openCart}
+          openMenu={openMenu}
+          filter={filter}
+          menu={menu}
+          shop={shop}
+        />
+      )}
+
       <DesktopHeader
+        setModal={setModal}
         filter={filter}
         menu={menu}
         shop={shop}
         openCart={openCart}
       />
-      <MobileHeader
-        filter={filter}
-        menu={menu}
-        shop={shop}
-        openCart={openCart}
-        openMenu={openMenu}
-      />
+      <MobileHeader shop={shop} openCart={openCart} openMenu={openMenu} />
     </>
   );
 }
@@ -142,166 +153,112 @@ function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
   );
 }
 
-// export function MenuDrawer({
-//   isOpen,
-//   onClose,
-//   menu,
-// }: {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   menu: EnhancedMenu;
-// }) {
-//   return (
-//     <Drawer open={isOpen} onClose={onClose} openFrom="left" heading="Menu">
-//       <div className="grid">
-//         <MenuMobileNav menu={menu} filter={filter} onClose={onClose} />
-//       </div>
-//     </Drawer>
-//   );
-// }
+export function MenuDrawer({
+  isOpen,
+  onClose,
+  openCart,
+  openMenu,
+  filter,
+  menu,
+  shop,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  openCart: () => void;
+  openMenu: () => void;
+  filter: EnhancedMenu;
+  menu: EnhancedMenu;
+  shop: QueryRoot['shop'];
+}) {
+  return (
+    <Drawer open={isOpen} onClose={onClose} openFrom="left" heading="Menu">
+      <div className="grid">
+        <MenuMobileNav
+          shop={shop}
+          menu={menu}
+          filter={filter}
+          openMenu={openMenu}
+          openCart={openCart}
+          onClose={onClose}
+        />
+      </div>
+    </Drawer>
+  );
+}
 
 function MenuMobileNav({
   shop,
   filter,
   menu,
   onClose,
-}: {
-  shop: QueryRoot['shop'];
-  filter: EnhancedMenu;
-  menu: EnhancedMenu;
-  onClose: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const {pathname} = useLocation();
-
-  return (
-    <nav className="md:hidden">
-      <header
-        role="banner"
-        className="h-10 flex items-center mx-auto border-black border-b"
-      >
-        <button
-          onClick={() => setOpen((isOpen) => !isOpen)}
-          type="button"
-          data-collapse-toggle="navbar-default"
-          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
-          aria-controls="navbar-default"
-          aria-expanded="false"
-        >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-6 h-6"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-        </button>
-        <Link
-          className="text-xl text-[#ED1C24] font-semibold border-black border-r flex-1 h-full items-center flex justify-center"
-          to="/"
-        >
-          {shop.name}
-        </Link>
-        <div className="flex h-full items-center">
-          <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <img
-              className="inline mx-1"
-              src={search}
-              width="16"
-              height="16"
-              alt="search-icon"
-            />
-          </div>
-          <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <img
-              className="inline mx-1"
-              src={cart}
-              width="16"
-              height="16"
-              alt="cart-icon"
-            />
-          </div>
-        </div>
-        {open ? (
-          <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
-            {menu?.items.map((menuItem) => (
-              <Fragment key={menuItem.id}>
-                {menuItem?.title === 'Shop' ? (
-                  <div
-                    key={menuItem.id}
-                    className={`${
-                      isCurrentPath(pathname, menuItem?.url)
-                        ? 'font-semibold'
-                        : 'font-medium'
-                    } flex border-b py-2`}
-                  >
-                    <Link
-                      onClick={() => setOpen(false)}
-                      className="font-bold px-2"
-                      to={urlPathname(menuItem.url)}
-                    >
-                      {menuItem.title}
-                    </Link>
-                    <div className="flex-1 ml-12">
-                      {filter?.items.map((item) => (
-                        <Link
-                          onClick={() => setOpen(false)}
-                          key={item.id}
-                          className={`${
-                            isCurrentPath(pathname, item?.url)
-                              ? 'font-semibold'
-                              : 'font-medium'
-                          } block whitespace-nowrap mb-2`}
-                          to={urlPathname(item.url)}
-                        >
-                          {item.title}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <Link
-                    onClick={() => setOpen(false)}
-                    className="font-bold px-2 flex items-center h-10 border-b"
-                    to={urlPathname(menuItem.url)}
-                  >
-                    {menuItem.title}
-                  </Link>
-                )}
-              </Fragment>
-            ))}
-          </ul>
-        ) : null}
-      </header>
-    </nav>
-  );
-}
-
-function MobileHeader({
-  shop,
-  filter,
-  menu,
   openCart,
   openMenu,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
   menu: EnhancedMenu;
+  onClose: () => void;
+  openCart: () => void;
+  openMenu: () => void;
+}) {
+  const {pathname} = useLocation();
+
+  return (
+    <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
+      {menu?.items.map((menuItem) => (
+        <Fragment key={menuItem.id}>
+          {menuItem?.title === 'Shop' ? (
+            <div
+              key={menuItem.id}
+              className={`${
+                isCurrentPath(pathname, menuItem?.url)
+                  ? 'font-semibold'
+                  : 'font-medium'
+              } flex border-b py-2`}
+            >
+              <Link className="font-bold px-2" to={urlPathname(menuItem.url)}>
+                {menuItem.title}
+              </Link>
+              <div className="flex-1 ml-12">
+                {filter?.items.map((item) => (
+                  <Link
+                    key={item.id}
+                    className={`${
+                      isCurrentPath(pathname, item?.url)
+                        ? 'font-semibold'
+                        : 'font-medium'
+                    } block whitespace-nowrap mb-2`}
+                    to={urlPathname(item.url)}
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <Link
+              className="font-bold px-2 flex items-center h-10 border-b"
+              to={urlPathname(menuItem.url)}
+            >
+              {menuItem.title}
+            </Link>
+          )}
+        </Fragment>
+      ))}
+    </ul>
+  );
+}
+
+function MobileHeader({
+  shop,
+  openCart,
+  openMenu,
+}: {
+  shop: QueryRoot['shop'];
   openCart: () => void;
   openMenu: () => void;
 }) {
   // useHeaderStyleFix(containerStyle, setContainerStyle, isHome);
-  const [open, setOpen] = useState(false);
-  const {pathname} = useLocation();
-
-  const params = useParams();
 
   return (
     <nav className="md:hidden">
@@ -310,7 +267,7 @@ function MobileHeader({
         className="h-10 flex items-center mx-auto border-black border-b"
       >
         <button
-          onClick={() => setOpen((isOpen) => !isOpen)}
+          onClick={openMenu}
           type="button"
           data-collapse-toggle="navbar-default"
           className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
@@ -350,6 +307,7 @@ function MobileHeader({
           </div>
           <div className="border-black border-r h-full flex items-center justify-center w-10">
             <img
+              onClick={openCart}
               className="inline mx-1"
               src={cart}
               width="16"
@@ -358,56 +316,6 @@ function MobileHeader({
             />
           </div>
         </div>
-        {open ? (
-          <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
-            {menu?.items.map((menuItem) => (
-              <Fragment key={menuItem.id}>
-                {menuItem?.title === 'Shop' ? (
-                  <div
-                    key={menuItem.id}
-                    className={`${
-                      isCurrentPath(pathname, menuItem?.url)
-                        ? 'font-semibold'
-                        : 'font-medium'
-                    } flex border-b py-2`}
-                  >
-                    <Link
-                      onClick={() => setOpen(false)}
-                      className="font-bold px-2"
-                      to={urlPathname(menuItem.url)}
-                    >
-                      {menuItem.title}
-                    </Link>
-                    <div className="flex-1 ml-12">
-                      {filter?.items.map((item) => (
-                        <Link
-                          onClick={() => setOpen(false)}
-                          key={item.id}
-                          className={`${
-                            isCurrentPath(pathname, item?.url)
-                              ? 'font-semibold'
-                              : 'font-medium'
-                          } block whitespace-nowrap mb-2`}
-                          to={urlPathname(item.url)}
-                        >
-                          {item.title}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <Link
-                    onClick={() => setOpen(false)}
-                    className="font-bold px-2 flex items-center h-10 border-b"
-                    to={urlPathname(menuItem.url)}
-                  >
-                    {menuItem.title}
-                  </Link>
-                )}
-              </Fragment>
-            ))}
-          </ul>
-        ) : null}
       </header>
     </nav>
   );
@@ -418,11 +326,15 @@ function DesktopHeader({
   filter,
   menu,
   openCart,
+  setModal,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   openCart: () => void;
+  setModal: React.Dispatch<
+    React.SetStateAction<'location' | 'newsletter' | undefined>
+  >;
 }) {
   const {pathname} = useLocation();
   const params = useParams();
@@ -430,7 +342,6 @@ function DesktopHeader({
 
   return (
     <nav className="hidden md:block">
-      {/* <Modal /> */}
       {/* {openCart && <CartDetails />} */}
       <header
         role="banner"
@@ -453,14 +364,15 @@ function DesktopHeader({
               {menuItem.title}
             </Link>
           ))}
-          <img
-            onClick={() => setModal('newsletter')}
-            className="inline mx-1 hover:cursor-pointer"
-            src={search}
-            width="16"
-            height="16"
-            alt="search-icon"
-          />
+          <button onClick={() => setModal('newsletter')}>
+            <img
+              className="inline mx-1 hover:cursor-pointer"
+              src={search}
+              width="16"
+              height="16"
+              alt="search-icon"
+            />
+          </button>
           <img
             onClick={() => setModal('location')}
             className="inline mx-1 hover:cursor-pointer"
@@ -594,7 +506,7 @@ function Footer({menu}: {menu?: EnhancedMenu}) {
         bg-primary dark:bg-contrast dark:text-primary text-contrast overflow-hidden`}
     >
       <FooterMenu menu={menu} />
-      <CountrySelector />
+      {/* <CountrySelector /> */}
       <div
         className={`self-end pt-8 opacity-50 md:col-span-2 lg:col-span-${itemsCount}`}
       >

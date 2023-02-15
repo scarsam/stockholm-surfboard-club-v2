@@ -4,6 +4,7 @@ import {
   type MetaFunction,
   type LoaderArgs,
   type AppLoadContext,
+  json,
 } from '@shopify/remix-oxygen';
 import {
   Links,
@@ -32,6 +33,7 @@ import invariant from 'tiny-invariant';
 import {Shop, Cart} from '@shopify/hydrogen/storefront-api-types';
 import {useAnalytics} from './hooks/useAnalytics';
 import type {StorefrontContext} from './lib/type';
+import {countries} from './data/countries';
 
 const seo: SeoHandleFunction<typeof loader> = ({data, pathname}) => ({
   title: data?.layout?.shop?.name,
@@ -75,6 +77,7 @@ export async function loader({context}: LoaderArgs) {
     layout,
     selectedLocale: context.storefront.i18n,
     cart: cartId ? getCart(context, cartId) : undefined,
+    countries: {...countries},
     analytics: {
       shopifySalesChannel: ShopifySalesChannel.hydrogen,
       shopId: layout.shop.id,
