@@ -1,27 +1,14 @@
-import {
-  useFetcher,
-  useLoaderData,
-  useLocation,
-  useMatches,
-} from '@remix-run/react';
-import {Heading, Button, IconCheck} from '~/components';
+import {useFetcher, useLocation, useMatches} from '@remix-run/react';
+import {Button, IconCheck} from '~/components';
 import {useCallback, useEffect, useRef} from 'react';
-import {useInView} from 'react-intersection-observer';
 import {Localizations, Locale, CartAction} from '~/lib/type';
 import {DEFAULT_LOCALE} from '~/lib/utils';
 import clsx from 'clsx';
 import {CartBuyerIdentityInput} from '@shopify/hydrogen/storefront-api-types';
-import {json} from '@shopify/remix-oxygen';
-import {countries} from '~/data/countries';
-
-export async function loader() {
-  return json({...countries});
-}
 
 export function CountrySelector() {
   const [root] = useMatches();
-  const {countries} = useLoaderData<typeof loader>();
-
+  const fetcher = useFetcher();
   const closeRef = useRef<HTMLDetailsElement>(null);
   const selectedLocale = root.data?.selectedLocale ?? DEFAULT_LOCALE;
   const {pathname, search} = useLocation();
@@ -30,30 +17,33 @@ export function CountrySelector() {
     '',
   )}${search}`;
 
+  const countries = (fetcher.data ?? {}) as Localizations;
   const defaultLocale = countries?.['default'];
   const defaultLocalePrefix = defaultLocale
     ? `${defaultLocale?.language}-${defaultLocale?.country}`
     : '';
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.type !== 'done') {
+      fetcher.load('/api/countries');
+    }
+  }, [fetcher]);
 
   const closeDropdown = useCallback(() => {
     closeRef.current?.removeAttribute('open');
   }, []);
 
   return (
-    <section
-      // ref={observerRef}
-      className="w-full"
-      // onMouseLeave={closeDropdown}
-    >
-      <div className="relative">
+    <section className="w-full" onMouseLeave={closeDropdown}>
+      <div className="relative h-[50px]">
         <details
-          className="absolute w-full border rounded border-black open:round-b-none overflow-clip bg-white"
+          className="absolute w-full border rounded border-black open:round-b-none overflow-clip"
           ref={closeRef}
         >
           <summary className="flex items-center justify-between w-full px-4 py-3 cursor-pointer text-black">
             {selectedLocale.label}
           </summary>
-          <div className="w-full overflow-auto border-t border-black bg-white max-h-36">
+          <div className="w-full overflow-auto border-t border-contrast/30 dark:border-white bg-contrast/30 max-h-36">
             {countries &&
               Object.keys(countries).map((countryPath) => {
                 const countryLocale = countries[countryPath];
@@ -105,8 +95,8 @@ function Country({
     >
       <Button
         className={clsx([
-          'text-contrast dark:text-primary',
-          'bg-primary dark:bg-contrast w-full p-2 transition rounded flex justify-start',
+          'text-black',
+          'w-full p-2 transition flex justify-start border-t border-black',
           'items-center text-left cursor-pointer py-2 px-4',
         ])}
         type="submit"

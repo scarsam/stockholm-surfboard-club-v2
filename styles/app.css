@@ -62,9 +62,9 @@ shop-pay-button {
     font-variant-ligatures: none;
   }
 
-  body {
+  /* body {
     @apply border-primary/10 bg-contrast text-primary/90 antialiased;
-  }
+  } */
 
   html {
     scroll-padding-top: 10rem;
@@ -110,9 +110,9 @@ shop-pay-button {
     h4,
     h5,
     h6 {
-      @apply font-sans text-primary;
+      @apply font-sans;
     }
-    @apply prose mx-auto mb-12 grid justify-center font-serif text-primary;
+    @apply prose mx-auto mb-12 grid justify-center font-serif;
     p,
     ul,
     li {

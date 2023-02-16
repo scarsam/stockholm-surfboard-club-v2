@@ -74,52 +74,52 @@ export const Location = ({handleClose}: {handleClose: () => void}) => {
   );
 };
 
-export function SelectCountries({
-  selectedCountry,
-  setSelectedCountry,
-}: {
-  selectedCountry: Pick<Country, 'isoCode' | 'name'>;
-  setSelectedCountry: React.Dispatch<React.SetStateAction<string>>;
-}) {
-  // const response = fetchSync('/api/countries');
+// export function SelectCountries({
+//   selectedCountry,
+//   setSelectedCountry,
+// }: {
+//   selectedCountry: Pick<Country, 'isoCode' | 'name'>;
+//   setSelectedCountry: React.Dispatch<React.SetStateAction<string>>;
+// }) {
+//   // const response = fetchSync('/api/countries');
 
-  // let countries: Country[] | undefined;
+//   // let countries: Country[] | undefined;
 
-  // if (response.ok) {
-  //   countries = response.json();
-  // } else {
-  //   console.error(
-  //     `Unable to load available countries ${response.url} returned a ${response.status}`,
-  //   );
-  // }
-  const countries = [];
-  return countries ? (
-    <select
-      defaultValue={selectedCountry.isoCode}
-      id="country"
-      className="w-full border border-black p-2"
-      onChange={(e) => setSelectedCountry(e.target.value)}
-    >
-      {countries.map((country) => {
-        const isSelected = country.isoCode === selectedCountry.isoCode;
+//   // if (response.ok) {
+//   //   countries = response.json();
+//   // } else {
+//   //   console.error(
+//   //     `Unable to load available countries ${response.url} returned a ${response.status}`,
+//   //   );
+//   // }
+//   const countries = [];
+//   return countries ? (
+//     <select
+//       defaultValue={selectedCountry.isoCode}
+//       id="country"
+//       className="w-full border border-black p-2"
+//       onChange={(e) => setSelectedCountry(e.target.value)}
+//     >
+//       {countries.map((country) => {
+//         const isSelected = country.isoCode === selectedCountry.isoCode;
 
-        return (
-          <option
-            key={country.isoCode}
-            value={country.isoCode}
-            className={`${isSelected ? 'bg-red' : 'bg-black'}`}
-          >
-            {country.name}
-          </option>
-        );
-      })}
-    </select>
-  ) : (
-    <div className="flex justify-center">
-      <div className="mt-4 text-center">
-        <div>Unable to load available countries.</div>
-        <div>Please try again.</div>
-      </div>
-    </div>
-  );
-}
+//         return (
+//           <option
+//             key={country.isoCode}
+//             value={country.isoCode}
+//             className={`${isSelected ? 'bg-red' : 'bg-black'}`}
+//           >
+//             {country.name}
+//           </option>
+//         );
+//       })}
+//     </select>
+//   ) : (
+//     <div className="flex justify-center">
+//       <div className="mt-4 text-center">
+//         <div>Unable to load available countries.</div>
+//         <div>Please try again.</div>
+//       </div>
+//     </div>
+//   );
+// }

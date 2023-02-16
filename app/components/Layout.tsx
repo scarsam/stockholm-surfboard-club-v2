@@ -259,6 +259,7 @@ function MobileHeader({
   openMenu: () => void;
 }) {
   // useHeaderStyleFix(containerStyle, setContainerStyle, isHome);
+  const params = useParams();
 
   return (
     <nav className="md:hidden">
@@ -297,13 +298,37 @@ function MobileHeader({
         </Link>
         <div className="flex h-full items-center">
           <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <img
+            <Form
+              method="get"
+              action={params.lang ? `/${params.lang}/search` : '/search'}
+            >
+              <button
+                type="submit"
+                className="relative flex items-center justify-center w-8 h-8"
+              >
+                <img
+                  className="inline mx-1"
+                  src={search}
+                  width="16"
+                  height="16"
+                  alt="search-icon"
+                />
+              </button>
+              {/* <Input
+                className="focus:border-primary/20"
+                type="search"
+                variant="minisearch"
+                placeholder="Search"
+                name="q"
+              /> */}
+            </Form>
+            {/* <img
               className="inline mx-1"
               src={search}
               width="16"
               height="16"
               alt="search-icon"
-            />
+            /> */}
           </div>
           <div className="border-black border-r h-full flex items-center justify-center w-10">
             <img
@@ -364,7 +389,7 @@ function DesktopHeader({
               {menuItem.title}
             </Link>
           ))}
-          <button onClick={() => setModal('newsletter')}>
+          {/* <button onClick={() => setModal('newsletter')}>
             <img
               className="inline mx-1 hover:cursor-pointer"
               src={search}
@@ -372,7 +397,22 @@ function DesktopHeader({
               height="16"
               alt="search-icon"
             />
-          </button>
+          </button> */}
+          <Form
+            method="get"
+            action={params.lang ? `/${params.lang}/search` : '/search'}
+            className="inline-block"
+          >
+            <button type="submit">
+              <img
+                className="inline mx-1"
+                src={search}
+                width="16"
+                height="16"
+                alt="search-icon"
+              />
+            </button>
+          </Form>
           <img
             onClick={() => setModal('location')}
             className="inline mx-1 hover:cursor-pointer"
@@ -381,14 +421,15 @@ function DesktopHeader({
             height="16"
             alt="globe-icon"
           />
-          <img
-            onClick={() => navigate('/account/register')}
-            className="inline mx-1 hover:cursor-pointer"
-            src={account}
-            width="16"
-            height="16"
-            alt="account-icon"
-          />
+          <Link to="/account">
+            <img
+              className="inline mx-1 hover:cursor-pointer"
+              src={account}
+              width="16"
+              height="16"
+              alt="account-icon"
+            />
+          </Link>
           <img
             onClick={openCart}
             className="inline mx-1 hover:cursor-pointer"
