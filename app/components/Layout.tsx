@@ -132,7 +132,12 @@ function Header({
         shop={shop}
         openCart={openCart}
       />
-      <MobileHeader shop={shop} openCart={openCart} openMenu={openMenu} />
+      <MobileHeader
+        shop={shop}
+        openCart={openCart}
+        openMenu={openMenu}
+        onClose={closeMenu}
+      />
     </>
   );
 }
@@ -171,7 +176,7 @@ export function MenuDrawer({
   shop: QueryRoot['shop'];
 }) {
   return (
-    <Drawer open={isOpen} onClose={onClose} openFrom="left" heading="Menu">
+    <Drawer open={isOpen} onClose={onClose} openFrom="left">
       <div className="grid">
         <MenuMobileNav
           shop={shop}
@@ -204,7 +209,7 @@ function MenuMobileNav({
   const {pathname} = useLocation();
 
   return (
-    <ul className="flex flex-col absolute top-[40px] w-full bg-white h-[calc(100%-40px)]">
+    <ul className="flex flex-col absolute top-[20px] w-full bg-white h-[calc(100%-40px)]">
       {menu?.items.map((menuItem) => (
         <Fragment key={menuItem.id}>
           {menuItem?.title === 'Shop' ? (
@@ -253,10 +258,12 @@ function MobileHeader({
   shop,
   openCart,
   openMenu,
+  onClose,
 }: {
   shop: QueryRoot['shop'];
   openCart: () => void;
   openMenu: () => void;
+  onClose: () => void;
 }) {
   // useHeaderStyleFix(containerStyle, setContainerStyle, isHome);
   const params = useParams();
@@ -430,14 +437,7 @@ function DesktopHeader({
               alt="account-icon"
             />
           </Link>
-          <img
-            onClick={openCart}
-            className="inline mx-1 hover:cursor-pointer"
-            src={cart}
-            width="16"
-            height="16"
-            alt="cart-icon"
-          />
+          <CartCount isHome openCart={openCart} />
         </div>
       </header>
 
@@ -498,12 +498,10 @@ function Badge({
   const BadgeCounter = useMemo(
     () => (
       <>
-        <IconBag />
+        <img src={cart} width="16" height="16" alt="cart-icon" />
         <div
           className={`${
-            dark
-              ? 'text-primary bg-contrast dark:text-contrast dark:bg-primary'
-              : 'text-contrast bg-primary'
+            dark ? 'text-primary bg-black' : 'text-contrast bg-primary'
           } absolute bottom-1 right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
         >
           <span>{count || 0}</span>
@@ -516,14 +514,14 @@ function Badge({
   return isHydrated ? (
     <button
       onClick={openCart}
-      className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative inline-flex items-center justify-center w-8 h-8 focus:ring-primary/5"
     >
       {BadgeCounter}
     </button>
   ) : (
     <Link
       to="/cart"
-      className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative inline-flex items-center justify-center w-8 h-8 focus:ring-primary/5"
     >
       {BadgeCounter}
     </Link>

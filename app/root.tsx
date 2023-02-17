@@ -106,7 +106,7 @@ export default function App() {
         >
           <Outlet />
         </Layout>
-        <ScrollRestoration />
+        {/* <ScrollRestoration /> */}
         <Scripts />
       </body>
     </html>

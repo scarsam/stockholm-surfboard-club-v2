@@ -41,14 +41,18 @@ export function Drawer({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
+          <div
+            className={`${
+              openFrom === 'left' ? 'top-[40px]' : 'bg-black bg-opacity-25'
+            } fixed inset-0`}
+          />
         </Transition.Child>
 
         <div className="fixed inset-0">
           <div className="absolute inset-0 overflow-hidden">
             <div
               className={`fixed inset-y-0 flex max-w-full ${
-                openFrom === 'right' ? 'right-0' : ''
+                openFrom === 'right' ? 'right-0' : 'top-[40px]'
               }`}
             >
               <Transition.Child
@@ -60,28 +64,32 @@ export function Drawer({
                 leaveFrom="translate-x-0"
                 leaveTo={offScreen[openFrom]}
               >
-                <Dialog.Panel className="w-screen max-w-lg text-left align-middle transition-all transform shadow-xl h-screen-dynamic bg-contrast">
-                  <header
-                    className={`sticky top-0 flex items-center px-6 h-nav sm:px-8 md:px-12 ${
-                      heading ? 'justify-between' : 'justify-end'
-                    }`}
-                  >
-                    {heading !== null && (
+                <Dialog.Panel
+                  className={`${
+                    openFrom === 'left' ? '' : 'max-w-lg'
+                  } bg-white w-screen text-left align-middle transition-all transform shadow-xl h-screen-dynamic`}
+                >
+                  {heading && (
+                    <header
+                      className={`sticky top-0 flex items-center px-6 h-nav sm:px-8 md:px-12 ${
+                        heading ? 'justify-between' : 'justify-end'
+                      }`}
+                    >
                       <Dialog.Title>
                         <Heading as="span" size="lead" id="cart-contents">
                           {heading}
                         </Heading>
                       </Dialog.Title>
-                    )}
-                    <button
-                      type="button"
-                      className="p-4 -m-4 transition text-primary hover:text-primary/50"
-                      onClick={onClose}
-                      data-test="close-cart"
-                    >
-                      <IconClose aria-label="Close panel" />
-                    </button>
-                  </header>
+                      <button
+                        type="button"
+                        className="p-4 -m-4 transition text-primary hover:text-primary/50"
+                        onClick={onClose}
+                        data-test="close-cart"
+                      >
+                        <IconClose aria-label="Close panel" />
+                      </button>
+                    </header>
+                  )}
                   {children}
                 </Dialog.Panel>
               </Transition.Child>

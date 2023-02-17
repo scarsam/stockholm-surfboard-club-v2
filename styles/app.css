@@ -67,6 +67,7 @@ shop-pay-button {
   } */
 
   html {
+    font-family: 'Times New Roman', Times, serif;
     scroll-padding-top: 10rem;
   }
 
@@ -110,13 +111,13 @@ shop-pay-button {
     h4,
     h5,
     h6 {
-      @apply font-sans;
+      /* @apply font-serif; */
+      @apply prose mx-auto mb-12 grid justify-center font-serif;
     }
-    @apply prose mx-auto mb-12 grid justify-center font-serif;
     p,
     ul,
     li {
-      @apply mb-4 text-lg;
+      @apply mb-4 text-lg font-serif;
     }
     img {
       @apply md:-mx-8 lg:-mx-16;
