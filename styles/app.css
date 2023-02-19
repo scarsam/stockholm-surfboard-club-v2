@@ -171,10 +171,10 @@ shop-pay-button {
   }
 
   .card-image {
-    @apply relative flex items-center justify-center overflow-clip rounded;
+    @apply relative flex items-center justify-center overflow-clip;
     &::before {
       content: ' ';
-      @apply absolute top-0 left-0 z-10 block h-full w-full rounded shadow-border;
+      @apply absolute top-0 left-0 z-10 block h-full w-full shadow-border;
     }
     img {
       @apply aspect-[inherit] w-full object-cover;

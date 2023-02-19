@@ -114,7 +114,7 @@ export function Section({
   divider?: 'none' | 'top' | 'bottom' | 'both';
   display?: 'grid' | 'flex';
   heading?: string;
-  padding?: 'x' | 'y' | 'swimlane' | 'all';
+  padding?: 'x' | 'y' | 'swimlane' | 'all' | 's';
   [key: string]: any;
 }) {
   const paddings = {
@@ -122,6 +122,7 @@ export function Section({
     y: 'py-6 md:py-8 lg:py-12',
     swimlane: 'pt-4 md:pt-8 lg:pt-12 md:pb-4 lg:pb-8',
     all: 'p-6 md:p-8 lg:p-12',
+    s: 'p-2',
   };
 
   const dividers = {
