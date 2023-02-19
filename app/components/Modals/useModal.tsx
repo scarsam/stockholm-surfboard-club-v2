@@ -1,4 +1,4 @@
-import {Suspense, useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Newsletter} from './Newsletter';
 import {Location} from './Location';
 
@@ -52,11 +52,9 @@ export const useModal = () => {
                       />
                     </svg>
                   </button>
-                  {/* <Suspense fallback={<div className="p-2">Loading…</div>}> */}
                   {RenderModal ? (
                     <RenderModal handleClose={() => setModal(undefined)} />
                   ) : null}
-                  {/* </Suspense> */}
                 </div>
               </div>
             </div>
