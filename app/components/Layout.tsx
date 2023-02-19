@@ -146,7 +146,7 @@ function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
   const [root] = useMatches();
 
   return (
-    <Drawer open={isOpen} onClose={onClose} heading="Cart" openFrom="right">
+    <Drawer open={isOpen} onClose={onClose} openFrom="right">
       <div className="grid">
         <Suspense fallback={<CartLoading />}>
           <Await resolve={root.data?.cart}>
@@ -338,14 +338,15 @@ function MobileHeader({
             /> */}
           </div>
           <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <img
-              onClick={openCart}
-              className="inline mx-1"
-              src={cart}
-              width="16"
-              height="16"
-              alt="cart-icon"
-            />
+            <button onClick={openCart} type="button">
+              <img
+                className="inline mx-1"
+                src={cart}
+                width="16"
+                height="16"
+                alt="cart-icon"
+              />
+            </button>
           </div>
         </div>
       </header>
@@ -382,7 +383,7 @@ function DesktopHeader({
         <Link className="text-2xl text-[#ED1C24] font-semibold" to="/">
           {shop.name}
         </Link>
-        <div>
+        <div className="flex items-center">
           {menu?.items.map((menuItem) => (
             <Link
               key={`desktop-${menuItem.id}`}
@@ -405,39 +406,42 @@ function DesktopHeader({
               alt="search-icon"
             />
           </button> */}
-          <Form
-            method="get"
-            action={params.lang ? `/${params.lang}/search` : '/search'}
-            className="inline-block"
-          >
-            <button type="submit">
+          <div className="flex items-center">
+            <Form
+              method="get"
+              action={params.lang ? `/${params.lang}/search` : '/search'}
+              className="flex self-stretch items-center mx-1"
+            >
+              <button type="submit">
+                <img
+                  className="inline"
+                  src={search}
+                  width="16"
+                  height="16"
+                  alt="search-icon"
+                />
+              </button>
+            </Form>
+            <button onClick={() => setModal('location')} type="button">
               <img
-                className="inline mx-1"
-                src={search}
+                className="flex self-stretch items-center hover:cursor-pointer mx-1"
+                src={globe}
                 width="16"
                 height="16"
-                alt="search-icon"
+                alt="globe-icon"
               />
             </button>
-          </Form>
-          <img
-            onClick={() => setModal('location')}
-            className="inline mx-1 hover:cursor-pointer"
-            src={globe}
-            width="16"
-            height="16"
-            alt="globe-icon"
-          />
-          <Link to="/account">
-            <img
-              className="inline mx-1 hover:cursor-pointer"
-              src={account}
-              width="16"
-              height="16"
-              alt="account-icon"
-            />
-          </Link>
-          <CartCount isHome openCart={openCart} />
+            <Link className="flex self-stretch items-center mx-1" to="/account">
+              <img
+                className="hover:cursor-pointer"
+                src={account}
+                width="16"
+                height="16"
+                alt="account-icon"
+              />
+            </Link>
+            <CartCount isHome openCart={openCart} />
+          </div>
         </div>
       </header>
 
@@ -502,7 +506,7 @@ function Badge({
         <div
           className={`${
             dark ? 'text-primary bg-black' : 'text-contrast bg-primary'
-          } absolute bottom-1 right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
+          } absolute -bottom-1 -right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
         >
           <span>{count || 0}</span>
         </div>
@@ -514,14 +518,14 @@ function Badge({
   return isHydrated ? (
     <button
       onClick={openCart}
-      className="relative inline-flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative inline-flex items-center justify-center mx-1 focus:ring-primary/5"
     >
       {BadgeCounter}
     </button>
   ) : (
     <Link
       to="/cart"
-      className="relative inline-flex items-center justify-center w-8 h-8 focus:ring-primary/5"
+      className="relative inline-flex items-center justify-center mx-1 focus:ring-primary/5"
     >
       {BadgeCounter}
     </Link>
