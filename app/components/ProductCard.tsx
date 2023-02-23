@@ -64,7 +64,7 @@ export function ProductCard({
         to={`/products/${product.handle}`}
         prefetch="intent"
       >
-        <div className={clsx('grid gap-4', className)}>
+        <div className={clsx('grid gap-1', className)}>
           <div className="card-image aspect-[4/5] bg-primary/5">
             {image && (
               <Image
@@ -97,8 +97,8 @@ export function ProductCard({
             >
               {product.title}
             </Text>
-            <div className="flex gap-4">
-              <Text className="flex gap-4">
+            <div className="flex gap-1">
+              <Text className="flex gap-1">
                 <Money withoutTrailingZeros data={price!} />
                 {isDiscounted(price as MoneyV2, compareAtPrice as MoneyV2) && (
                   <CompareAtPrice

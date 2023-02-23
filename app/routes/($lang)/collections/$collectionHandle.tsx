@@ -160,7 +160,7 @@ export default function Collection() {
 
   return (
     <>
-      <PageHeader heading={collection.title}>
+      {/* <PageHeader heading={collection.title}>
         {collection?.description && (
           <div className="flex items-baseline justify-between w-full">
             <div>
@@ -170,20 +170,20 @@ export default function Collection() {
             </div>
           </div>
         )}
-      </PageHeader>
-      <Section>
-        <SortFilter
+      </PageHeader> */}
+      <Section padding="s">
+        {/* <SortFilter
           filters={collection.products.filters as Filter[]}
           appliedFilters={appliedFilters}
           collections={collections as CollectionType[]}
-        >
-          <ProductGrid
-            key={collection.id}
-            collection={collection as CollectionType}
-            url={`/collections/${collection.handle}`}
-            data-test="product-grid"
-          />
-        </SortFilter>
+        > */}
+        <ProductGrid
+          key={collection.id}
+          collection={collection as CollectionType}
+          url={`/collections/${collection.handle}`}
+          data-test="product-grid"
+        />
+        {/* </SortFilter> */}
       </Section>
     </>
   );
