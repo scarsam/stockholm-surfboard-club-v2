@@ -12,7 +12,7 @@ import type {
   MailingAddress,
   Order,
 } from '@shopify/hydrogen/storefront-api-types';
-import {Suspense} from 'react';
+import {Suspense, useState} from 'react';
 import {
   Button,
   OrderCard,
@@ -117,7 +117,7 @@ interface Account {
   orders: Order[];
   heading: string;
   addresses: MailingAddress[];
-  featuredData: any; // @todo: help please
+  // featuredData: any; // @todo: help please
 }
 
 function Account({
@@ -125,42 +125,69 @@ function Account({
   orders,
   heading,
   addresses,
-  featuredData,
-}: Account) {
+}: // featuredData,
+Account) {
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
   return (
-    <>
-      <PageHeader heading={heading}>
+    <div className="grid grid-cols-1 grid-rows-[1fr_auto]">
+      <div className="flex justify-between md:p-4 border-b">
+        <div>
+          <button
+            className={`mr-3 ${
+              activeTab === 'profile' ? 'font-semibold' : 'font-regular'
+            }`}
+            onClick={() => setActiveTab('profile')}
+          >
+            Profile
+          </button>
+          <button
+            className={`${
+              activeTab === 'orders' ? 'font-semibold' : 'font-regular'
+            }`}
+            onClick={() => setActiveTab('orders')}
+          >
+            Orders
+          </button>
+        </div>
         <Form method="post" action={usePrefixPathWithLocale('/account/logout')}>
-          <button type="submit" className="text-primary/50">
-            Sign out
+          <button type="submit" className="text-black">
+            Log out
           </button>
         </Form>
-      </PageHeader>
-      {orders && <AccountOrderHistory orders={orders as Order[]} />}
-      <AccountDetails customer={customer as Customer} />
-      <AccountAddressBook
-        addresses={addresses as MailingAddress[]}
-        customer={customer as Customer}
-      />
-      {!orders.length && (
-        <Suspense>
-          <Await
-            resolve={featuredData}
-            errorElement="There was a problem loading featured products."
-          >
-            {(data) => (
-              <>
-                <FeaturedCollections
-                  title="Popular Collections"
-                  collections={data.featuredCollections as Collection[]}
-                />
-                <ProductSwimlane products={data.featuredProducts} />
-              </>
-            )}
-          </Await>
-        </Suspense>
-      )}
-    </>
+      </div>
+      <div className="grid gap-4 p-4">
+        {activeTab === 'orders' && orders ? (
+          <AccountOrderHistory orders={orders as Order[]} />
+        ) : (
+          <>
+            <AccountDetails customer={customer as Customer} />
+            <AccountAddressBook
+              addresses={addresses as MailingAddress[]}
+              customer={customer as Customer}
+            />
+          </>
+        )}
+
+        {/* {!orders.length && (
+          <Suspense>
+            <Await
+              resolve={featuredData}
+              errorElement="There was a problem loading featured products."
+            >
+              {(data) => (
+                <>
+                  <FeaturedCollections
+                    title="Popular Collections"
+                    collections={data.featuredCollections as Collection[]}
+                  />
+                  <ProductSwimlane products={data.featuredProducts} />
+                </>
+              )}
+            </Await>
+          </Suspense>
+        )} */}
+      </div>
+    </div>
   );
 }
 

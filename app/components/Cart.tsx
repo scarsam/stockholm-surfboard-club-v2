@@ -36,7 +36,7 @@ export function Cart({
   return (
     <>
       {cart?.totalQuantity && (
-        <h2 className="font-semibold px-2 py-2 mb-10 border-b">
+        <h2 className="font-semibold p-4 mb-10 border-b">
           Bag: {cart?.totalQuantity}
         </h2>
       )}
