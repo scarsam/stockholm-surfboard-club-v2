@@ -27,7 +27,6 @@ import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import globe from '../../public/globe-icon.svg';
 import {useModal} from './Modals/useModal';
-import {Login} from './Login';
 import Authenticated from './Account';
 import {
   ActionFunction,
@@ -36,6 +35,7 @@ import {
   LoaderArgs,
   redirect,
 } from '@shopify/remix-oxygen';
+import {Session} from './Session';
 
 export const handle = {
   isPublic: true,
@@ -167,7 +167,11 @@ function AccountDrawer({
   return (
     <Drawer open={isOpen} onClose={onClose} openFrom="right">
       <div className="grid">
-        {root.data.isLoggedIn ? <Authenticated /> : <Login shop={shop} />}
+        {root.data.isLoggedIn ? (
+          <Authenticated />
+        ) : (
+          <Session name={shop.name} />
+        )}
       </div>
     </Drawer>
   );

@@ -7,7 +7,7 @@ type ActionData = {
   formError?: string;
 };
 
-export function Login({shop}: {shop: QueryRoot['shop']}) {
+export function Login({name}: {name: string}) {
   const actionData = useActionData<ActionData>();
   const [nativeEmailError, setNativeEmailError] = useState<null | string>(null);
   const [nativePasswordError, setNativePasswordError] = useState<null | string>(
@@ -15,20 +15,16 @@ export function Login({shop}: {shop: QueryRoot['shop']}) {
   );
 
   return (
-    <Form
-      action="/?index"
-      method="post"
-      noValidate
-      className="pt-6 pb-8 mt-4 mb-4 space-y-3"
-    >
+    <Form action="/?index" method="post" noValidate className="p-2 w-full">
       {actionData?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
           <p className="m-4 text-s text-contrast">{actionData.formError}</p>
         </div>
       )}
-      <div>
+      <h2 className="text-xl mb-4">Sign in.</h2>
+      <div className="mb-2">
         <input
-          className={`mb-1 ${getInputStyleClasses(nativeEmailError)}`}
+          className="w-full"
           id="email"
           name="email"
           type="email"
@@ -52,9 +48,9 @@ export function Login({shop}: {shop: QueryRoot['shop']}) {
         )}
       </div>
 
-      <div>
+      <div className="mb-6">
         <input
-          className={`mb-1 ${getInputStyleClasses(nativePasswordError)}`}
+          className="w-full"
           id="password"
           name="password"
           type="password"
@@ -86,25 +82,11 @@ export function Login({shop}: {shop: QueryRoot['shop']}) {
       </div>
       <div className="flex items-center justify-between">
         <button
-          className="bg-primary text-contrast rounded py-2 px-4 focus:shadow-outline block w-full"
+          className="border border-black uppercase py-2 px-10 w-full"
           type="submit"
         >
           Sign in
         </button>
-      </div>
-      <div className="flex justify-between items-center mt-8 border-t border-gray-300">
-        <p className="align-baseline text-sm mt-6">
-          New to {shop.name}? &nbsp;
-          <Link className="inline underline" to="/account/register">
-            Create an account
-          </Link>
-        </p>
-        <Link
-          className="mt-6 inline-block align-baseline text-sm text-primary/50"
-          to="/account/recover"
-        >
-          Forgot password
-        </Link>
       </div>
     </Form>
   );

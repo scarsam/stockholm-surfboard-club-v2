@@ -205,10 +205,8 @@ function AccountOrderHistory({orders}: {orders: Order[]}) {
 function EmptyOrders() {
   return (
     <div>
-      <Text className="mb-1" size="fine" width="narrow" as="p">
-        You haven&apos;t placed any orders yet.
-      </Text>
-      <div className="w-48">
+      <p className="mb-1">You haven&apos;t placed any orders yet.</p>
+      <div>
         <Button
           className="w-full mt-2 text-sm"
           variant="secondary"

@@ -15,7 +15,7 @@ export async function loader({context, params}: LoaderArgs) {
   const customerAccessToken = await context.session.get('customerAccessToken');
 
   if (customerAccessToken) {
-    return redirect(params.lang ? `${params.lang}/account` : '/account');
+    return redirect(params.lang ? `${params.lang}/` : '/');
   }
 
   return new Response(null);
