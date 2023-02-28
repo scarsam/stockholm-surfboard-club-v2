@@ -304,7 +304,7 @@ function MobileHeader({
   const params = useParams();
 
   return (
-    <nav className="md:hidden">
+    <nav className="lg:hidden">
       <header
         role="banner"
         className="h-10 flex items-center mx-auto border-black border-b"
@@ -313,7 +313,7 @@ function MobileHeader({
           onClick={openMenu}
           type="button"
           data-collapse-toggle="navbar-default"
-          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
+          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black lg:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
           aria-controls="navbar-default"
           aria-expanded="false"
         >
@@ -411,7 +411,7 @@ function DesktopHeader({
   const {y} = useWindowScroll();
 
   return (
-    <nav className="hidden md:block relative z-10">
+    <nav className="hidden lg:block relative z-10">
       {/* {openCart && <CartDetails />} */}
       <header
         role="banner"

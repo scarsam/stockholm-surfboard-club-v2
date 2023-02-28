@@ -23,14 +23,16 @@ export const Session = ({name}: {name: string}) => {
               >
                 Create an account
               </button>
-              <div className="flex justify-between items-center mt-8 border-t border-gray-300">
-                <button
-                  onClick={() => setForm('reset')}
-                  className="mt-6 inline-block align-baseline text-sm"
-                >
-                  Forgot password
-                </button>
-              </div>
+              .
+            </p>
+            <p className="align-baseline text-sm">
+              Or did you{' '}
+              <button
+                onClick={() => setForm('reset')}
+                className="inline underline"
+              >
+                forget your password?
+              </button>
             </p>
           </>
         );

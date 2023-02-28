@@ -67,7 +67,7 @@ export function Drawer({
                 <Dialog.Panel
                   className={`${
                     openFrom === 'left' ? '' : 'max-w-lg'
-                  } bg-white w-screen text-left align-middle transition-all transform shadow-xl h-screen-dynamic overflow-x-scroll`}
+                  } bg-white w-screen text-left align-middle transition-all transform shadow-xl h-screen-dynamic`}
                 >
                   {heading && (
                     <header
