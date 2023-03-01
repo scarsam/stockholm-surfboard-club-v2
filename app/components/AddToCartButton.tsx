@@ -10,6 +10,7 @@ export function AddToCartButton({
   variant = 'primary',
   width = 'full',
   analytics,
+  disabled,
   ...props
 }: {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export function AddToCartButton({
   variant?: 'primary' | 'secondary' | 'inline';
   width?: 'auto' | 'full';
   analytics?: unknown;
+  disabled?: boolean;
   [key: string]: any;
 }) {
   const [root] = useMatches();
@@ -31,6 +33,7 @@ export function AddToCartButton({
       <input type="hidden" name="lines" value={JSON.stringify(lines)} />
       <input type="hidden" name="analytics" value={JSON.stringify(analytics)} />
       <Button
+        disabled={disabled}
         as="button"
         type="submit"
         width={width}
