@@ -36,9 +36,12 @@ export function Cart({
   return (
     <>
       {cart?.totalQuantity && (
-        <h2 className="font-semibold px-2 py-2 mb-10 border-b">
-          Bag: {cart?.totalQuantity}
-        </h2>
+        <div className="flex justify-between p-4 mb-10 border-b">
+          <h2 className="font-semibold">Bag: {cart?.totalQuantity}</h2>
+          <button onClick={onClose} type="button">
+            Close
+          </button>
+        </div>
       )}
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
       <CartDetails cart={cart} layout={layout} />
@@ -66,7 +69,7 @@ export function CartDetails({
       <CartLines lines={cart?.lines} layout={layout} />
       {!isZeroCost && (
         <CartSummary cost={cart.cost} layout={layout}>
-          <CartDiscounts discountCodes={cart.discountCodes} />
+          {/* <CartDiscounts discountCodes={cart.discountCodes} /> */}
           <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
         </CartSummary>
       )}
@@ -182,9 +185,12 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl: string}) {
   return (
     <div className="flex flex-col mt-2">
       <a href={checkoutUrl} target="_self">
-        <Button as="span" width="full">
+        <button
+          type="submit"
+          className="border bg-black text-white uppercase py-2 px-10 w-full"
+        >
           Continue to Checkout
-        </Button>
+        </button>
       </a>
       {/* @todo: <CartShopPayButton cart={cart} /> */}
     </div>

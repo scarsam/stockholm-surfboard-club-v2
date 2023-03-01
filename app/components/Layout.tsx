@@ -5,23 +5,7 @@ import {
   urlPathname,
   isCurrentPath,
 } from '~/lib/utils';
-import {
-  Drawer,
-  useDrawer,
-  Text,
-  Input,
-  IconAccount,
-  IconBag,
-  IconSearch,
-  Heading,
-  IconMenu,
-  IconCaret,
-  Section,
-  CountrySelector,
-  Cart,
-  CartLoading,
-  Link,
-} from '~/components';
+import {Drawer, useDrawer, Text, Cart, CartLoading, Link} from '~/components';
 import {
   useParams,
   Form,
@@ -30,17 +14,32 @@ import {
   useLocation,
 } from '@remix-run/react';
 import {useWindowScroll} from 'react-use';
-import {Disclosure} from '@headlessui/react';
 import {Fragment, Suspense, useEffect, useMemo, useState} from 'react';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 import type {LayoutData} from '../root';
-import {QueryRoot} from '@shopify/hydrogen/storefront-api-types';
+import {
+  CustomerAccessTokenCreatePayload,
+  QueryRoot,
+} from '@shopify/hydrogen/storefront-api-types';
 import cart from '../../public/cart-icon.svg';
 import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import globe from '../../public/globe-icon.svg';
 import {useModal} from './Modals/useModal';
+import Authenticated from './Account';
+import {
+  ActionFunction,
+  AppLoadContext,
+  json,
+  LoaderArgs,
+  redirect,
+} from '@shopify/remix-oxygen';
+import {Session} from './Session';
+
+export const handle = {
+  isPublic: true,
+};
 
 export function Layout({
   children,
@@ -102,6 +101,12 @@ function Header({
     closeDrawer: closeMenu,
   } = useDrawer();
 
+  const {
+    isOpen: isAccountOpen,
+    openDrawer: openAccount,
+    closeDrawer: closeAccount,
+  } = useDrawer();
+
   const addToCartFetchers = useCartFetchers('ADD_TO_CART');
 
   // toggle cart drawer when adding to cart
@@ -112,6 +117,11 @@ function Header({
 
   return (
     <>
+      <AccountDrawer
+        shop={shop}
+        isOpen={isAccountOpen}
+        onClose={closeAccount}
+      />
       <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
       {menu && (
         <MenuDrawer
@@ -131,6 +141,7 @@ function Header({
         menu={menu}
         shop={shop}
         openCart={openCart}
+        openAccount={openAccount}
       />
       <MobileHeader
         shop={shop}
@@ -139,6 +150,30 @@ function Header({
         onClose={closeMenu}
       />
     </>
+  );
+}
+
+function AccountDrawer({
+  isOpen,
+  onClose,
+  shop,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  shop: QueryRoot['shop'];
+}) {
+  const [root] = useMatches();
+
+  return (
+    <Drawer open={isOpen} onClose={onClose} openFrom="right">
+      <div className="grid">
+        {root.data.isLoggedIn ? (
+          <Authenticated />
+        ) : (
+          <Session name={shop.name} />
+        )}
+      </div>
+    </Drawer>
   );
 }
 
@@ -269,7 +304,7 @@ function MobileHeader({
   const params = useParams();
 
   return (
-    <nav className="md:hidden relative z-10">
+    <nav className="lg:hidden">
       <header
         role="banner"
         className="h-10 flex items-center mx-auto border-black border-b"
@@ -278,7 +313,7 @@ function MobileHeader({
           onClick={openMenu}
           type="button"
           data-collapse-toggle="navbar-default"
-          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black md:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
+          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black lg:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
           aria-controls="navbar-default"
           aria-expanded="false"
         >
@@ -359,12 +394,14 @@ function DesktopHeader({
   filter,
   menu,
   openCart,
+  openAccount,
   setModal,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   openCart: () => void;
+  openAccount: () => void;
   setModal: React.Dispatch<
     React.SetStateAction<'location' | 'newsletter' | undefined>
   >;
@@ -374,7 +411,7 @@ function DesktopHeader({
   const {y} = useWindowScroll();
 
   return (
-    <nav className="hidden md:block relative z-10">
+    <nav className="hidden lg:block relative z-10">
       {/* {openCart && <CartDetails />} */}
       <header
         role="banner"
@@ -431,7 +468,10 @@ function DesktopHeader({
                 alt="globe-icon"
               />
             </button>
-            <Link className="flex self-stretch items-center mx-1" to="/account">
+            <button
+              className="flex self-stretch items-center mx-1"
+              onClick={() => openAccount()}
+            >
               <img
                 className="hover:cursor-pointer"
                 src={account}
@@ -439,7 +479,7 @@ function DesktopHeader({
                 height="16"
                 alt="account-icon"
               />
-            </Link>
+            </button>
             <CartCount isHome openCart={openCart} />
           </div>
         </div>

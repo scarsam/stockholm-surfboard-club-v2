@@ -11,7 +11,7 @@ export async function doLogout(context: AppLoadContext) {
   session.unset('customerAccessToken');
 
   // The only file where I have to explicitly type cast i18n to pass typecheck
-  return redirect(`${context.storefront.i18n.pathPrefix}/account/login`, {
+  return redirect(`${context.storefront.i18n.pathPrefix}/`, {
     headers: {
       'Set-Cookie': await session.commit(),
     },

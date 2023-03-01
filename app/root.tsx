@@ -20,6 +20,7 @@ import {
   ShopifySalesChannel,
   Seo,
   type SeoHandleFunction,
+  flattenConnection,
 } from '@shopify/hydrogen';
 import {Layout} from '~/components';
 import {GenericError} from './components/GenericError';
@@ -30,10 +31,18 @@ import favicon from '../public/favicon.svg';
 
 import {DEFAULT_LOCALE, parseMenu, type EnhancedMenu} from './lib/utils';
 import invariant from 'tiny-invariant';
-import {Shop, Cart} from '@shopify/hydrogen/storefront-api-types';
+import {
+  Shop,
+  Cart,
+  Customer,
+  MailingAddress,
+  Order,
+} from '@shopify/hydrogen/storefront-api-types';
 import {useAnalytics} from './hooks/useAnalytics';
 import type {StorefrontContext} from './lib/type';
 import {countries} from './data/countries';
+import {doLogout} from './routes/($lang)/account/__private/logout';
+import {getFeaturedData} from './routes/($lang)/featured-products';
 
 const seo: SeoHandleFunction<typeof loader> = ({data, pathname}) => ({
   title: data?.layout?.shop?.name,
@@ -73,10 +82,29 @@ export async function loader({context}: LoaderArgs) {
     getLayoutData(context),
   ]);
 
+  const customerAccessToken = await context.session.get('customerAccessToken');
+
+  let customer;
+  let orders;
+  let addresses;
+  let featuredData;
+
+  if (customerAccessToken) {
+    customer = await getCustomer(context, customerAccessToken);
+    orders = flattenConnection(customer.orders) as Order[];
+    addresses = flattenConnection(customer.addresses) as MailingAddress[];
+    featuredData = getFeaturedData(context.storefront);
+  }
+
   return defer({
     layout,
+    customer,
+    orders,
+    addresses,
+    featuredData,
     selectedLocale: context.storefront.i18n,
     cart: cartId ? getCart(context, cartId) : undefined,
+    isLoggedIn: !!customerAccessToken,
     countries: {...countries},
     analytics: {
       shopifySalesChannel: ShopifySalesChannel.hydrogen,
@@ -379,6 +407,83 @@ const CART_QUERY = `#graphql
   }
 `;
 
+const CUSTOMER_QUERY = `#graphql
+  query CustomerDetails(
+    $customerAccessToken: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    customer(customerAccessToken: $customerAccessToken) {
+      firstName
+      lastName
+      phone
+      email
+      defaultAddress {
+        id
+        formatted
+        firstName
+        lastName
+        company
+        address1
+        address2
+        country
+        province
+        city
+        zip
+        phone
+      }
+      addresses(first: 6) {
+        edges {
+          node {
+            id
+            formatted
+            firstName
+            lastName
+            company
+            address1
+            address2
+            country
+            province
+            city
+            zip
+            phone
+          }
+        }
+      }
+      orders(first: 250, sortKey: PROCESSED_AT, reverse: true) {
+        edges {
+          node {
+            id
+            orderNumber
+            processedAt
+            financialStatus
+            fulfillmentStatus
+            currentTotalPrice {
+              amount
+              currencyCode
+            }
+            lineItems(first: 2) {
+              edges {
+                node {
+                  variant {
+                    image {
+                      url
+                      altText
+                      height
+                      width
+                    }
+                  }
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export async function getCart({storefront}: StorefrontContext, cartId: string) {
   invariant(storefront, 'missing storefront client in cart query');
 
@@ -392,4 +497,30 @@ export async function getCart({storefront}: StorefrontContext, cartId: string) {
   });
 
   return cart;
+}
+
+export async function getCustomer(
+  context: AppLoadContext,
+  customerAccessToken: string,
+) {
+  const {storefront} = context;
+
+  const data = await storefront.query<{
+    customer: Customer;
+  }>(CUSTOMER_QUERY, {
+    variables: {
+      customerAccessToken,
+      country: context.storefront.i18n.country,
+      language: context.storefront.i18n.language,
+    },
+  });
+
+  /**
+   * If the customer failed to load, we assume their access token is invalid.
+   */
+  if (!data || !data.customer) {
+    throw await doLogout(context);
+  }
+
+  return data.customer;
 }
