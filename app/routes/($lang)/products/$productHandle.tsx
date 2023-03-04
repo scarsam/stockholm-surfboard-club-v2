@@ -1,5 +1,5 @@
 import {type ReactNode, useRef, Suspense, useMemo} from 'react';
-import {Disclosure, Listbox} from '@headlessui/react';
+import {Listbox} from '@headlessui/react';
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
@@ -122,9 +122,18 @@ export async function loader({params, request, context}: LoaderArgs) {
 }
 
 export default function Product() {
-  const {product, shop, recommended} = useLoaderData<typeof loader>();
-  const {media, title, vendor, descriptionHtml} = product;
-  const {shippingPolicy, refundPolicy} = shop;
+  const {product, recommended} = useLoaderData<typeof loader>();
+  const {media, title, descriptionHtml} = product;
+  // const {shippingPolicy, refundPolicy} = shop;
+
+  const firstVariant = product.variants.nodes[0];
+  const selectedVariant = product.selectedVariant ?? firstVariant;
+  // const isOutOfStock = !selectedVariant?.availableForSale;
+
+  const isOnSale =
+    selectedVariant?.price?.amount &&
+    selectedVariant?.compareAtPrice?.amount &&
+    selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
   return (
     <>
@@ -135,55 +144,56 @@ export default function Product() {
             className="w-screen md:w-full lg:col-span-2"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
-            <section className="flex flex-col w-full max-w-xl gap-2 p-2 md:max-w-sm md:px-0">
+            <section className="flex flex-col w-full max-w-xl gap-8 md:px-0">
               <div className="grid gap-2">
-                <Text className="whitespace-normal">{title}</Text>
-                {/* {vendor && (
-                  <Text className={'opacity-50 font-medium'}>{vendor}</Text>
-                )} */}
+                <Heading as="h1" size="copy" className="whitespace-normal">
+                  {title}
+                </Heading>
+                <Text as="span" className="flex items-center gap-2">
+                  <Money
+                    withoutTrailingZeros
+                    data={selectedVariant?.price!}
+                    as="span"
+                  />
+                  {isOnSale && (
+                    <Money
+                      withoutTrailingZeros
+                      data={selectedVariant?.compareAtPrice!}
+                      as="span"
+                      className="opacity-50 strike"
+                    />
+                  )}
+                </Text>
               </div>
-              {/* <ProductForm /> */}
-              <div className="grid gap-4 py-4">
-                {descriptionHtml && (
-                  <ProductDetail
-                    title="Product Details"
-                    content={descriptionHtml}
-                  />
-                )}
-                {shippingPolicy?.body && (
-                  <ProductDetail
-                    title="Shipping"
-                    content={getExcerpt(shippingPolicy.body)}
-                    learnMore={`/policies/${shippingPolicy.handle}`}
-                  />
-                )}
-                {refundPolicy?.body && (
-                  <ProductDetail
-                    title="Returns"
-                    content={getExcerpt(refundPolicy.body)}
-                    learnMore={`/policies/${refundPolicy.handle}`}
-                  />
-                )}
+              <ProductForm prouctDescription={descriptionHtml} />
+              <div className="grid gap-2 py-2">
+                <Suspense fallback={<Skeleton className="h-32" />}>
+                  <Await
+                    errorElement="There was a problem loading related products"
+                    resolve={recommended}
+                  >
+                    {(products) => (
+                      <ProductSwimlane
+                        title="You might also like"
+                        products={products}
+                      />
+                    )}
+                  </Await>
+                </Suspense>
               </div>
             </section>
           </div>
         </div>
       </Section>
-      <Suspense fallback={<Skeleton className="h-32" />}>
-        <Await
-          errorElement="There was a problem loading related products"
-          resolve={recommended}
-        >
-          {(products) => (
-            <ProductSwimlane title="Related Products" products={products} />
-          )}
-        </Await>
-      </Suspense>
     </>
   );
 }
 
-export function ProductForm() {
+type ProductFormProps = {
+  prouctDescription: string;
+};
+
+export function ProductForm({prouctDescription}: ProductFormProps) {
   const {product, analytics} = useLoaderData<typeof loader>();
 
   const [currentSearchParams] = useSearchParams();
@@ -228,25 +238,23 @@ export function ProductForm() {
   const selectedVariant = product.selectedVariant ?? firstVariant;
   const isOutOfStock = !selectedVariant?.availableForSale;
 
-  const isOnSale =
-    selectedVariant?.price?.amount &&
-    selectedVariant?.compareAtPrice?.amount &&
-    selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
-
   const productAnalytics: ShopifyAnalyticsProduct = {
     ...analytics.products[0],
     quantity: 1,
   };
 
   return (
-    <div className="grid gap-10">
-      <div className="grid gap-4">
+    <div className="grid gap-2">
+      <div className="grid gap-2">
         <ProductOptions
           options={product.options}
           searchParamsWithDefaults={searchParamsWithDefaults}
         />
+        {prouctDescription && (
+          <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
+        )}
         {selectedVariant && (
-          <div className="grid items-stretch gap-4">
+          <div className="grid items-stretch gap-2">
             <AddToCartButton
               lines={[
                 {
@@ -260,6 +268,7 @@ export function ProductForm() {
                 products: [productAnalytics],
                 totalValue: parseFloat(productAnalytics.price),
               }}
+              disabled={isOutOfStock}
             >
               {isOutOfStock ? (
                 <Text>Sold out</Text>
@@ -268,26 +277,10 @@ export function ProductForm() {
                   as="span"
                   className="flex items-center justify-center gap-2"
                 >
-                  <span>Add to Bag</span> <span>·</span>{' '}
-                  <Money
-                    withoutTrailingZeros
-                    data={selectedVariant?.price!}
-                    as="span"
-                  />
-                  {isOnSale && (
-                    <Money
-                      withoutTrailingZeros
-                      data={selectedVariant?.compareAtPrice!}
-                      as="span"
-                      className="opacity-50 strike"
-                    />
-                  )}
+                  ADD TO CART
                 </Text>
               )}
             </AddToCartButton>
-            {!isOutOfStock && (
-              <ShopPayButton variantIds={[selectedVariant?.id!]} />
-            )}
           </div>
         )}
       </div>
@@ -303,6 +296,7 @@ function ProductOptions({
   searchParamsWithDefaults: URLSearchParams;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+
   return (
     <>
       {options
@@ -312,10 +306,10 @@ function ProductOptions({
             key={option.name}
             className="flex flex-col flex-wrap mb-4 gap-y-2 last:mb-0"
           >
-            <Heading as="legend" size="lead" className="min-w-[4rem]">
-              {option.name}
+            <Heading as="legend" size="copy" className="min-w-[4rem]">
+              {option.name === 'Size' ? 'Select Size' : option.name}
             </Heading>
-            <div className="flex flex-wrap items-baseline gap-4">
+            <div className="flex flex-wrap items-baseline">
               {/**
                * First, we render a bunch of <Link> elements for each option value.
                * When the user clicks one of these buttons, it will hit the loader
@@ -398,8 +392,9 @@ function ProductOptions({
                           optionValue={value}
                           searchParams={searchParamsWithDefaults}
                           className={clsx(
-                            'leading-none py-1 border-b-[1.5px] cursor-pointer transition-all duration-200',
-                            checked ? 'border-primary/50' : 'border-primary/0',
+                            'leading-none cursor-pointer transition-all duration-200',
+                            'px-1 py-3 px-5 mt-1 mr-1 min-w-[5rem] flex justify-center border-black border',
+                            checked ? 'bg-black text-white' : '',
                           )}
                         />
                       </Text>
@@ -450,54 +445,54 @@ function ProductOptionLink({
   );
 }
 
-function ProductDetail({
-  title,
-  content,
-  learnMore,
-}: {
-  title: string;
-  content: string;
-  learnMore?: string;
-}) {
-  return (
-    <Disclosure key={title} as="div" className="grid w-full gap-2">
-      {({open}) => (
-        <>
-          <Disclosure.Button className="text-left">
-            <div className="flex justify-between">
-              <Text size="lead" as="h4">
-                {title}
-              </Text>
-              <IconClose
-                className={clsx(
-                  'transition-transform transform-gpu duration-200',
-                  !open && 'rotate-[45deg]',
-                )}
-              />
-            </div>
-          </Disclosure.Button>
+// function ProductDetail({
+//   title,
+//   content,
+//   learnMore,
+// }: {
+//   title: string;
+//   content: string;
+//   learnMore?: string;
+// }) {
+//   return (
+//     <Disclosure key={title} as="div" className="grid w-full gap-2">
+//       {({open}) => (
+//         <>
+//           <Disclosure.Button className="text-left">
+//             <div className="flex justify-between">
+//               <Text size="lead" as="h4">
+//                 {title}
+//               </Text>
+//               <IconClose
+//                 className={clsx(
+//                   'transition-transform transform-gpu duration-200',
+//                   !open && 'rotate-[45deg]',
+//                 )}
+//               />
+//             </div>
+//           </Disclosure.Button>
 
-          <Disclosure.Panel className={'pb-4 pt-2 grid gap-2'}>
-            <div
-              className="prose dark:prose-invert"
-              dangerouslySetInnerHTML={{__html: content}}
-            />
-            {learnMore && (
-              <div className="">
-                <Link
-                  className="pb-px border-b border-primary/30 text-primary/50"
-                  to={learnMore}
-                >
-                  Learn more
-                </Link>
-              </div>
-            )}
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
-  );
-}
+//           <Disclosure.Panel className={'pb-4 pt-2 grid gap-2'}>
+//             <div
+//               className="prose dark:prose-invert"
+//               dangerouslySetInnerHTML={{__html: content}}
+//             />
+//             {learnMore && (
+//               <div className="">
+//                 <Link
+//                   className="pb-px border-b border-primary/30 text-primary/50"
+//                   to={learnMore}
+//                 >
+//                   Learn more
+//                 </Link>
+//               </div>
+//             )}
+//           </Disclosure.Panel>
+//         </>
+//       )}
+//     </Disclosure>
+//   );
+// }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
   fragment ProductVariantFragment on ProductVariant {
