@@ -15,13 +15,12 @@ export function Login({name}: {name: string}) {
   );
 
   return (
-    <Form action="/?index" method="post" noValidate className="p-2 w-full">
+    <Form action="/?index" method="post" noValidate className="w-full">
       {actionData?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
           <p className="m-4 text-s text-contrast">{actionData.formError}</p>
         </div>
       )}
-      <h2 className="text-xl mb-4">Sign in.</h2>
       <div className="mb-2">
         <input
           className="w-full"

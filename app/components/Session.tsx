@@ -1,11 +1,18 @@
 import {useState} from 'react';
+import {DrawerHeader} from './CartHeader';
 import {CreateAccount} from './CreateAccount';
 import {Login} from './Login';
 import {ResetPassword} from './ResetPassword';
 
 type Forms = 'login' | 'create' | 'reset';
 
-export const Session = ({name}: {name: string}) => {
+export const Session = ({
+  name,
+  onClose,
+}: {
+  name: string;
+  onClose: () => void;
+}) => {
   const [form, setForm] = useState<Forms>('login');
 
   const renderForm = () => {
@@ -13,6 +20,7 @@ export const Session = ({name}: {name: string}) => {
       case 'login':
         return (
           <>
+            <DrawerHeader title="Sign in" onClose={onClose} />
             <Login name={name} />
             <p className="align-baseline text-sm mt-6">
               New to {name}? &nbsp;
@@ -39,6 +47,7 @@ export const Session = ({name}: {name: string}) => {
       case 'create':
         return (
           <>
+            <DrawerHeader title="Create an account" onClose={onClose} />
             <CreateAccount />
             <div className="flex items-center mt-8 border-t border-gray-300">
               <p className="align-baseline text-sm mt-6">
@@ -57,6 +66,7 @@ export const Session = ({name}: {name: string}) => {
       case 'reset':
         return (
           <>
+            <DrawerHeader title="Forgot password" onClose={onClose} />
             <ResetPassword />
             <div className="flex items-center mt-8 border-t border-gray-300">
               <p className="align-baseline text-sm mt-6">
@@ -78,7 +88,7 @@ export const Session = ({name}: {name: string}) => {
   };
 
   return (
-    <div className="flex justify-between items-center mt-8 flex-col border-gray-300">
+    <div className="flex justify-between items-center flex-col px-2">
       {renderForm()}
     </div>
   );

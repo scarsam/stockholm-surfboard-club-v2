@@ -170,7 +170,7 @@ function AccountDrawer({
         {root.data.isLoggedIn ? (
           <Authenticated />
         ) : (
-          <Session name={shop.name} />
+          <Session onClose={onClose} name={shop.name} />
         )}
       </div>
     </Drawer>
@@ -182,7 +182,7 @@ function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
 
   return (
     <Drawer open={isOpen} onClose={onClose} openFrom="right">
-      <div className="grid">
+      <div className="grid p-2">
         <Suspense fallback={<CartLoading />}>
           <Await resolve={root.data?.cart}>
             {(cart) => <Cart layout="drawer" onClose={onClose} cart={cart} />}

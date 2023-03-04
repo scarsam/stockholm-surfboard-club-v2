@@ -19,6 +19,7 @@ import type {
 } from '@shopify/hydrogen/storefront-api-types';
 import {useFetcher} from '@remix-run/react';
 import {CartAction} from '~/lib/type';
+import {DrawerHeader} from './CartHeader';
 
 type Layouts = 'page' | 'drawer';
 
@@ -35,14 +36,7 @@ export function Cart({
 
   return (
     <>
-      {cart?.totalQuantity && (
-        <div className="flex justify-between p-4 mb-10 border-b">
-          <h2 className="font-semibold">Bag: {cart?.totalQuantity}</h2>
-          <button onClick={onClose} type="button">
-            Close
-          </button>
-        </div>
-      )}
+      <DrawerHeader title={`Bag: ${cart?.totalQuantity}`} onClose={onClose} />
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
       <CartDetails cart={cart} layout={layout} />
     </>
@@ -161,7 +155,7 @@ function CartLines({
     y > 0 ? 'border-t' : '',
     layout === 'page'
       ? 'flex-grow md:translate-y-4'
-      : 'px-2 pb-6 sm-max:pt-2 overflow-auto transition',
+      : 'pb-6 sm-max:pt-2 overflow-auto transition',
   ]);
 
   return (
@@ -409,9 +403,10 @@ export function CartEmpty({
   const scrollRef = useRef(null);
   const {y} = useScroll(scrollRef);
 
+  // grid grid-cols-1 h-screen-no-nav grid-rows-[1fr_auto]
   const container = {
     drawer: clsx([
-      'content-start gap-4 px-6 pb-8 transition overflow-y-scroll md:gap-12 md:px-12 h-screen-no-nav md:pb-12',
+      'content-start pb-8 transition overflow-y-scroll  h-screen-no-nav md:pb-12',
       y > 0 ? 'border-t' : '',
     ]),
     page: clsx([
@@ -422,7 +417,7 @@ export function CartEmpty({
 
   return (
     <div ref={scrollRef} className={container[layout]} hidden={hidden}>
-      <section className="grid gap-6">
+      {/* <section className="grid gap-6">
         <Text format>
           Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
           started!
@@ -430,8 +425,8 @@ export function CartEmpty({
         <div>
           <Button onClick={onClose}>Continue shopping</Button>
         </div>
-      </section>
-      <section className="grid gap-8 pt-16">
+      </section> */}
+      <section className="grid gap-8">
         <FeaturedProducts
           count={4}
           heading="Shop Best Sellers"

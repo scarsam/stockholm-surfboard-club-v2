@@ -77,7 +77,7 @@ export function ResetPassword() {
       ) : (
         <>
           {/* TODO: Add onSubmit to validate _before_ submission with native? */}
-          <Form method="post" noValidate className="p-2 w-full">
+          <Form method="post" noValidate className="w-full">
             {actionData?.formError && (
               <div className="flex items-center justify-center mb-6 bg-zinc-500">
                 <p className="m-4 text-s text-contrast">
@@ -85,7 +85,7 @@ export function ResetPassword() {
                 </p>
               </div>
             )}
-            <h1 className="text-xl">Forgot Password.</h1>
+            {/* <h1 className="text-xl">Forgot Password.</h1> */}
             <p className="mt-2 mb-4">
               Enter the email address associated with your account to receive a
               link to reset your password.
