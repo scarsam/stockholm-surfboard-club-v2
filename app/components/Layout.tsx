@@ -68,8 +68,8 @@ export function Layout({
         <main role="main" id="mainContent" className="flex-grow">
           {children}
         </main>
+        <Footer setModal={setModal} menu={layout?.footerMenu} />
       </div>
-      <Footer setModal={setModal} menu={layout?.footerMenu} />
     </>
   );
 }

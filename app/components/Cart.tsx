@@ -36,7 +36,10 @@ export function Cart({
 
   return (
     <>
-      <DrawerHeader title={`Bag: ${cart?.totalQuantity}`} onClose={onClose} />
+      <DrawerHeader
+        title={`Bag: ${cart?.totalQuantity || 0}`}
+        onClose={onClose}
+      />
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
       <CartDetails cart={cart} layout={layout} />
     </>
