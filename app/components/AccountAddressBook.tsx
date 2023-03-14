@@ -30,6 +30,8 @@ export function AccountAddressBook({
   customer: Customer;
   addresses: MailingAddress[];
 }) {
+  const [editMode, setEditMode] = useState(false);
+
   return (
     <div className="grid w-full gap-4 border-t pt-6">
       <div className="flex flex-col">
@@ -41,10 +43,14 @@ export function AccountAddressBook({
             </Text>
           )}
           <div>
-            <EditAddress customer={customer} />
+            <EditAddress
+              editMode={editMode}
+              setEditMode={setEditMode}
+              customer={customer}
+            />
           </div>
           {Boolean(addresses?.length) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 mt-2 gap-2">
               {customer.defaultAddress && (
                 <Address
                   customer={customer}
@@ -81,12 +87,10 @@ function Address({
   const [editMode, setEditMode] = useState(false);
 
   return (
-    <div className="lg:p-8 p-6 border border-gray-200 rounded flex flex-col">
+    <div className="p-2 border border-gray-200 rounded flex flex-col">
       {defaultAddress && (
-        <div className="mb-3 flex flex-row">
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary/20 text-primary/50">
-            Default
-          </span>
+        <div className="flex flex-row">
+          <span className="py-1 text-xs font-medium rounded-full">Default</span>
         </div>
       )}
       <ul className="flex-1 flex-row">
@@ -101,14 +105,21 @@ function Address({
           address.formatted.map((line: string) => <li key={line}>{line}</li>)}
       </ul>
 
-      <div className="flex flex-row font-medium mt-6 items-baseline">
-        <EditAddress customer={customer} addressId={address.id} />
-        <Form action="address/delete" method="delete">
-          <input type="hidden" name="addressId" value={address.id} />
-          <button className="text-left text-primary/50 ml-6 text-sm">
-            Remove
-          </button>
-        </Form>
+      <div className="flex flex-col font-medium mt-2 items-baseline">
+        <EditAddress
+          customer={customer}
+          addressId={address.id}
+          editMode={editMode}
+          setEditMode={setEditMode}
+        />
+        {!editMode && (
+          <Form className="mt-2" action="address/delete" method="delete">
+            <input type="hidden" name="addressId" value={address.id} />
+            <button className="border border-black uppercase py-2 px-10">
+              Remove
+            </button>
+          </Form>
+        )}
       </div>
     </div>
   );
@@ -238,11 +249,14 @@ interface ActionData {
 export default function EditAddress({
   customer,
   addressId,
+  editMode,
+  setEditMode,
 }: {
+  editMode: boolean;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   customer: Customer;
   addressId?: string;
 }) {
-  const [editMode, setEditMode] = useState(false);
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
   const addresses = flattenConnection(customer.addresses);
@@ -261,195 +275,195 @@ export default function EditAddress({
   );
 
   const path = usePrefixPathWithLocale(`/account/address/${addressId}`);
+  console.log(path);
   return (
     <>
-      <div className="mt-6">
-        <button
-          type="button"
-          onClick={() => setEditMode(true)}
-          className="border border-black uppercase py-2 px-10"
-        >
-          {addressId ? 'Edit address' : 'Add address'}
-        </button>
-      </div>
-      {editMode && (
+      {!editMode && (
         <div>
-          <Form method="post" action={path}>
-            <input
-              type="hidden"
-              name="addressId"
-              value={address?.id ? addressId : 'add'}
-            />
-            {actionData?.formError && (
-              <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
-                <p className="m-4 text-sm text-red-900">
-                  {actionData.formError}
-                </p>
-              </div>
-            )}
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="firstName"
-                name="firstName"
-                required
-                type="text"
-                autoComplete="given-name"
-                placeholder="First name"
-                aria-label="First name"
-                defaultValue={address?.firstName ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="lastName"
-                name="lastName"
-                required
-                type="text"
-                autoComplete="family-name"
-                placeholder="Last name"
-                aria-label="Last name"
-                defaultValue={address?.lastName ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="company"
-                name="company"
-                type="text"
-                autoComplete="organization"
-                placeholder="Company"
-                aria-label="Company"
-                defaultValue={address?.company ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="address1"
-                name="address1"
-                type="text"
-                autoComplete="address-line1"
-                placeholder="Address line 1*"
-                required
-                aria-label="Address line 1"
-                defaultValue={address?.address1 ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="address2"
-                name="address2"
-                type="text"
-                autoComplete="address-line2"
-                placeholder="Address line 2"
-                aria-label="Address line 2"
-                defaultValue={address?.address2 ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="city"
-                name="city"
-                type="text"
-                required
-                autoComplete="address-level2"
-                placeholder="City"
-                aria-label="City"
-                defaultValue={address?.city ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="province"
-                name="province"
-                type="text"
-                autoComplete="address-level1"
-                placeholder="State / Province"
-                required
-                aria-label="State"
-                defaultValue={address?.province ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="zip"
-                name="zip"
-                type="text"
-                autoComplete="postal-code"
-                placeholder="Zip / Postal Code"
-                required
-                aria-label="Zip"
-                defaultValue={address?.zip ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="country"
-                name="country"
-                type="text"
-                autoComplete="country-name"
-                placeholder="Country"
-                required
-                aria-label="Country"
-                defaultValue={address?.country ?? ''}
-              />
-            </div>
-            <div className="mt-3">
-              <input
-                className="w-full"
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                placeholder="Phone"
-                aria-label="Phone"
-                defaultValue={address?.phone ?? ''}
-              />
-            </div>
-            <div className="mt-4">
-              <input
-                type="checkbox"
-                name="defaultAddress"
-                id="defaultAddress"
-                defaultChecked={defaultAddress?.id === address?.id}
-                className="border-gray-500 rounded-sm cursor-pointer border-1"
-              />
-              <label
-                className="inline-block ml-2 text-sm cursor-pointer"
-                htmlFor="defaultAddress"
-              >
-                Set as default address
-              </label>
-            </div>
-            <div className="mt-6 mb-4">
-              <Button
-                className="w-full rounded focus:shadow-outline"
-                type="submit"
-                variant="primary"
-                disabled={transition.state !== 'idle'}
-              >
-                {transition.state !== 'idle' ? 'Saving' : 'Save'}
-              </Button>
-            </div>
-            <div className="mb-4">
-              <button
-                type="button"
-                onClick={() => setEditMode(false)}
-                className="border border-black uppercase py-2 px-10 w-full"
-              >
-                Cancel
-              </button>
-            </div>
-          </Form>
+          <button
+            type="button"
+            onClick={() => setEditMode(true)}
+            className="border border-black uppercase py-2 px-10"
+          >
+            {addressId ? 'Edit address' : 'Add address'}
+          </button>
         </div>
+      )}
+
+      {editMode && (
+        <Form className="w-full" method="post" action={path}>
+          <input
+            type="hidden"
+            name="addressId"
+            value={addressId ? addressId : 'add'}
+          />
+          {actionData?.formError && (
+            <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
+              <p className="m-4 text-sm text-red-900">{actionData.formError}</p>
+            </div>
+          )}
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="firstName"
+              name="firstName"
+              required
+              type="text"
+              autoComplete="given-name"
+              placeholder="First name"
+              aria-label="First name"
+              defaultValue={address?.firstName ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="lastName"
+              name="lastName"
+              required
+              type="text"
+              autoComplete="family-name"
+              placeholder="Last name"
+              aria-label="Last name"
+              defaultValue={address?.lastName ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="company"
+              name="company"
+              type="text"
+              autoComplete="organization"
+              placeholder="Company"
+              aria-label="Company"
+              defaultValue={address?.company ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="address1"
+              name="address1"
+              type="text"
+              autoComplete="address-line1"
+              placeholder="Address line 1*"
+              required
+              aria-label="Address line 1"
+              defaultValue={address?.address1 ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="address2"
+              name="address2"
+              type="text"
+              autoComplete="address-line2"
+              placeholder="Address line 2"
+              aria-label="Address line 2"
+              defaultValue={address?.address2 ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="city"
+              name="city"
+              type="text"
+              required
+              autoComplete="address-level2"
+              placeholder="City"
+              aria-label="City"
+              defaultValue={address?.city ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="province"
+              name="province"
+              type="text"
+              autoComplete="address-level1"
+              placeholder="State / Province"
+              required
+              aria-label="State"
+              defaultValue={address?.province ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="zip"
+              name="zip"
+              type="text"
+              autoComplete="postal-code"
+              placeholder="Zip / Postal Code"
+              required
+              aria-label="Zip"
+              defaultValue={address?.zip ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="country"
+              name="country"
+              type="text"
+              autoComplete="country-name"
+              placeholder="Country"
+              required
+              aria-label="Country"
+              defaultValue={address?.country ?? ''}
+            />
+          </div>
+          <div className="mt-3">
+            <input
+              className="w-full"
+              id="phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="Phone"
+              aria-label="Phone"
+              defaultValue={address?.phone ?? ''}
+            />
+          </div>
+          <div className="mt-4">
+            <input
+              type="checkbox"
+              name="defaultAddress"
+              id="defaultAddress"
+              defaultChecked={defaultAddress?.id === address?.id}
+              className="border-gray-500 rounded-sm cursor-pointer border-1"
+            />
+            <label
+              className="inline-block ml-2 text-sm cursor-pointer"
+              htmlFor="defaultAddress"
+            >
+              Set as default address
+            </label>
+          </div>
+          <div className="mt-6 mb-4">
+            <Button
+              className="w-full rounded focus:shadow-outline"
+              type="submit"
+              variant="primary"
+              disabled={transition.state !== 'idle'}
+            >
+              {transition.state !== 'idle' ? 'Saving' : 'Save'}
+            </Button>
+          </div>
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={() => setEditMode(false)}
+              className="border border-black uppercase py-2 px-10 w-full"
+            >
+              Cancel
+            </button>
+          </div>
+        </Form>
       )}
     </>
   );
