@@ -3,6 +3,7 @@ import type {Customer} from '@shopify/hydrogen/storefront-api-types';
 import clsx from 'clsx';
 import {useState} from 'react';
 import {Button, Link, Text} from '~/components';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 
 export interface ActionData {
   success?: boolean;
@@ -24,10 +25,11 @@ export function AccountDetails({customer}: {customer: Customer}) {
   const [editMode, setEditMode] = useState(false);
   const editStyle = editMode ? '' : 'p-0 border-0';
 
+  const path = usePrefixPathWithLocale(`/account/edit`);
   return (
     <div className="grid w-full gap-4">
       <div className="flex flex-col">
-        <Form className="flex-1" method="post">
+        <Form className="flex-1" method="post" action={path}>
           <h3 className="font-bold text-lead mb-4">Personal infos</h3>
 
           {actionData?.formError && (

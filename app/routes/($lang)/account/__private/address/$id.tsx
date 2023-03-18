@@ -45,6 +45,7 @@ export async function loader({context, params}: LoaderArgs) {
 }
 
 export const action: ActionFunction = async ({request, context, params}) => {
+  console.log('here');
   const {storefront, session} = context;
   const formData = await request.formData();
 

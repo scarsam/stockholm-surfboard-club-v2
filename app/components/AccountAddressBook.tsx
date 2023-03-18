@@ -274,8 +274,8 @@ export default function EditAddress({
     address.id!.startsWith(normalizedAddress),
   );
 
-  const path = usePrefixPathWithLocale(`/account/address/${addressId}`);
-  console.log(path);
+  // It's not using the $id in the action - so it's unecessary atm!
+  const path = usePrefixPathWithLocale(`/account/address/uselessId`);
   return (
     <>
       {!editMode && (
@@ -295,7 +295,7 @@ export default function EditAddress({
           <input
             type="hidden"
             name="addressId"
-            value={addressId ? addressId : 'add'}
+            value={address?.id ? addressId : 'add'}
           />
           {actionData?.formError && (
             <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
