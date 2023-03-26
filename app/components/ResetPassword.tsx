@@ -8,7 +8,7 @@ import {
 import {Form, useActionData} from '@remix-run/react';
 import {useState} from 'react';
 import {Link} from '~/components';
-import {getInputStyleClasses} from '~/lib/utils';
+import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
 import type {CustomerRecoverPayload} from '@shopify/hydrogen/storefront-api-types';
 
 export async function loader({context, params}: LoaderArgs) {
@@ -64,6 +64,8 @@ export function ResetPassword() {
   const [nativeEmailError, setNativeEmailError] = useState<null | string>(null);
   const isSubmitted = actionData?.resetRequested;
 
+  const path = usePrefixPathWithLocale(`/account/recover`);
+
   return (
     <>
       {isSubmitted ? (
@@ -77,7 +79,7 @@ export function ResetPassword() {
       ) : (
         <>
           {/* TODO: Add onSubmit to validate _before_ submission with native? */}
-          <Form method="post" noValidate className="w-full">
+          <Form method="post" action={path} noValidate className="w-full">
             {actionData?.formError && (
               <div className="flex items-center justify-center mb-6 bg-zinc-500">
                 <p className="m-4 text-s text-contrast">

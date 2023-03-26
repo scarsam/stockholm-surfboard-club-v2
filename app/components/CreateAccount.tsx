@@ -8,7 +8,7 @@ import {
 } from '@shopify/remix-oxygen';
 import {Form, useActionData} from '@remix-run/react';
 import {useState} from 'react';
-import {getInputStyleClasses} from '~/lib/utils';
+import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
 import {Link} from '~/components';
 import type {
   CustomerAccessTokenCreatePayload,
@@ -97,9 +97,10 @@ export function CreateAccount() {
   const [nativePasswordError, setNativePasswordError] = useState<null | string>(
     null,
   );
+  const path = usePrefixPathWithLocale(`/account/register`);
 
   return (
-    <Form method="post" noValidate className="w-full">
+    <Form method="post" action={path} noValidate className="w-full">
       {actionData?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
           <p className="m-4 text-s text-contrast">{actionData.formError}</p>

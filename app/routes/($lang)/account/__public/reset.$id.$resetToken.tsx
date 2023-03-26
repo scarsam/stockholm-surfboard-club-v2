@@ -75,7 +75,7 @@ export const action: ActionFunction = async ({
 
     session.set('customerAccessToken', accessToken);
 
-    return redirect(lang ? `${lang}/account` : '/account', {
+    return redirect(lang ? `${lang}/` : '/', {
       headers: {
         'Set-Cookie': await session.commit(),
       },

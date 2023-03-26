@@ -48,7 +48,10 @@ export async function loader({request, context, params}: LoaderArgs) {
   const loginPath = lang ? `/${lang}/account/login` : '/account/login';
 
   if (!isAuthenticated) {
-    if (/\/account\/login$/.test(pathname)) {
+    if (
+      /\/account\/login$/.test(pathname) ||
+      pathname.includes('/account/reset')
+    ) {
       return json({isAuthenticated}) as unknown as TmpRemixFix;
     }
 
