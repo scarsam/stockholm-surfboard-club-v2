@@ -136,16 +136,19 @@ export default function Product() {
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
-  const filteredMedia = selectedVariantColor
-    ? media.nodes.filter((node) => node.alt == selectedVariant.image?.altText)
-    : media.nodes;
+  // const filteredMedia = selectedVariantColor
+  //   ? media.nodes.filter((node) => node.alt == selectedVariant.image?.altText)
+  //   : media.nodes;
+
+  // const ggMedia = filteredMedia.length ? filteredMedia : media.nodes;
 
   return (
     <>
       <Section padding="s">
         <div className="grid items-start md:gap-2 lg:gap-2 md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
-            media={filteredMedia.length ? filteredMedia : media.nodes}
+            color={selectedVariant.image?.altText}
+            media={media.nodes}
             className="md:w-full lg:col-span-2"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
@@ -409,14 +412,14 @@ function ProductOptions({
                             )}
                           />
                         ) : (
-                          <ProductImageOptionLink
+                          <ProductOptionLink
                             optionName={option.name}
                             optionValue={value}
                             searchParams={searchParamsWithDefaults}
                             className={clsx(
                               'leading-none cursor-pointer transition-all duration-200',
-                              'mt-1 mr-1 flex justify-center',
-                              checked ? 'border border-black text-white' : '',
+                              'mt-1 mr-1 flex justify-center border',
+                              checked ? 'border-black' : 'border-white',
                             )}
                           >
                             {image?.previewImage && (
@@ -426,14 +429,14 @@ function ProductOptions({
                                 className="w-full mx-auto min-w-[50px] max-w-[60px]"
                                 sizes="4vw"
                                 widths={[400, 800, 1200]}
-                                // width="10px"
+                                width="10px"
                                 loaderOptions={{
                                   scale: 2,
                                   crop: 'center',
                                 }}
                               />
                             )}
-                          </ProductImageOptionLink>
+                          </ProductOptionLink>
                         )}
                       </Text>
                     );
@@ -445,42 +448,6 @@ function ProductOptions({
         ))}
     </>
   );
-
-  function ProductImageOptionLink({
-    optionName,
-    optionValue,
-    searchParams,
-    children,
-    ...props
-  }: {
-    optionName: string;
-    optionValue: string;
-    searchParams: URLSearchParams;
-    children?: ReactNode;
-    [key: string]: any;
-  }) {
-    const {pathname} = useLocation();
-    const isLangPathname = /\/[a-zA-Z]{2}-[a-zA-Z]{2}\//g.test(pathname);
-    // fixes internalized pathname
-    const path = isLangPathname
-      ? `/${pathname.split('/').slice(2).join('/')}`
-      : pathname;
-
-    const clonedSearchParams = new URLSearchParams(searchParams);
-    clonedSearchParams.set(optionName, optionValue);
-
-    return (
-      <Link
-        {...props}
-        preventScrollReset
-        prefetch="intent"
-        replace
-        to={`${path}?${clonedSearchParams.toString()}`}
-      >
-        {children ?? optionValue}
-      </Link>
-    );
-  }
 }
 
 function ProductOptionLink({

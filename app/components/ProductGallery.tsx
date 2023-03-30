@@ -1,4 +1,4 @@
-import type {MediaEdge} from '@shopify/hydrogen/storefront-api-types';
+import type {Maybe, MediaEdge} from '@shopify/hydrogen/storefront-api-types';
 import {ATTR_LOADING_EAGER} from '~/lib/const';
 import type {MediaImage} from '@shopify/hydrogen/storefront-api-types';
 
@@ -8,19 +8,25 @@ import type {MediaImage} from '@shopify/hydrogen/storefront-api-types';
 export function ProductGallery({
   media,
   className,
+  color,
 }: {
   media: MediaEdge['node'][];
   className?: string;
+  color?: Maybe<string> | undefined;
 }) {
   if (!media.length) {
     return null;
   }
 
+  let i = 0;
+
   return (
     <div
       className={`swimlane md:grid-flow-row hiddenScroll md:p-0 md:overflow-x-auto md:grid-cols-2 ${className}`}
     >
-      {media.map((med, i) => {
+      {media.map((med) => {
+        const shouldHideImage = color && med.alt !== color;
+
         let mediaProps: Record<string, any> = {};
         const isFirst = i === 0;
         const isFourth = i === 3;
@@ -70,11 +76,15 @@ export function ProductGallery({
           mediaProps.loading = ATTR_LOADING_EAGER;
         }
 
-        const style = [
-          isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
-          isFirst || isFourth ? '' : 'md:aspect-[4/5]',
-          'aspect-square snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
-        ].join(' ');
+        const style = shouldHideImage
+          ? 'hidden'
+          : [
+              isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
+              isFirst || isFourth ? '' : 'md:aspect-[4/5]',
+              'aspect-square snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
+            ].join(' ');
+
+        !shouldHideImage && i++;
 
         return (
           <div
