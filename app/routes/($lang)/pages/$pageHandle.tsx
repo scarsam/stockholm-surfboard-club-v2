@@ -1,13 +1,7 @@
-import {
-  json,
-  type MetaFunction,
-  type SerializeFrom,
-  type LoaderArgs,
-} from '@shopify/remix-oxygen';
+import {json, type LoaderArgs} from '@shopify/remix-oxygen';
 import type {Page as PageType} from '@shopify/hydrogen/storefront-api-types';
 import {useLoaderData} from '@remix-run/react';
 import invariant from 'tiny-invariant';
-import {PageHeader} from '~/components';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
@@ -47,14 +41,17 @@ export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
   return (
-    <>
-      <PageHeader heading={page.title}>
-        <div
-          dangerouslySetInnerHTML={{__html: page.body}}
-          className="prose dark:prose-invert"
-        />
-      </PageHeader>
-    </>
+    <div className="flex flex-grow flex-col md:flex-row flex-col-reverse">
+      <div className="md:flex-1 p-6 min-h-[300px] md:min-h-[unset]">
+        <div className="flex h-full md:items-center justify-center">
+          <div dangerouslySetInnerHTML={{__html: page.body}} />
+        </div>
+      </div>
+      <div
+        className={`bg-${page.title.toLowerCase()} flex-1 bg-no-repeat bg-cover`}
+      />
+      <div className="d-none bg-store bg-about"></div>
+    </div>
   );
 }
 

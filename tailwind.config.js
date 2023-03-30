@@ -64,6 +64,10 @@ module.exports = {
         darkHeader: 'inset 0px -1px 0px 0px rgba(21, 21, 21, 0.4)',
         lightHeader: 'inset 0px -1px 0px 0px rgba(21, 21, 21, 0.05)',
       },
+      backgroundImage: {
+        store: "url('public/store.png')",
+        about: "url('public/about.png')",
+      },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],

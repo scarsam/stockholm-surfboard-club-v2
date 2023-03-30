@@ -65,7 +65,7 @@ export function Layout({
           filter={layout?.filterMenu}
           shop={layout?.shop}
         />
-        <main role="main" id="mainContent" className="flex-grow">
+        <main role="main" id="mainContent" className="flex-grow flex">
           {children}
         </main>
         <Footer setModal={setModal} menu={layout?.footerMenu} />
@@ -334,7 +334,7 @@ function MobileHeader({
         </button>
         <Link
           className="text-xl text-[#ED1C24] font-semibold border-black border-r flex-1 h-full items-center flex justify-center"
-          to="/"
+          to="/collections/new"
         >
           {shop.name}
         </Link>
@@ -417,7 +417,10 @@ function DesktopHeader({
         role="banner"
         className="h-10 px-2 flex items-center justify-between flex-wrap mx-auto"
       >
-        <Link className="text-2xl text-[#ED1C24] font-semibold" to="/">
+        <Link
+          className="text-2xl text-[#ED1C24] font-semibold"
+          to="/collections/new"
+        >
           {shop.name}
         </Link>
         <div className="flex items-center">

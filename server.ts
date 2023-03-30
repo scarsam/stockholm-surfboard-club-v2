@@ -7,6 +7,7 @@ import {
 import {createStorefrontClient, storefrontRedirect} from '@shopify/hydrogen';
 import {HydrogenSession} from '~/lib/session.server';
 import {getLocaleFromRequest} from '~/lib/utils';
+import {redirect} from 'react-router';
 
 /**
  * Export a fetch handler in module format.
@@ -65,6 +66,12 @@ export default {
          * will pass through the 404 response.
          */
         return storefrontRedirect({request, response, storefront});
+      }
+
+      const url = new URL(request.url);
+
+      if (url.pathname === '/') {
+        return redirect(`${url.origin}/collections/new`);
       }
 
       return response;

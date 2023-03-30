@@ -12,8 +12,8 @@ import {
   AnalyticsPageType,
   Money,
   ShopifyAnalyticsProduct,
-  ShopPayButton,
   flattenConnection,
+  Image,
   type SeoHandleFunction,
   type SeoConfig,
 } from '@shopify/hydrogen';
@@ -30,7 +30,6 @@ import {
   Link,
   AddToCartButton,
 } from '~/components';
-import {getExcerpt} from '~/lib/utils';
 import invariant from 'tiny-invariant';
 import clsx from 'clsx';
 import type {
@@ -128,6 +127,8 @@ export default function Product() {
 
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
+  // For this to work we depend on every image having altText equal to variant Color
+  const selectedVariantColor = selectedVariant.image?.altText;
   // const isOutOfStock = !selectedVariant?.availableForSale;
 
   const isOnSale =
@@ -135,16 +136,20 @@ export default function Product() {
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
+  const filteredMedia = selectedVariantColor
+    ? media.nodes.filter((node) => node.alt == selectedVariant.image?.altText)
+    : media.nodes;
+
   return (
     <>
       <Section padding="s">
         <div className="grid items-start md:gap-2 lg:gap-2 md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
-            media={media.nodes}
-            className="w-screen md:w-full lg:col-span-2"
+            media={filteredMedia.length ? filteredMedia : media.nodes}
+            className="md:w-full lg:col-span-2"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
-            <section className="flex flex-col w-full max-w-xl gap-8 md:px-0">
+            <section className="flex flex-col w-full gap-8 md:px-0">
               <div className="grid gap-2">
                 <Heading as="h1" size="copy" className="whitespace-normal">
                   {title}
@@ -247,7 +252,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
     <div className="grid gap-2">
       <div className="grid gap-2">
         <ProductOptions
-          options={product.options}
+          product={product}
           searchParamsWithDefaults={searchParamsWithDefaults}
         />
         {prouctDescription && (
@@ -275,6 +280,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
               ) : (
                 <Text
                   as="span"
+                  width="wide"
                   className="flex items-center justify-center gap-2"
                 >
                   ADD TO CART
@@ -289,13 +295,14 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
 }
 
 function ProductOptions({
-  options,
+  product,
   searchParamsWithDefaults,
 }: {
-  options: ProductType['options'];
+  product: ProductType;
   searchParamsWithDefaults: URLSearchParams;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const options = product.options;
 
   return (
     <>
@@ -384,19 +391,50 @@ function ProductOptions({
                     const checked =
                       searchParamsWithDefaults.get(option.name) === value;
                     const id = `option-${option.name}-${value}`;
+                    const image = product.media?.nodes?.find(
+                      (image) => image.alt === value,
+                    );
 
                     return (
                       <Text key={id}>
-                        <ProductOptionLink
-                          optionName={option.name}
-                          optionValue={value}
-                          searchParams={searchParamsWithDefaults}
-                          className={clsx(
-                            'leading-none cursor-pointer transition-all duration-200',
-                            'px-1 py-3 px-5 mt-1 mr-1 min-w-[5rem] flex justify-center border-black border',
-                            checked ? 'bg-black text-white' : '',
-                          )}
-                        />
+                        {option.name === 'Size' || !image ? (
+                          <ProductOptionLink
+                            optionName={option.name}
+                            optionValue={value}
+                            searchParams={searchParamsWithDefaults}
+                            className={clsx(
+                              'leading-none cursor-pointer transition-all duration-200',
+                              'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border-black border',
+                              checked ? 'bg-black text-white' : '',
+                            )}
+                          />
+                        ) : (
+                          <ProductImageOptionLink
+                            optionName={option.name}
+                            optionValue={value}
+                            searchParams={searchParamsWithDefaults}
+                            className={clsx(
+                              'leading-none cursor-pointer transition-all duration-200',
+                              'mt-1 mr-1 flex justify-center',
+                              checked ? 'border border-black text-white' : '',
+                            )}
+                          >
+                            {image?.previewImage && (
+                              <Image
+                                data={image.previewImage}
+                                alt={image.alt!}
+                                className="w-full mx-auto min-w-[50px] max-w-[60px]"
+                                sizes="4vw"
+                                widths={[400, 800, 1200]}
+                                // width="10px"
+                                loaderOptions={{
+                                  scale: 2,
+                                  crop: 'center',
+                                }}
+                              />
+                            )}
+                          </ProductImageOptionLink>
+                        )}
                       </Text>
                     );
                   })}
@@ -407,6 +445,42 @@ function ProductOptions({
         ))}
     </>
   );
+
+  function ProductImageOptionLink({
+    optionName,
+    optionValue,
+    searchParams,
+    children,
+    ...props
+  }: {
+    optionName: string;
+    optionValue: string;
+    searchParams: URLSearchParams;
+    children?: ReactNode;
+    [key: string]: any;
+  }) {
+    const {pathname} = useLocation();
+    const isLangPathname = /\/[a-zA-Z]{2}-[a-zA-Z]{2}\//g.test(pathname);
+    // fixes internalized pathname
+    const path = isLangPathname
+      ? `/${pathname.split('/').slice(2).join('/')}`
+      : pathname;
+
+    const clonedSearchParams = new URLSearchParams(searchParams);
+    clonedSearchParams.set(optionName, optionValue);
+
+    return (
+      <Link
+        {...props}
+        preventScrollReset
+        prefetch="intent"
+        replace
+        to={`${path}?${clonedSearchParams.toString()}`}
+      >
+        {children ?? optionValue}
+      </Link>
+    );
+  }
 }
 
 function ProductOptionLink({
@@ -553,7 +627,7 @@ const PRODUCT_QUERY = `#graphql
       selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions) {
         ...ProductVariantFragment
       }
-      media(first: 7) {
+      media(first: 20) {
         nodes {
           ...Media
         }
