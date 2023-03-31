@@ -1,86 +1,79 @@
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
-import {flattenConnection} from '@shopify/hydrogen';
-import {Await, Form, useLoaderData} from '@remix-run/react';
+import {Await, Form, useLoaderData, useSubmit} from '@remix-run/react';
 import type {
   Collection,
-  CollectionConnection,
-  Product,
   ProductConnection,
 } from '@shopify/hydrogen/storefront-api-types';
-import {Suspense} from 'react';
+import {ChangeEventHandler, Suspense, useRef, useState} from 'react';
 import invariant from 'tiny-invariant';
-import {
-  Heading,
-  Input,
-  PageHeader,
-  ProductGrid,
-  ProductSwimlane,
-  FeaturedCollections,
-  Section,
-  Text,
-} from '~/components';
+import {Input, ProductGrid, Section, Text} from '~/components';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {PAGINATION_SIZE} from '~/lib/const';
+import {useDebounce} from 'react-use';
 
 export default function () {
-  const {searchTerm, products, noResultRecommendations} =
-    useLoaderData<typeof loader>();
+  const {searchTerm, products, searchParams} = useLoaderData<typeof loader>();
   const noResults = products?.nodes?.length === 0;
 
+  const submit = useSubmit();
+
+  const [val, setVal] = useState(searchTerm);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useDebounce(() => submit(formRef.current, {replace: true}), 500, [val]);
   return (
     <>
-      <div className="p-2">
-        <Form method="get" className="relative flex w-full text-heading">
-          <Input
-            defaultValue={searchTerm}
-            placeholder="Search…"
-            type="search"
-            variant="search"
-            name="q"
-          />
-          <button className="absolute right-5 py-2" type="submit">
-            Go
-          </button>
+      <div className="border border-bottom">
+        <Form
+          ref={formRef}
+          method="get"
+          className="relative flex w-full text-heading"
+        >
+          <>
+            <Input
+              value={val}
+              placeholder="Type to search..."
+              type="search"
+              variant="search"
+              name="q"
+              onChange={({currentTarget}: any) => {
+                setVal(currentTarget.value);
+              }}
+            />
+            {val && (
+              <button
+                className="absolute right-5 p-2 text-base"
+                onClick={() => setVal('')}
+              >
+                &#10005;
+              </button>
+            )}
+          </>
         </Form>
       </div>
-      {!searchTerm || noResults ? (
-        <>
-          {noResults && (
-            <Section padding="x">
-              <Text className="opacity-50">
-                No results, try something else.
-              </Text>
-            </Section>
-          )}
-          <Suspense>
-            <Await
-              errorElement="There was a problem loading related products"
-              resolve={noResultRecommendations}
-            >
-              {(data) => (
-                <>
-                  {/* <FeaturedCollections
-                    title="Trending Collections"
-                    collections={data!.featuredCollections as Array<Collection>}
-                  /> */}
-                  <ProductSwimlane
-                    title="Trending Products"
-                    products={data!.featuredProducts as Array<Product>}
-                  />
-                </>
-              )}
-            </Await>
-          </Suspense>
-        </>
-      ) : (
-        <Section>
-          <ProductGrid
-            key="search"
-            url={`/search?q=${searchTerm}`}
-            collection={{products} as Collection}
-          />
+      {noResults ? (
+        <Section padding="x">
+          <Text className="opacity-50">No results, try something else.</Text>
         </Section>
-      )}
+      ) : products ? (
+        <Suspense>
+          <Await
+            errorElement="There was a problem loading related products"
+            resolve={products}
+          >
+            {() => (
+              <Section padding="s">
+                <ProductGrid
+                  key="search"
+                  url={`/search?q=${searchTerm}`}
+                  collection={{products} as Collection}
+                />
+              </Section>
+            )}
+          </Await>
+        </Suspense>
+      ) : null}
     </>
   );
 }
@@ -88,7 +81,8 @@ export default function () {
 export async function loader({request, context: {storefront}}: LoaderArgs) {
   const searchParams = new URL(request.url).searchParams;
   const cursor = searchParams.get('cursor')!;
-  const searchTerm = searchParams.get('q')!;
+  const qParam = searchParams.get('q')!;
+  const searchTerm = qParam ? qParam.replace(/\?.*/, '') : '';
 
   const data = await storefront.query<{
     products: ProductConnection;
@@ -105,14 +99,10 @@ export async function loader({request, context: {storefront}}: LoaderArgs) {
   invariant(data, 'No data returned from Shopify API');
   const {products} = data;
 
-  const getRecommendations = !searchTerm || products?.nodes?.length === 0;
-
   return defer({
     searchTerm,
+    searchParams,
     products,
-    noResultRecommendations: getRecommendations
-      ? getNoResultRecommendations(storefront)
-      : Promise.resolve(null),
   });
 }
 
@@ -123,72 +113,20 @@ const SEARCH_QUERY = `#graphql
     $country: CountryCode
     $language: LanguageCode
     $pageBy: Int!
-    $after: String
+    $cursor: String
   ) @inContext(country: $country, language: $language) {
     products(
-      first: $pageBy
-      sortKey: RELEVANCE
       query: $searchTerm
-      after: $after
+      first: $pageBy
+      after: $cursor
+      sortKey: RELEVANCE
     ) {
       nodes {
         ...ProductCard
       }
       pageInfo {
-        startCursor
-        endCursor
         hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
-
-export async function getNoResultRecommendations(
-  storefront: LoaderArgs['context']['storefront'],
-) {
-  const data = await storefront.query<{
-    featuredCollections: CollectionConnection;
-    featuredProducts: ProductConnection;
-  }>(SEARCH_NO_RESULTS_QUERY, {
-    variables: {
-      pageBy: PAGINATION_SIZE,
-      country: storefront.i18n.country,
-      language: storefront.i18n.language,
-    },
-  });
-
-  invariant(data, 'No data returned from Shopify API');
-
-  return {
-    featuredCollections: flattenConnection(data.featuredCollections),
-    featuredProducts: flattenConnection(data.featuredProducts),
-  };
-}
-
-const SEARCH_NO_RESULTS_QUERY = `#graphql
-  ${PRODUCT_CARD_FRAGMENT}
-  query searchNoResult(
-    $country: CountryCode
-    $language: LanguageCode
-    $pageBy: Int!
-  ) @inContext(country: $country, language: $language) {
-    featuredCollections: collections(first: 3, sortKey: UPDATED_AT) {
-      nodes {
-        id
-        title
-        handle
-        image {
-          altText
-          width
-          height
-          url
-        }
-      }
-    }
-    featuredProducts: products(first: $pageBy) {
-      nodes {
-        ...ProductCard
+        endCursor
       }
     }
   }

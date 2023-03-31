@@ -47,7 +47,6 @@ export async function loader({request, context, params}: LoaderArgs) {
   const isAuthenticated = Boolean(customerAccessToken);
   const loginPath = lang ? `/${lang}/` : '/';
 
-  console.log('hello');
   if (!isAuthenticated) {
     if (/\/account\/login$/.test(pathname)) {
       return json({isAuthenticated}) as unknown as TmpRemixFix;

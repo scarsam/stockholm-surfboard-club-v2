@@ -65,7 +65,7 @@ export function Layout({
           filter={layout?.filterMenu}
           shop={layout?.shop}
         />
-        <main role="main" id="mainContent" className="flex-grow flex">
+        <main role="main" id="mainContent" className="flex-grow flex flex-col">
           {children}
         </main>
         <Footer setModal={setModal} menu={layout?.footerMenu} />
@@ -256,12 +256,17 @@ function MenuMobileNav({
                   : 'font-medium'
               } flex border-b py-2`}
             >
-              <Link className="font-bold px-2" to={urlPathname(menuItem.url)}>
+              <Link
+                className="font-bold px-2"
+                to={urlPathname(menuItem.url)}
+                onClick={onClose}
+              >
                 {menuItem.title}
               </Link>
               <div className="flex-1 ml-12">
                 {filter?.items.map((item) => (
                   <Link
+                    onClick={onClose}
                     key={item.id}
                     className={`${
                       isCurrentPath(pathname, item?.url)
@@ -279,6 +284,7 @@ function MenuMobileNav({
             <Link
               className="font-bold px-2 flex items-center h-10 border-b"
               to={urlPathname(menuItem.url)}
+              onClick={onClose}
             >
               {menuItem.title}
             </Link>
@@ -304,88 +310,90 @@ function MobileHeader({
   const params = useParams();
 
   return (
-    <nav className="lg:hidden">
-      <header
-        role="banner"
-        className="h-10 flex items-center mx-auto border-black border-b"
-      >
-        <button
-          onClick={openMenu}
-          type="button"
-          data-collapse-toggle="navbar-default"
-          className="inline-flex justify-center h-full w-10 border-black border-r items-center text-sm text-black lg:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
-          aria-controls="navbar-default"
-          aria-expanded="false"
+    <>
+      <nav className="lg:hidden">
+        <header
+          role="banner"
+          className="h-10 flex items-center mx-auto border-b"
         >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-6 h-6"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            onClick={openMenu}
+            type="button"
+            data-collapse-toggle="navbar-default"
+            className="inline-flex justify-center h-full w-10 border-r items-center text-sm text-black lg:hidden hover:bg-gray-200 focus:outline-none focus:ring-0"
+            aria-controls="navbar-default"
+            aria-expanded="false"
           >
-            <path
-              fillRule="evenodd"
-              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-        </button>
-        <Link
-          className="text-xl text-[#ED1C24] font-semibold border-black border-r flex-1 h-full items-center flex justify-center"
-          to="/collections/new"
-        >
-          {shop.name}
-        </Link>
-        <div className="flex h-full items-center">
-          <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <Form
-              method="get"
-              action={params.lang ? `/${params.lang}/search` : '/search'}
+            <span className="sr-only">Open main menu</span>
+            <svg
+              className="w-6 h-6"
+              aria-hidden="true"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <button
-                type="submit"
-                className="relative flex items-center justify-center w-8 h-8"
+              <path
+                fillRule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </button>
+          <Link
+            className="text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
+            to="/collections/new"
+          >
+            {shop.name}
+          </Link>
+          <div className="flex h-full items-center">
+            <div className="border-r h-full flex items-center justify-center w-10">
+              <Form
+                method="get"
+                action={params.lang ? `/${params.lang}/search` : '/search'}
               >
-                <img
-                  className="inline mx-1"
-                  src={search}
-                  width="16"
-                  height="16"
-                  alt="search-icon"
-                />
-              </button>
-              {/* <Input
+                <button
+                  type="submit"
+                  className="relative flex items-center justify-center w-8 h-8"
+                >
+                  <img
+                    className="inline mx-1"
+                    src={search}
+                    width="16"
+                    height="16"
+                    alt="search-icon"
+                  />
+                </button>
+                {/* <Input
                 className="focus:border-primary/20"
                 type="search"
                 variant="minisearch"
                 placeholder="Search"
                 name="q"
               /> */}
-            </Form>
-            {/* <img
-              className="inline mx-1"
-              src={search}
-              width="16"
-              height="16"
-              alt="search-icon"
-            /> */}
-          </div>
-          <div className="border-black border-r h-full flex items-center justify-center w-10">
-            <button onClick={openCart} type="button">
-              <img
+              </Form>
+              {/* <img
                 className="inline mx-1"
-                src={cart}
+                src={search}
                 width="16"
                 height="16"
-                alt="cart-icon"
-              />
-            </button>
+                alt="search-icon"
+              /> */}
+            </div>
+            <div className="border-r h-full flex items-center justify-center w-10">
+              <button onClick={openCart} type="button">
+                <img
+                  className="inline mx-1"
+                  src={cart}
+                  width="16"
+                  height="16"
+                  alt="cart-icon"
+                />
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
-    </nav>
+        </header>
+      </nav>
+    </>
   );
 }
 
@@ -589,10 +597,12 @@ function Footer({
   return (
     <footer
       role="contentinfo"
-      className="h-10 flex border-t border-black items-center px-2 justify-between"
+      className="h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between"
     >
       <FooterMenu setModal={setModal} menu={menu} />
-      <div>&copy; Stockholm Surfboard Club {new Date().getFullYear()}</div>
+      <div className="py-10 md:py-0">
+        &copy; Stockholm Surfboard Club {new Date().getFullYear()}
+      </div>
     </footer>
   );
 }
@@ -623,7 +633,7 @@ function FooterMenu({
   >;
 }) {
   return (
-    <div>
+    <div className="pt-5 md:pt-0">
       {(menu?.items || []).map((item: EnhancedMenuItem) => (
         <Link to={item.url || ''} key={item.id} className="mr-3 inline-block">
           <Text className="flex justify-between uppercase text-sm">
