@@ -57,7 +57,9 @@ export function CartDetails({
   const isZeroCost = !cart || cart?.cost?.subtotalAmount?.amount === '0.0';
 
   const container = {
-    drawer: 'grid grid-cols-1 h-screen-no-nav grid-rows-[1fr_auto]',
+    drawer: cart?.totalQuantity
+      ? 'grid grid-cols-1 h-screen-no-nav grid-rows-[1fr_auto]'
+      : 'hidden',
     page: 'w-full pb-12 grid md:grid-cols-2 md:items-start gap-8 md:gap-8 lg:gap-12',
   };
 
@@ -158,7 +160,7 @@ function CartLines({
     y > 0 ? 'border-t' : '',
     layout === 'page'
       ? 'flex-grow md:translate-y-4'
-      : 'pb-6 sm-max:pt-2 overflow-auto transition',
+      : 'p-0 first-of-type:pt-8 sm-max:pt-2 overflow-auto transition',
   ]);
 
   return (
@@ -409,7 +411,8 @@ export function CartEmpty({
   // grid grid-cols-1 h-screen-no-nav grid-rows-[1fr_auto]
   const container = {
     drawer: clsx([
-      'content-start pb-8 transition overflow-y-scroll  h-screen-no-nav md:pb-12',
+      // 'content-start pb-0 transition overflow-y-scroll  h-screen-no-nav',
+      'content-start pb-0 transition overflow-y-scroll',
       y > 0 ? 'border-t' : '',
     ]),
     page: clsx([

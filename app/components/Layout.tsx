@@ -311,7 +311,7 @@ function MobileHeader({
 
   return (
     <>
-      <nav className="lg:hidden">
+      <nav className="lg:hidden bg-white relative z-10">
         <header
           role="banner"
           className="h-10 flex items-center mx-auto border-b"
@@ -419,7 +419,7 @@ function DesktopHeader({
   const {y} = useWindowScroll();
 
   return (
-    <nav className="hidden lg:block relative z-10">
+    <nav className="hidden lg:block relative z-10 bg-white">
       {/* {openCart && <CartDetails />} */}
       <header
         role="banner"
