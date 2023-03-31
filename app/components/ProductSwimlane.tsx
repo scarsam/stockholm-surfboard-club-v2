@@ -16,7 +16,7 @@ export function ProductSwimlane({
 }) {
   return (
     <Section heading={title} padding="none" {...props}>
-      <div className="swimlane hiddenScroll">
+      <div className="swimlane hiddenScroll px-0">
         {products.map((product) => (
           <ProductCard
             product={product}

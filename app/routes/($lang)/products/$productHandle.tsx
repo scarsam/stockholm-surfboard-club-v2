@@ -152,8 +152,8 @@ export default function Product() {
             className="md:w-full lg:col-span-2"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
-            <section className="flex flex-col w-full gap-8 md:px-0">
-              <div className="grid gap-2">
+            <section className="flex flex-col w-full gap-4 md:px-0">
+              <div className="grid">
                 <Heading as="h1" size="copy" className="whitespace-normal">
                   {title}
                 </Heading>
@@ -174,7 +174,7 @@ export default function Product() {
                 </Text>
               </div>
               <ProductForm prouctDescription={descriptionHtml} />
-              <div className="grid gap-2 py-2">
+              <div className="grid gap-2">
                 <Suspense fallback={<Skeleton className="h-32" />}>
                   <Await
                     errorElement="There was a problem loading related products"
@@ -252,8 +252,8 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
   };
 
   return (
-    <div className="grid gap-2">
-      <div className="grid gap-2">
+    <div className="grid pb-4 border-b">
+      <div className="grid gap-4">
         <ProductOptions
           product={product}
           searchParamsWithDefaults={searchParamsWithDefaults}
@@ -309,15 +309,13 @@ function ProductOptions({
 
   return (
     <>
-      {options
+      {[...options]
+        .reverse()
         .filter((option) => option.values.length > 1)
         .map((option) => (
-          <div
-            key={option.name}
-            className="flex flex-col flex-wrap mb-4 gap-y-2 last:mb-0"
-          >
+          <div key={option.name} className="flex flex-col flex-wrap last:mb-0">
             <Heading as="legend" size="copy" className="min-w-[4rem]">
-              {option.name === 'Size' ? 'Select Size' : option.name}
+              {option.name}
             </Heading>
             <div className="flex flex-wrap items-baseline">
               {/**
