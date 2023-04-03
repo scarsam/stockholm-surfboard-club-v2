@@ -115,6 +115,11 @@ function Header({
     openCart();
   }, [addToCartFetchers, isCartOpen, openCart]);
 
+  const cartLogin = () => {
+    closeCart();
+    openAccount();
+  };
+
   return (
     <>
       <AccountDrawer
@@ -122,7 +127,11 @@ function Header({
         isOpen={isAccountOpen}
         onClose={closeAccount}
       />
-      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
+      <CartDrawer
+        isOpen={isCartOpen}
+        openAccount={cartLogin}
+        onClose={closeCart}
+      />
       {menu && (
         <MenuDrawer
           isOpen={isMenuOpen}
@@ -170,14 +179,22 @@ function AccountDrawer({
         {root.data.isLoggedIn ? (
           <Authenticated />
         ) : (
-          <Session onClose={onClose} name={shop.name} />
+          <Session onClose={onClose} name={shop?.name} />
         )}
       </div>
     </Drawer>
   );
 }
 
-function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
+function CartDrawer({
+  isOpen,
+  onClose,
+  openAccount,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  openAccount: () => void;
+}) {
   const [root] = useMatches();
 
   return (
@@ -185,7 +202,14 @@ function CartDrawer({isOpen, onClose}: {isOpen: boolean; onClose: () => void}) {
       <div className="grid p-2">
         <Suspense fallback={<CartLoading />}>
           <Await resolve={root.data?.cart}>
-            {(cart) => <Cart layout="drawer" onClose={onClose} cart={cart} />}
+            {(cart) => (
+              <Cart
+                layout="drawer"
+                onClose={onClose}
+                openAccount={openAccount}
+                cart={cart}
+              />
+            )}
           </Await>
         </Suspense>
       </div>
@@ -343,7 +367,7 @@ function MobileHeader({
             className="text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
             to="/collections/new"
           >
-            {shop.name}
+            {shop?.name}
           </Link>
           <div className="flex h-full items-center">
             <div className="border-r h-full flex items-center justify-center w-10">
@@ -429,7 +453,7 @@ function DesktopHeader({
           className="text-2xl text-[#ED1C24] font-semibold"
           to="/collections/new"
         >
-          {shop.name}
+          {shop?.name}
         </Link>
         <div className="flex items-center">
           {menu?.items.map((menuItem) => (

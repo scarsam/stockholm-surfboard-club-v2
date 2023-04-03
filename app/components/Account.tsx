@@ -149,7 +149,11 @@ Account) {
             Orders
           </button>
         </div>
-        <Form method="post" action={usePrefixPathWithLocale('/account/logout')}>
+        <Form
+          method="post"
+          action={usePrefixPathWithLocale('/account/logout')}
+          reloadDocument
+        >
           <button type="submit" className="text-black">
             Log out
           </button>

@@ -46,10 +46,10 @@ import {getFeaturedData} from './routes/($lang)/featured-products';
 
 const seo: SeoHandleFunction<typeof loader> = ({data, pathname}) => ({
   title: data?.layout?.shop?.name,
-  titleTemplate: '%s | Hydrogen Demo Store',
+  titleTemplate: '%s | Stockholm Surfboard Club',
   description: data?.layout?.shop?.description,
-  handle: '@shopify',
-  url: `https://hydrogen.shop${pathname}`,
+  handle: '@stockholmsurfboardclub',
+  url: `https://stockholmsurfboardclub${pathname}`,
 });
 
 export const handle = {

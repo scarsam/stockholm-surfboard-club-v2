@@ -17,7 +17,7 @@ import type {
   CartLine,
   CartLineUpdateInput,
 } from '@shopify/hydrogen/storefront-api-types';
-import {useFetcher} from '@remix-run/react';
+import {useFetcher, useMatches} from '@remix-run/react';
 import {CartAction} from '~/lib/type';
 import {DrawerHeader} from './CartHeader';
 
@@ -26,10 +26,12 @@ type Layouts = 'page' | 'drawer';
 export function Cart({
   layout,
   onClose,
+  openAccount,
   cart,
 }: {
   layout: Layouts;
   onClose?: () => void;
+  openAccount: () => void;
   cart: CartType | null;
 }) {
   const linesCount = Boolean(cart?.lines?.edges?.length || 0);
@@ -41,7 +43,7 @@ export function Cart({
         onClose={onClose}
       />
       <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
-      <CartDetails cart={cart} layout={layout} />
+      <CartDetails cart={cart} openAccount={openAccount} layout={layout} />
     </>
   );
 }
@@ -49,10 +51,13 @@ export function Cart({
 export function CartDetails({
   layout,
   cart,
+  openAccount,
 }: {
   layout: Layouts;
   cart: CartType | null;
+  openAccount: () => void;
 }) {
+  const [root] = useMatches();
   // @todo: get optimistic cart cost
   const isZeroCost = !cart || cart?.cost?.subtotalAmount?.amount === '0.0';
 
@@ -70,6 +75,15 @@ export function CartDetails({
         <CartSummary cost={cart.cost} layout={layout}>
           {/* <CartDiscounts discountCodes={cart.discountCodes} /> */}
           <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
+          {!root.data.isLoggedIn && (
+            <button
+              onClick={openAccount}
+              className="border border-black uppercase py-2 px-10 w-full"
+              type="button"
+            >
+              Sign in
+            </button>
+          )}
         </CartSummary>
       )}
     </div>
@@ -412,7 +426,7 @@ export function CartEmpty({
   const container = {
     drawer: clsx([
       // 'content-start pb-0 transition overflow-y-scroll  h-screen-no-nav',
-      'content-start pb-0 transition overflow-y-scroll',
+      'content-start pb-0 transition',
       y > 0 ? 'border-t' : '',
     ]),
     page: clsx([

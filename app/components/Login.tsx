@@ -1,7 +1,7 @@
 import {Form, Link, useActionData} from '@remix-run/react';
 import {QueryRoot} from '@shopify/hydrogen/storefront-api-types';
 import {useState} from 'react';
-import {getInputStyleClasses} from '~/lib/utils';
+import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
 
 type ActionData = {
   formError?: string;
@@ -14,8 +14,16 @@ export function Login({name}: {name: string}) {
     null,
   );
 
+  const path = usePrefixPathWithLocale(`/account/login`);
+
   return (
-    <Form action="/?index" method="post" noValidate className="w-full">
+    <Form
+      action={path}
+      method="post"
+      noValidate
+      className="w-full"
+      reloadDocument
+    >
       {actionData?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
           <p className="m-4 text-s text-contrast">{actionData.formError}</p>

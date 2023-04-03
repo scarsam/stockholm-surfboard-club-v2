@@ -87,7 +87,7 @@ export default function OrderRoute() {
       <div className="w-full p-6 sm:grid-cols-1 md:p-8 lg:p-12 lg:py-6">
         <div>
           <Text as="h3" size="lead">
-            Order No. {order.name}
+            Order No. {order?.name}
           </Text>
           <Text className="mt-2" as="p">
             Placed on {new Date(order.processedAt!).toDateString()}
