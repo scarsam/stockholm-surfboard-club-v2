@@ -144,7 +144,7 @@ export default function Product() {
 
   return (
     <>
-      <Section padding="none" className="pr-2">
+      <Section padding="none" className="p-2 lg:p-0 lg:pr-2">
         <div className="grid items-start gap-2 md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
             color={selectedVariant.image?.altText}
@@ -153,7 +153,7 @@ export default function Product() {
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
             <section className="flex flex-col w-full gap-4 md:px-0">
-              <div className="grid">
+              <div className="grid md:flex justify-between md:border-b md:pb-3">
                 <Heading as="h1" size="copy" className="whitespace-normal">
                   {title}
                 </Heading>
@@ -254,13 +254,18 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
   return (
     <div className="grid pb-4 border-b">
       <div className="grid gap-4">
+        {prouctDescription && (
+          <div className="grid gap-2 border-b">
+            <Heading size="fine" className="min-w-[4rem]">
+              Description
+            </Heading>
+            <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
+          </div>
+        )}
         <ProductOptions
           product={product}
           searchParamsWithDefaults={searchParamsWithDefaults}
         />
-        {prouctDescription && (
-          <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
-        )}
         {selectedVariant && (
           <div className="grid items-stretch gap-2">
             <AddToCartButton
@@ -313,8 +318,11 @@ function ProductOptions({
         .reverse()
         .filter((option) => option.values.length > 1)
         .map((option) => (
-          <div key={option.name} className="flex flex-col flex-wrap last:mb-0">
-            <Heading as="legend" size="copy" className="min-w-[4rem]">
+          <div
+            key={option.name}
+            className="flex flex-col flex-wrap pb-4 border-b"
+          >
+            <Heading as="legend" size="fine" className="min-w-[4rem] pb-2">
               {option.name}
             </Heading>
             <div className="flex flex-wrap items-baseline">

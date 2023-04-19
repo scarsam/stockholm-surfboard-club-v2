@@ -68,7 +68,7 @@ export function Heading({
   as?: React.ElementType;
   children: React.ReactNode;
   format?: boolean;
-  size?: 'display' | 'heading' | 'lead' | 'copy';
+  size?: 'display' | 'heading' | 'lead' | 'copy' | 'fine';
   width?: 'default' | 'narrow' | 'wide';
 } & React.HTMLAttributes<HTMLHeadingElement>) {
   const sizes = {
@@ -76,6 +76,7 @@ export function Heading({
     heading: 'font-bold text-heading',
     lead: 'font-bold text-lead',
     copy: 'font-medium text-copy',
+    fine: 'text-fine subpixel-antialiased text-gray-500',
   };
 
   const widths = {
