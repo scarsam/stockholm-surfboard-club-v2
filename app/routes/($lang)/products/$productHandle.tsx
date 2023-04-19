@@ -144,8 +144,8 @@ export default function Product() {
 
   return (
     <>
-      <Section padding="s">
-        <div className="grid items-start md:gap-2 lg:gap-2 md:grid-cols-2 lg:grid-cols-3">
+      <Section padding="none" className="pr-2">
+        <div className="grid items-start gap-2 md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
             color={selectedVariant.image?.altText}
             media={media.nodes}
