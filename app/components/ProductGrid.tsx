@@ -69,6 +69,7 @@ export function ProductGrid({
             key={product.id}
             product={product}
             loading={getImageLoadingPriority(i)}
+            flexTitleAndPrice
           />
         ))}
       </Grid>

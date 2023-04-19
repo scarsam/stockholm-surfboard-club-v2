@@ -19,6 +19,7 @@ export function ProductCard({
   loading,
   onClick,
   quickAdd,
+  flexTitleAndPrice,
 }: {
   product: SerializeFrom<Product>;
   label?: string;
@@ -26,6 +27,7 @@ export function ProductCard({
   loading?: HTMLImageElement['loading'];
   onClick?: () => void;
   quickAdd?: boolean;
+  flexTitleAndPrice?: boolean;
 }) {
   let cardLabel;
 
@@ -90,9 +92,9 @@ export function ProductCard({
               {cardLabel}
             </Text>
           </div>
-          <div className="flex px-1">
+          <div className={clsx(flexTitleAndPrice ? 'flex px-1' : 'grid')}>
             <Text
-              className="w-full overflow-hidden whitespace-nowrap text-ellipsis"
+              className="w-full overflow-hidden whitespace-nowrap text-ellipsis leading-4"
               as="h3"
             >
               {product.title}
