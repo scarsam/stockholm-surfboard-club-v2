@@ -520,7 +520,7 @@ function DesktopHeader({
         </div>
       </header>
 
-      <div className="border-y px-2 w-full overflow-x-auto grid grid-flow-col gap-2">
+      <div className="border-y px-2 w-full overflow-x-auto inline-flex grid-flow-col gap-1">
         {filter?.items.map((item) => (
           <Link
             key={`desktop-${item.id}`}
@@ -528,10 +528,10 @@ function DesktopHeader({
               isCurrentPath(pathname, item?.url)
                 ? 'font-semibold'
                 : 'font-medium'
-            } h-10 px-2 flex items-center whitespace-nowrap first:pl-0 last:pr-0 text-black hover:italic relative`}
+            } h-10 px-2 flex items-center whitespace-nowrap first:pl-0 last:pr-0 text-black hover-scew`}
             to={urlPathname(item.url)}
           >
-            <span className="absolute-center">{item.title}</span>
+            {item.title}
           </Link>
         ))}
       </div>

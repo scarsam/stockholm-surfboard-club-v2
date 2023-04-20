@@ -181,3 +181,7 @@ shop-pay-button {
     }
   }
 }
+
+.hover-scew:hover{
+  transform: skew(-20deg);
+}
