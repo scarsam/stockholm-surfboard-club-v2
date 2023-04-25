@@ -5,53 +5,11 @@ import {
   type ActionFunction,
   type LoaderArgs,
 } from '@shopify/remix-oxygen';
-import {Form, useActionData} from '@remix-run/react';
+import {Form, useActionData, useFetcher} from '@remix-run/react';
 import {useState} from 'react';
 import {Link} from '~/components';
 import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
 import type {CustomerRecoverPayload} from '@shopify/hydrogen/storefront-api-types';
-
-export async function loader({context, params}: LoaderArgs) {
-  const customerAccessToken = await context.session.get('customerAccessToken');
-
-  if (customerAccessToken) {
-    return redirect(params.lang ? `${params.lang}/` : '/');
-  }
-
-  return new Response(null);
-}
-
-type ActionData = {
-  formError?: string;
-  resetRequested?: boolean;
-};
-
-const badRequest = (data: ActionData) => json(data, {status: 400});
-
-export const action: ActionFunction = async ({request, context}) => {
-  const formData = await request.formData();
-  const email = formData.get('email');
-
-  if (!email || typeof email !== 'string') {
-    return badRequest({
-      formError: 'Please provide an email.',
-    });
-  }
-
-  try {
-    await context.storefront.mutate<{
-      customerRecover: CustomerRecoverPayload;
-    }>(CUSTOMER_RECOVER_MUTATION, {
-      variables: {email},
-    });
-
-    return json({resetRequested: true});
-  } catch (error: any) {
-    return badRequest({
-      formError: 'Something went wrong. Please try again later.',
-    });
-  }
-};
 
 export const meta: MetaFunction = () => {
   return {
@@ -60,9 +18,9 @@ export const meta: MetaFunction = () => {
 };
 
 export function ResetPassword() {
-  const actionData = useActionData<ActionData>();
+  const fetcher = useFetcher();
   const [nativeEmailError, setNativeEmailError] = useState<null | string>(null);
-  const isSubmitted = actionData?.resetRequested;
+  const isSubmitted = fetcher.data?.resetRequested;
 
   const path = usePrefixPathWithLocale(`/account/recover`);
 
@@ -79,22 +37,21 @@ export function ResetPassword() {
       ) : (
         <>
           {/* TODO: Add onSubmit to validate _before_ submission with native? */}
-          <Form method="post" action={path} noValidate className="w-full">
-            {actionData?.formError && (
+          <fetcher.Form method="post" action={path} className="w-full">
+            {fetcher.data?.formError && (
               <div className="flex items-center justify-center mb-6 bg-zinc-500">
                 <p className="m-4 text-s text-contrast">
-                  {actionData.formError}
+                  {fetcher.data?.formError}
                 </p>
               </div>
             )}
-            {/* <h1 className="text-xl">Forgot Password.</h1> */}
             <p className="mt-2 mb-4">
               Enter the email address associated with your account to receive a
               link to reset your password.
             </p>
             <div>
               <input
-                className="w-full mb-6"
+                className="w-full mb-6 focus:border-black focus:outline-none ring-black focus:ring-black"
                 id="email"
                 name="email"
                 type="email"
@@ -127,21 +84,9 @@ export function ResetPassword() {
                 Request Reset Link
               </button>
             </div>
-          </Form>
+          </fetcher.Form>
         </>
       )}
     </>
   );
 }
-
-const CUSTOMER_RECOVER_MUTATION = `#graphql
-  mutation customerRecover($email: String!) {
-    customerRecover(email: $email) {
-      customerUserErrors {
-        code
-        field
-        message
-      }
-    }
-  }
-`;

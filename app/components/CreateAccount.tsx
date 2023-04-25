@@ -1,13 +1,9 @@
-import {Form, useActionData} from '@remix-run/react';
+import {Form, useActionData, useFetcher} from '@remix-run/react';
 import {useState} from 'react';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
-type ActionData = {
-  formError?: string;
-};
-
 export function CreateAccount() {
-  const actionData = useActionData<ActionData>();
+  const fetcher = useFetcher();
   const [nativeEmailError, setNativeEmailError] = useState<null | string>(null);
   const [nativePasswordError, setNativePasswordError] = useState<null | string>(
     null,
@@ -15,21 +11,15 @@ export function CreateAccount() {
   const path = usePrefixPathWithLocale(`/account/register`);
 
   return (
-    <Form
-      method="post"
-      action={path}
-      noValidate
-      className="w-full"
-      reloadDocument
-    >
-      {actionData?.formError && (
+    <fetcher.Form method="post" action={path} className="w-full">
+      {fetcher?.data?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
-          <p className="m-4 text-s text-contrast">{actionData.formError}</p>
+          <p className="m-4 text-s text-contrast">{fetcher?.data.formError}</p>
         </div>
       )}
       <div className="mb-2">
         <input
-          className="w-full"
+          className="w-full focus:border-black focus:outline-none ring-black focus:ring-black"
           id="email"
           name="email"
           type="email"
@@ -54,7 +44,7 @@ export function CreateAccount() {
       </div>
       <div className="mb-6">
         <input
-          className="w-full"
+          className="w-full focus:border-black focus:outline-none ring-black focus:ring-black"
           id="password"
           name="password"
           type="password"
@@ -93,6 +83,6 @@ export function CreateAccount() {
           Create Account
         </button>
       </div>
-    </Form>
+    </fetcher.Form>
   );
 }

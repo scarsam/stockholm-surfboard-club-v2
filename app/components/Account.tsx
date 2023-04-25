@@ -130,7 +130,7 @@ Account) {
   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
   return (
     <div className="grid grid-cols-1 grid-rows-[1fr_auto]">
-      <div className="flex justify-between md:p-4 border-b">
+      <div className="flex justify-between border-b border-t md:p-[calc(0.5em-0.5px)]">
         <div>
           <button
             className={`mr-3 ${

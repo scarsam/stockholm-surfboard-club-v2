@@ -1,7 +1,7 @@
-import {Form, useActionData, useTransition} from '@remix-run/react';
+import {Form, useActionData, useFetcher, useTransition} from '@remix-run/react';
 import type {Customer} from '@shopify/hydrogen/storefront-api-types';
 import clsx from 'clsx';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Button, Link, Text} from '~/components';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
@@ -20,25 +20,38 @@ export interface ActionData {
 }
 
 export function AccountDetails({customer}: {customer: Customer}) {
-  const actionData = useActionData<ActionData>();
+  const fetcher = useFetcher();
   const transition = useTransition();
   const [editMode, setEditMode] = useState(false);
-  const editStyle = editMode ? '' : 'p-0 border-0';
+  const editStyle = editMode
+    ? 'text-black text-[12px]'
+    : 'p-0 border-0 text-black';
+
+  useEffect(() => {
+    if (fetcher.type === 'done') {
+      setEditMode(false);
+    }
+  }, [fetcher.type]);
 
   const path = usePrefixPathWithLocale(`/account/edit`);
   return (
     <div className="grid w-full gap-4">
       <div className="flex flex-col">
-        <Form className="flex-1" method="post" action={path}>
+        <fetcher.Form className="flex-1" method="post" action={path}>
           <h3 className="font-bold text-lead mb-4">Personal infos</h3>
 
-          {actionData?.formError && (
+          {fetcher?.data?.formError && (
             <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
-              <p className="m-4 text-sm text-red-900">{actionData.formError}</p>
+              <p className="m-4 text-sm text-red-900">
+                {fetcher?.data?.formError}
+              </p>
             </div>
           )}
           <div>
-            <label className="flex flex-col text-sm gap-1" htmlFor="firstName">
+            <label
+              className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+              htmlFor="firstName"
+            >
               First name
               <input
                 disabled={!editMode}
@@ -52,25 +65,31 @@ export function AccountDetails({customer}: {customer: Customer}) {
                 defaultValue={customer.firstName ?? ''}
               />
             </label>
+            <div className="mt-3">
+              <label
+                className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+                htmlFor="lastName"
+              >
+                Last name
+                <input
+                  disabled={!editMode}
+                  className={editStyle}
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autoComplete="family-name"
+                  placeholder="Last name"
+                  aria-label="Last name"
+                  defaultValue={customer.lastName ?? ''}
+                />
+              </label>
+            </div>
           </div>
           <div className="mt-3">
-            <label className="flex flex-col text-sm gap-1" htmlFor="lastName">
-              Last name
-              <input
-                disabled={!editMode}
-                className={editStyle}
-                id="lastName"
-                name="lastName"
-                type="text"
-                autoComplete="family-name"
-                placeholder="Last name"
-                aria-label="Last name"
-                defaultValue={customer.lastName ?? ''}
-              />
-            </label>
-          </div>
-          <div className="mt-3">
-            <label className="flex flex-col text-sm gap-1" htmlFor="email">
+            <label
+              className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+              htmlFor="email"
+            >
               E-mail address
               <input
                 disabled={!editMode}
@@ -84,9 +103,9 @@ export function AccountDetails({customer}: {customer: Customer}) {
                 aria-label="Email address"
                 defaultValue={customer.email ?? ''}
               />
-              {actionData?.fieldErrors?.email && (
+              {fetcher?.data?.fieldErrors?.email && (
                 <p className="text-red-500 text-xs">
-                  {actionData.fieldErrors.email} &nbsp;
+                  {fetcher?.data.fieldErrors.email} &nbsp;
                 </p>
               )}
             </label>
@@ -94,45 +113,51 @@ export function AccountDetails({customer}: {customer: Customer}) {
           {editMode ? (
             <>
               <Password
+                editMode={editMode}
                 name="currentPassword"
                 label="Current password"
-                passwordError={actionData?.fieldErrors?.currentPassword}
+                passwordError={fetcher?.data?.fieldErrors?.currentPassword}
               />
-              {actionData?.fieldErrors?.currentPassword && (
+              {fetcher?.data?.fieldErrors?.currentPassword && (
                 <Text size="fine" className="mt-1 text-red-500">
-                  {actionData.fieldErrors.currentPassword} &nbsp;
+                  {fetcher?.data.fieldErrors.currentPassword} &nbsp;
                 </Text>
               )}
               <Password
+                editMode={editMode}
                 name="newPassword"
                 label="New password"
-                passwordError={actionData?.fieldErrors?.newPassword}
+                passwordError={fetcher?.data?.fieldErrors?.newPassword}
               />
               <Password
+                editMode={editMode}
                 name="newPassword2"
                 label="Re-enter new password"
-                passwordError={actionData?.fieldErrors?.newPassword2}
+                passwordError={fetcher?.data?.fieldErrors?.newPassword2}
               />
               <Text
                 size="fine"
                 color="subtle"
                 className={clsx(
                   'mt-1',
-                  actionData?.fieldErrors?.newPassword && 'text-red-500',
+                  fetcher?.data?.fieldErrors?.newPassword && 'text-red-500',
                 )}
               >
                 Passwords must be at least 8 characters.
               </Text>
-              {actionData?.fieldErrors?.newPassword2 ? <br /> : null}
-              {actionData?.fieldErrors?.newPassword2 && (
+              {fetcher?.data?.fieldErrors?.newPassword2 ? <br /> : null}
+              {fetcher?.data?.fieldErrors?.newPassword2 && (
                 <Text size="fine" className="mt-1 text-red-500">
-                  {actionData.fieldErrors.newPassword2} &nbsp;
+                  {fetcher?.data?.fieldErrors.newPassword2} &nbsp;
                 </Text>
               )}
             </>
           ) : (
             <div className="mt-3">
-              <label className="flex flex-col text-sm gap-1" htmlFor="password">
+              <label
+                className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+                htmlFor="password"
+              >
                 Password
                 <input
                   disabled={!editMode}
@@ -158,7 +183,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
                   type="submit"
                   disabled={transition.state !== 'idle'}
                 >
-                  {transition.state !== 'idle' ? 'Saving' : 'Save'}
+                  {transition.state !== 'idle' ? 'SAVING' : 'SAVE'}
                 </Button>
               </div>
               <div className="mb-4">
@@ -182,7 +207,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
               </button>
             </div>
           )}
-        </Form>
+        </fetcher.Form>
       </div>
     </div>
   );
@@ -192,17 +217,24 @@ function Password({
   name,
   passwordError,
   label,
+  editMode,
 }: {
   name: string;
   passwordError?: string;
   label: string;
+  editMode: boolean;
 }) {
+  const editStyle = editMode ? 'w-full text-[12px]' : 'w-full';
+
   return (
     <div className="mt-3">
-      <label className="flex flex-col text-sm gap-1" htmlFor={name}>
+      <label
+        className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+        htmlFor={name}
+      >
         {label}
         <input
-          className="w-full"
+          className={editStyle}
           id={name}
           name={name}
           type="password"
@@ -218,14 +250,14 @@ function Password({
   );
 }
 
-const CUSTOMER_UPDATE_MUTATION = `#graphql
-  mutation customerUpdate($customerAccessToken: String!, $customer: CustomerUpdateInput!) {
-    customerUpdate(customerAccessToken: $customerAccessToken, customer: $customer) {
-      customerUserErrors {
-        code
-        field
-        message
-      }
-    }
-  }
-  `;
+// const CUSTOMER_UPDATE_MUTATION = `#graphql
+//   mutation customerUpdate($customerAccessToken: String!, $customer: CustomerUpdateInput!) {
+//     customerUpdate(customerAccessToken: $customerAccessToken, customer: $customer) {
+//       customerUserErrors {
+//         code
+//         field
+//         message
+//       }
+//     }
+//   }
+//   `;

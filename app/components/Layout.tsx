@@ -199,7 +199,7 @@ function CartDrawer({
 
   return (
     <Drawer open={isOpen} onClose={onClose} openFrom="right">
-      <div className="grid p-2">
+      <div className="grid">
         <Suspense fallback={<CartLoading />}>
           <Await resolve={root.data?.cart}>
             {(cart) => (

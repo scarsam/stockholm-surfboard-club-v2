@@ -11,23 +11,31 @@ import {useState} from 'react';
 import {getInputStyleClasses} from '~/lib/utils';
 import {Link} from '~/components';
 import type {CustomerAccessTokenCreatePayload} from '@shopify/hydrogen/storefront-api-types';
+import Homepage from '~/routes/($lang)/index';
 
 export const handle = {
   isPublic: true,
 };
 
-export async function loader({context, params}: LoaderArgs) {
-  const customerAccessToken = await context.session.get('customerAccessToken');
+// export async function loader({context, params, request}: LoaderArgs) {
+//   const customerAccessToken = await context.session.get('customerAccessToken');
 
-  if (customerAccessToken) {
-    return redirect(
-      params.lang ? `${params.lang}/collections/new` : '/collections/new',
-    );
-  }
+//   if (customerAccessToken) {
+//     return redirect(
+//       params.lang ? `${params.lang}/collections/new` : '/collections/new',
+//     );
+//   }
 
-  // TODO: Query for this?
-  return json({shopName: 'Stockholm Surfboard Club'});
-}
+//   const url = new URL(request.url);
+//   const pathname = url.pathname;
+//   const hasError = url.searchParams.get('formError');
+
+//   console.log('headers', request.headers.get('referer'));
+
+//   if (hasError) return json({shopName: 'Stockholm Surfboard Club'});
+
+//   return redirect(params.lang ? `${params.lang}/${pathname}` : `${pathname}`);
+// }
 
 type ActionData = {
   formError?: string;
@@ -58,7 +66,10 @@ export const action: ActionFunction = async ({request, context, params}) => {
     const customerAccessToken = await doLogin(context, {email, password});
     session.set('customerAccessToken', customerAccessToken);
 
-    return redirect(params.lang ? `/${params.lang}/` : '/', {
+    const path = new URL(request.headers.get('referer') || '');
+    const pathname = path.pathname;
+
+    return redirect(params.lang ? `/${params.lang}${pathname}` : pathname, {
       headers: {
         'Set-Cookie': await session.commit(),
       },
@@ -81,11 +92,17 @@ export const action: ActionFunction = async ({request, context, params}) => {
   }
 };
 
+export const shouldRevalidate = () => {
+  return false;
+};
+
 export const meta: MetaFunction = () => {
   return {
     title: 'Login',
   };
 };
+
+export default () => {};
 
 // export default function Login() {
 //   const {shopName} = useLoaderData<typeof loader>();

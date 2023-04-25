@@ -109,7 +109,10 @@ export const action: ActionFunction = async ({request, context, params}) => {
 
     assertApiErrors(data.customerUpdate);
 
-    return redirect(params?.lang ? `${params.lang}/` : '/');
+    const path = new URL(request.headers.get('referer') || '');
+    const pathname = path.pathname;
+
+    return redirect(params.lang ? `/${params.lang}${pathname}` : pathname);
   } catch (error: any) {
     return badRequest({formError: error.message});
   }

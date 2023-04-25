@@ -1,4 +1,4 @@
-import {Form} from '@remix-run/react';
+import {Form, useFetcher} from '@remix-run/react';
 import type {
   Customer,
   MailingAddress,
@@ -114,10 +114,6 @@ function Address({
   );
 }
 
-interface ActionData {
-  formError?: string;
-}
-
 export default function EditAddress({
   customer,
   addressId,
@@ -129,7 +125,7 @@ export default function EditAddress({
   customer: Customer;
   addressId?: string;
 }) {
-  const actionData = useActionData<ActionData>();
+  const fetcher = useFetcher();
   const transition = useTransition();
   const addresses = flattenConnection(customer.addresses);
   const defaultAddress = customer.defaultAddress;
@@ -163,15 +159,17 @@ export default function EditAddress({
       )}
 
       {editMode && (
-        <Form className="w-full" method="post" action={path}>
+        <fetcher.Form className="w-full" method="post" action={path}>
           <input
             type="hidden"
             name="addressId"
             value={addressId ? addressId : 'add'}
           />
-          {actionData?.formError && (
+          {fetcher.data?.formError && (
             <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
-              <p className="m-4 text-sm text-red-900">{actionData.formError}</p>
+              <p className="m-4 text-sm text-red-900">
+                {fetcher.data?.formError}
+              </p>
             </div>
           )}
           <div className="mt-3">
@@ -323,7 +321,7 @@ export default function EditAddress({
               variant="primary"
               disabled={transition.state !== 'idle'}
             >
-              {transition.state !== 'idle' ? 'Saving' : 'Save'}
+              {transition.state !== 'idle' ? 'SAVING' : 'SAVE'}
             </Button>
           </div>
           <div className="mb-4">
@@ -335,7 +333,7 @@ export default function EditAddress({
               Cancel
             </button>
           </div>
-        </Form>
+        </fetcher.Form>
       )}
     </>
   );

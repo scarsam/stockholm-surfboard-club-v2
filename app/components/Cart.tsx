@@ -42,8 +42,10 @@ export function Cart({
         title={`Bag: ${cart?.totalQuantity || 0}`}
         onClose={onClose}
       />
-      <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
-      <CartDetails cart={cart} openAccount={openAccount} layout={layout} />
+      <div className="px-2 pb-2">
+        <CartEmpty hidden={linesCount} onClose={onClose} layout={layout} />
+        <CartDetails cart={cart} openAccount={openAccount} layout={layout} />
+      </div>
     </>
   );
 }
@@ -446,7 +448,7 @@ export function CartEmpty({
           <Button onClick={onClose}>Continue shopping</Button>
         </div>
       </section> */}
-      <section className="grid gap-8">
+      <section className="grid gap-4 pt-2">
         <FeaturedProducts
           count={4}
           heading="Shop Best Sellers"
