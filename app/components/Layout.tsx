@@ -443,7 +443,7 @@ function DesktopHeader({
   const {y} = useWindowScroll();
 
   return (
-    <nav className="hidden lg:block relative z-10 bg-white sticky top-0">
+    <nav className="hidden lg:block bg-white sticky top-0 z-50">
       {/* {openCart && <CartDetails />} */}
       <header
         role="banner"
