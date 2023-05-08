@@ -1,9 +1,10 @@
-import {json, type MetaFunction, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json, type LoaderArgs} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 
 import {PageHeader, Section, Button} from '~/components';
 import invariant from 'tiny-invariant';
 import {ShopPolicy} from '@shopify/hydrogen/storefront-api-types';
+import {type V2_MetaFunction} from '@remix-run/react';
 
 export async function loader({request, params, context}: LoaderArgs) {
   invariant(params.policyHandle, 'Missing policy handle');
@@ -43,10 +44,12 @@ export async function loader({request, params, context}: LoaderArgs) {
   );
 }
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return {
-    title: data?.policy?.title ?? 'Policies',
-  };
+export const meta: V2_MetaFunction<typeof loader> = ({data}) => {
+  return [
+    {
+      title: data?.policy?.title ?? 'Policies',
+    },
+  ];
 };
 
 export default function Policies() {

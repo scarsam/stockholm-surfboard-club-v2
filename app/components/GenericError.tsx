@@ -2,11 +2,7 @@ import {Button} from './Button';
 import {FeaturedSection} from './FeaturedSection';
 import {PageHeader, Text} from './Text';
 
-export function GenericError({
-  error,
-}: {
-  error?: {message: string; stack?: string};
-}) {
+export function GenericError({error}: {error?: any}) {
   const heading = `Something’s wrong here.`;
   let description = `We found an error while loading this page.`;
 

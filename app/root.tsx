@@ -41,8 +41,9 @@ import {
 import {useAnalytics} from './hooks/useAnalytics';
 import type {StorefrontContext} from './lib/type';
 import {countries} from './data/countries';
-import {doLogout} from './routes/($lang)/account/__private/logout';
-import {getFeaturedData} from './routes/($lang)/featured-products';
+import {doLogout} from './routes/($lang).account_.private.logout';
+import {getFeaturedData} from './routes/($lang).featured-products';
+import {useRouteError, isRouteErrorResponse} from '@remix-run/react';
 
 const seo: SeoHandleFunction<typeof loader> = ({data, pathname}) => ({
   title: data?.layout?.shop?.name,
@@ -70,11 +71,6 @@ export const links: LinksFunction = () => {
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
 };
-
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  viewport: 'width=device-width,initial-scale=1',
-});
 
 export async function loader({context}: LoaderArgs) {
   const [cartId, layout] = await Promise.all([
@@ -141,39 +137,40 @@ export default function App() {
   );
 }
 
-export function CatchBoundary() {
-  const [root] = useMatches();
-  const caught = useCatch();
-  const isNotFound = caught.status === 404;
-  const locale = root.data?.selectedLocale ?? DEFAULT_LOCALE;
+// export function CatchBoundary() {
+//   const [root] = useMatches();
+//   const caught = useCatch();
+//   const isNotFound = caught.status === 404;
+//   const locale = root.data?.selectedLocale ?? DEFAULT_LOCALE;
 
-  return (
-    <html lang={locale.language}>
-      <head>
-        <title>{isNotFound ? 'Not found' : 'Error'}</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Layout
-          layout={root?.data?.layout}
-          key={`${locale.language}-${locale.country}`}
-        >
-          {isNotFound ? (
-            <NotFound type={caught.data?.pageType} />
-          ) : (
-            <GenericError
-              error={{message: `${caught.status} ${caught.data}`}}
-            />
-          )}
-        </Layout>
-        <Scripts />
-      </body>
-    </html>
-  );
-}
+//   return (
+//     <html lang={locale.language}>
+//       <head>
+//         <title>{isNotFound ? 'Not found' : 'Error'}</title>
+//         <Meta />
+//         <Links />
+//       </head>
+//       <body>
+//         <Layout
+//           layout={root?.data?.layout}
+//           key={`${locale.language}-${locale.country}`}
+//         >
+//           {isNotFound ? (
+//             <NotFound type={caught.data?.pageType} />
+//           ) : (
+//             <GenericError
+//               error={{message: `${caught.status} ${caught.data}`}}
+//             />
+//           )}
+//         </Layout>
+//         <Scripts />
+//       </body>
+//     </html>
+//   );
+// }
 
-export function ErrorBoundary({error}: {error: Error}) {
+export function ErrorBoundary() {
+  const error = useRouteError();
   const [root] = useMatches();
   const locale = root?.data?.selectedLocale ?? DEFAULT_LOCALE;
 
@@ -181,12 +178,14 @@ export function ErrorBoundary({error}: {error: Error}) {
     <html lang={locale.language}>
       <head>
         <title>Error</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
       <body>
         <Layout layout={root?.data?.layout}>
-          <GenericError error={error} />
+          {isRouteErrorResponse(error) && <GenericError error={error} />}
         </Layout>
         <Scripts />
       </body>

@@ -1,7 +1,6 @@
 import {
   json,
   redirect,
-  type MetaFunction,
   type ActionFunction,
   type LoaderArgs,
 } from '@shopify/remix-oxygen';
@@ -10,11 +9,14 @@ import {useState} from 'react';
 import {Link} from '~/components';
 import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
 import type {CustomerRecoverPayload} from '@shopify/hydrogen/storefront-api-types';
+import {type V2_MetaFunction} from '@remix-run/react';
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'Recover Password',
-  };
+export const meta: V2_MetaFunction = () => {
+  return [
+    {
+      title: 'Recover Password',
+    },
+  ];
 };
 
 export function ResetPassword() {

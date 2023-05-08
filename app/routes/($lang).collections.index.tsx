@@ -1,9 +1,10 @@
-import {json, type MetaFunction, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json, type LoaderArgs} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 import type {
   Collection,
   CollectionConnection,
 } from '@shopify/hydrogen/storefront-api-types';
+import {type V2_MetaFunction} from '@remix-run/react';
 import {
   Grid,
   Heading,
@@ -39,10 +40,12 @@ export const loader = async ({request, context: {storefront}}: LoaderArgs) => {
   return json({collections});
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'All Collections',
-  };
+export const meta: V2_MetaFunction = () => {
+  return [
+    {
+      title: 'All Collections',
+    },
+  ];
 };
 
 export default function Collections() {

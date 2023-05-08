@@ -32,8 +32,8 @@ import {
   type AppLoadContext,
 } from '@shopify/remix-oxygen';
 import {flattenConnection} from '@shopify/hydrogen';
-import {getFeaturedData} from './featured-products';
-import {doLogout} from './account/__private/logout';
+import {getFeaturedData} from './($lang).featured-products';
+import {doLogout} from './($lang).account_.private.logout';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
 // Combining json + Response + defer in a loader breaks the

@@ -372,7 +372,7 @@ function MobileHeader({
           <div className="flex h-full items-center">
             <div className="border-r h-full flex items-center justify-center w-10">
               <Form
-                method="get"
+                method="GET"
                 action={params.lang ? `/${params.lang}/search` : '/search'}
               >
                 <button
@@ -453,7 +453,7 @@ function DesktopHeader({
           className="text-2xl text-[#ED1C24] font-semibold"
           to="/collections/new"
         >
-          {shop?.name}
+          Stockholm (Surfboard) Club
         </Link>
         <div className="flex items-center">
           {menu?.items.map((menuItem) => (
@@ -480,7 +480,7 @@ function DesktopHeader({
           </button> */}
           <div className="flex items-center">
             <Form
-              method="get"
+              method="GET"
               action={params.lang ? `/${params.lang}/search` : '/search'}
               className="flex self-stretch items-center mx-1"
             >

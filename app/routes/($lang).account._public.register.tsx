@@ -5,7 +5,7 @@ import {
   type LoaderArgs,
 } from '@shopify/remix-oxygen';
 
-import {doLogin} from './login';
+import {doLogin} from './($lang).account._public.login';
 import type {CustomerCreatePayload} from '@shopify/hydrogen/storefront-api-types';
 
 export async function loader({context, params}: LoaderArgs) {

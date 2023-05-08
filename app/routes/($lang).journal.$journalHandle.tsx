@@ -1,6 +1,5 @@
 import {
   json,
-  type MetaFunction,
   type SerializeFrom,
   type LinksFunction,
   type LoaderArgs,
@@ -11,9 +10,9 @@ import {Blog} from '@shopify/hydrogen/storefront-api-types';
 import invariant from 'tiny-invariant';
 import {PageHeader, Section} from '~/components';
 import {ATTR_LOADING_EAGER} from '~/lib/const';
-import styles from '../../../styles/custom-font.css';
+import styles from '../styles/custom-font.css';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
-
+import {type V2_MetaFunction} from '@remix-run/react';
 const BLOG_HANDLE = 'journal';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
@@ -63,15 +62,17 @@ export async function loader({params, context}: LoaderArgs) {
   );
 }
 
-export const meta: MetaFunction = ({
+export const meta: V2_MetaFunction<typeof loader> = ({
   data,
 }: {
   data: SerializeFrom<typeof loader> | undefined;
 }) => {
-  return {
-    title: data?.article?.seo?.title ?? 'Article',
-    description: data?.article?.seo?.description,
-  };
+  return [
+    {
+      title: data?.article?.seo?.title ?? 'Article',
+      description: data?.article?.seo?.description,
+    },
+  ];
 };
 
 export const links: LinksFunction = () => {
@@ -96,13 +97,8 @@ export default function Article() {
             data={image}
             className="w-full mx-auto mt-8 md:mt-16 max-w-7xl"
             sizes="90vw"
-            widths={[400, 800, 1200]}
-            width="100px"
+            aspectRatio="3/2"
             loading={ATTR_LOADING_EAGER}
-            loaderOptions={{
-              scale: 2,
-              crop: 'center',
-            }}
           />
         )}
         <div

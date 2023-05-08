@@ -24,7 +24,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
   const transition = useTransition();
   const [editMode, setEditMode] = useState(false);
   const editStyle = editMode
-    ? 'text-black text-[12px]'
+    ? 'text-black text-[16px]'
     : 'p-0 border-0 text-black';
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
   return (
     <div className="grid w-full gap-4">
       <div className="flex flex-col">
-        <fetcher.Form className="flex-1" method="post" action={path}>
+        <fetcher.Form className="flex-1" method="POST" action={path}>
           <h3 className="font-bold text-lead mb-4">Personal infos</h3>
 
           {fetcher?.data?.formError && (
@@ -49,7 +49,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
           )}
           <div>
             <label
-              className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+              className="flex flex-col text-xs gap-1 text-[#4D4D4D]"
               htmlFor="firstName"
             >
               First name
@@ -67,7 +67,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
             </label>
             <div className="mt-3">
               <label
-                className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+                className="flex flex-col text-xs gap-1 text-[#4D4D4D]"
                 htmlFor="lastName"
               >
                 Last name
@@ -87,7 +87,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
           </div>
           <div className="mt-3">
             <label
-              className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+              className="flex flex-col text-xs gap-1 text-[#4D4D4D]"
               htmlFor="email"
             >
               E-mail address
@@ -155,7 +155,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
           ) : (
             <div className="mt-3">
               <label
-                className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+                className="flex flex-col text-xs gap-1 text-[#4D4D4D]"
                 htmlFor="password"
               >
                 Password
@@ -224,12 +224,12 @@ function Password({
   label: string;
   editMode: boolean;
 }) {
-  const editStyle = editMode ? 'w-full text-[12px]' : 'w-full';
+  const editStyle = 'w-full text-[16px]';
 
   return (
     <div className="mt-3">
       <label
-        className="flex flex-col text-sm gap-1 text-[#4D4D4D]"
+        className="flex flex-col text-xs gap-1 text-[#4D4D4D]"
         htmlFor={name}
       >
         {label}

@@ -289,7 +289,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                 <Text
                   as="span"
                   width="wide"
-                  className="flex items-center justify-center gap-2"
+                  className="flex items-center justify-center gap-2 m-auto"
                 >
                   ADD TO CART
                 </Text>
@@ -434,12 +434,7 @@ function ProductOptions({
                                 alt={image.alt!}
                                 className="w-full mx-auto min-w-[50px] max-w-[60px]"
                                 sizes="4vw"
-                                widths={[400, 800, 1200]}
-                                width="10px"
-                                loaderOptions={{
-                                  scale: 2,
-                                  crop: 'center',
-                                }}
+                                aspectRatio="3/2"
                               />
                             )}
                           </ProductOptionLink>

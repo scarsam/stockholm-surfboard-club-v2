@@ -32,8 +32,8 @@ import {
   type AppLoadContext,
 } from '@shopify/remix-oxygen';
 import {flattenConnection} from '@shopify/hydrogen';
-import {getFeaturedData} from '../routes/($lang)/featured-products';
-import {doLogout} from '../routes/($lang)/account/__private/logout';
+import {getFeaturedData} from '../routes/($lang).featured-products';
+import {doLogout} from '../routes/($lang).account_.private.logout';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
 // Combining json + Response + defer in a loader breaks the
@@ -150,7 +150,7 @@ Account) {
           </button>
         </div>
         <Form
-          method="post"
+          method="POST"
           action={usePrefixPathWithLocale('/account/logout')}
           reloadDocument
         >
@@ -216,7 +216,7 @@ function EmptyOrders() {
           variant="secondary"
           to={usePrefixPathWithLocale('/')}
         >
-          Start Shopping
+          START SHOPPING
         </Button>
       </div>
     </div>

@@ -126,7 +126,7 @@ export default function Homepage() {
   } = useLoaderData<typeof loader>();
 
   // TODO: skeletons vs placeholders
-  const skeletons = getHeroPlaceholder([{}, {}, {}]);
+  // const skeletons = getHeroPlaceholder([{}, {}, {}]);
 
   // TODO: analytics
   // useServerAnalytics({
@@ -158,7 +158,7 @@ export default function Homepage() {
         </Suspense>
       )}
 
-      {secondaryHero && (
+      {/* {secondaryHero && (
         <Suspense fallback={<Hero {...skeletons[1]} />}>
           <Await resolve={secondaryHero}>
             {({hero}) => {
@@ -167,7 +167,7 @@ export default function Homepage() {
             }}
           </Await>
         </Suspense>
-      )}
+      )} */}
 
       {featuredCollections && (
         <Suspense>
@@ -185,7 +185,7 @@ export default function Homepage() {
         </Suspense>
       )}
 
-      {tertiaryHero && (
+      {/* {tertiaryHero && (
         <Suspense fallback={<Hero {...skeletons[2]} />}>
           <Await resolve={tertiaryHero}>
             {({hero}) => {
@@ -194,7 +194,7 @@ export default function Homepage() {
             }}
           </Await>
         </Suspense>
-      )}
+      )} */}
     </>
   );
 }

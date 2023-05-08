@@ -27,7 +27,7 @@ export default function () {
       <div className="border border-bottom">
         <Form
           ref={formRef}
-          method="get"
+          method="GET"
           className="relative flex w-full text-heading"
         >
           <>

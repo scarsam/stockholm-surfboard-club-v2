@@ -1,4 +1,6 @@
-import {json, type MetaFunction, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json} from '@shopify/remix-oxygen';
+import {type V2_MetaFunction} from '@remix-run/react';
+
 import {useLoaderData} from '@remix-run/react';
 import {flattenConnection, Image} from '@shopify/hydrogen';
 import type {Article, Blog} from '@shopify/hydrogen/storefront-api-types';
@@ -52,10 +54,12 @@ export const loader = async ({context: {storefront}}: StorefrontLoaderArgs) => {
   );
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'All Journals',
-  };
+export const meta: V2_MetaFunction = () => {
+  return [
+    {
+      title: 'All Journals',
+    },
+  ];
 };
 
 export default function Journals() {
@@ -98,14 +102,9 @@ function ArticleCard({
               alt={article.image.altText || article.title}
               className="object-cover w-full"
               data={article.image}
-              height={400}
               loading={loading}
               sizes="(min-width: 768px) 50vw, 100vw"
-              width={600}
-              loaderOptions={{
-                scale: 2,
-                crop: 'center',
-              }}
+              aspectRatio="3/2"
             />
           </div>
         )}

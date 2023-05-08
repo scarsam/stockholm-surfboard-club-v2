@@ -41,3 +41,9 @@ npm run build
 ```bash
 npm run dev
 ```
+
+
+    <!-- "build": "npm run build:css && shopify hydrogen build", -->
+    <!-- "build:css": "postcss styles --base styles --dir app/styles --env production", -->
+    <!-- "dev": "npm run build:css && concurrently -g --kill-others-on-fail -r npm:dev:css \"shopify hydrogen dev\"", -->
+    <!-- "dev:css": "postcss styles --base styles --dir app/styles -w", -->

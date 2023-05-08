@@ -159,7 +159,7 @@ export default function EditAddress({
       )}
 
       {editMode && (
-        <fetcher.Form className="w-full" method="post" action={path}>
+        <fetcher.Form className="w-full" method="POST" action={path}>
           <input
             type="hidden"
             name="addressId"
@@ -305,7 +305,7 @@ export default function EditAddress({
               name="defaultAddress"
               id="defaultAddress"
               defaultChecked={defaultAddress?.id === address?.id}
-              className="border-gray-500 rounded-sm cursor-pointer border-1"
+              className="border-gray-500 rounded-sm cursor-pointer border-1 accent-[#000000] text-black focus:ring-0"
             />
             <label
               className="inline-block ml-2 text-sm cursor-pointer"
@@ -316,7 +316,7 @@ export default function EditAddress({
           </div>
           <div className="mt-6 mb-4">
             <Button
-              className="w-full rounded focus:shadow-outline"
+              className="w-full focus:shadow-outline"
               type="submit"
               variant="primary"
               disabled={transition.state !== 'idle'}

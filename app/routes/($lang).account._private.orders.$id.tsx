@@ -1,11 +1,6 @@
 import invariant from 'tiny-invariant';
 import clsx from 'clsx';
-import {
-  json,
-  redirect,
-  type MetaFunction,
-  type LoaderArgs,
-} from '@shopify/remix-oxygen';
+import {json, redirect, type LoaderArgs} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 import {Money, Image, flattenConnection} from '@shopify/hydrogen';
 import {statusMessage} from '~/lib/utils';
@@ -15,10 +10,13 @@ import type {
   DiscountApplicationConnection,
 } from '@shopify/hydrogen/storefront-api-types';
 import {Link, Heading, PageHeader, Text} from '~/components';
+import {type V2_MetaFunction} from '@remix-run/react';
 
-export const meta: MetaFunction = ({data}) => ({
-  title: `Order ${data?.order?.name}`,
-});
+export const meta: V2_MetaFunction<typeof loader> = ({data}) => [
+  {
+    title: `Order ${data?.order?.name}`,
+  },
+];
 
 export async function loader({request, context, params}: LoaderArgs) {
   if (!params.id) {
@@ -137,13 +135,8 @@ export default function OrderRoute() {
                                 data={{
                                   url: lineItem.variant.image.src!,
                                 }}
-                                width={lineItem.variant.image.width!}
-                                height={lineItem.variant.image.height!}
                                 alt={lineItem.variant.image.altText!}
-                                loaderOptions={{
-                                  scale: 2,
-                                  crop: 'center',
-                                }}
+                                aspectRatio={`${lineItem.variant.image.width}/${lineItem.variant.image.height}`}
                               />
                             </div>
                           )}

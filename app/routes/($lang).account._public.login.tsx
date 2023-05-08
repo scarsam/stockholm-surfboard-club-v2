@@ -11,7 +11,8 @@ import {useState} from 'react';
 import {getInputStyleClasses} from '~/lib/utils';
 import {Link} from '~/components';
 import type {CustomerAccessTokenCreatePayload} from '@shopify/hydrogen/storefront-api-types';
-import Homepage from '~/routes/($lang)/index';
+// import Homepage from '~/routes/($lang)/($lang).index';
+import {type V2_MetaFunction} from '@remix-run/react';
 
 export const handle = {
   isPublic: true,
@@ -96,10 +97,12 @@ export const shouldRevalidate = () => {
   return false;
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'Login',
-  };
+export const meta: V2_MetaFunction = () => {
+  return [
+    {
+      title: 'Login',
+    },
+  ];
 };
 
 export default () => {};
