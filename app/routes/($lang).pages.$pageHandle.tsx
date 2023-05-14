@@ -3,6 +3,7 @@ import type {Page as PageType} from '@shopify/hydrogen/storefront-api-types';
 import {useLoaderData} from '@remix-run/react';
 import invariant from 'tiny-invariant';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
+import clsx from 'clsx';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.page?.seo?.title,
@@ -37,20 +38,38 @@ export async function loader({request, params, context}: LoaderArgs) {
   );
 }
 
+const BG_PAGES = ['about', 'store'];
+
 export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
+  const pageTite = page.title.toLowerCase();
+
+  const isBgPage = BG_PAGES.some((page) => page === pageTite);
+
+  console.log(isBgPage);
+
   return (
-    <div className="flex flex-grow flex-col md:flex-row flex-col-reverse">
-      <div className="md:flex-1 p-6 min-h-[300px] md:min-h-[unset]">
+    <div
+      className={clsx('flex-grow flex-col md:flex-row flex-col-reverse', {
+        ['flex']: isBgPage,
+      })}
+    >
+      <div
+        className={clsx('md:flex-1 p-6 min-h-[300px] md:min-h-[unset]', {
+          ['max-w-[1000px] m-auto border-x']: !isBgPage,
+        })}
+      >
         <div className="flex h-full md:items-center justify-center">
           <div dangerouslySetInnerHTML={{__html: page.body}} />
         </div>
       </div>
-      <div
-        className={`bg-${page.title.toLowerCase()} flex-1 bg-no-repeat bg-cover`}
-      />
-      <div className="d-none bg-store bg-about"></div>
+      {isBgPage ? (
+        <>
+          <div className={`bg-${pageTite} flex-1 bg-no-repeat bg-cover`} />
+          <div className="hidden bg-store bg-about"></div>
+        </>
+      ) : null}
     </div>
   );
 }
