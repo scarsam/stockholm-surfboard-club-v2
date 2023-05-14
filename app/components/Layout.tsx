@@ -22,7 +22,8 @@ import {
   CustomerAccessTokenCreatePayload,
   QueryRoot,
 } from '@shopify/hydrogen/storefront-api-types';
-import cart from '../../public/cart-icon.svg';
+import cartIcon from '../../public/cart-icon.svg';
+import emptyCartIcon from '../../public/empty-cart-icon.svg';
 import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import globe from '../../public/globe-icon.svg';
@@ -407,7 +408,7 @@ function MobileHeader({
               <button onClick={openCart} type="button">
                 <img
                   className="inline mx-1"
-                  src={cart}
+                  src={cartIcon}
                   width="16"
                   height="16"
                   alt="cart-icon"
@@ -577,14 +578,21 @@ function Badge({
   const BadgeCounter = useMemo(
     () => (
       <>
-        <img src={cart} width="16" height="16" alt="cart-icon" />
-        <div
-          className={`${
-            dark ? 'text-primary bg-black' : 'text-contrast bg-primary'
-          } absolute -bottom-1 -right-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
-        >
-          <span>{count || 0}</span>
-        </div>
+        <img
+          src={count ? cartIcon : emptyCartIcon}
+          width="16"
+          height="16"
+          alt="cart-icon"
+        />
+        {count ? (
+          <div
+            className={`${
+              dark ? 'text-primary bg-black' : 'text-contrast bg-primary'
+            } absolute bottom-0 top-1 text-[0.625rem] font-medium subpixel-antialiased h-3 min-w-[0.75rem] flex items-center justify-center leading-none text-center rounded-full w-auto px-[0.125rem] pb-px`}
+          >
+            <span>{count}</span>
+          </div>
+        ) : null}
       </>
     ),
     [count, dark],
