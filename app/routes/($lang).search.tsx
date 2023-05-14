@@ -54,7 +54,11 @@ export default function () {
       </div>
       {noResults ? (
         <Section padding="x">
-          <Text className="opacity-50">No results, try something else.</Text>
+          <div className="flex justify-center">
+            <Text className="mt-[10rem]">
+              Sorry, no results for {val}, please search a different item.
+            </Text>
+          </div>
         </Section>
       ) : products ? (
         <Suspense>
