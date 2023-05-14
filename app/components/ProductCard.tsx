@@ -60,7 +60,7 @@ export function ProductCard({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       <Link
         onClick={onClick}
         to={`/products/${product.handle}`}

@@ -144,8 +144,8 @@ export default function Product() {
 
   return (
     <>
-      <Section padding="none" className="p-2 lg:p-0 lg:pr-2">
-        <div className="grid items-start gap-2 md:grid-cols-2 lg:grid-cols-3">
+      <Section padding="none" className="p-2 lg:p-0">
+        <div className="grid items-start md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
             color={selectedVariant.image?.altText}
             media={media.nodes}
@@ -153,25 +153,27 @@ export default function Product() {
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
             <section className="flex flex-col w-full gap-4 md:px-0">
-              <div className="grid md:flex justify-between md:border-b md:pb-3">
-                <Heading as="h1" size="copy" className="whitespace-normal">
-                  {title}
-                </Heading>
-                <Text as="span" className="flex items-center gap-2">
-                  <Money
-                    withoutTrailingZeros
-                    data={selectedVariant?.price!}
-                    as="span"
-                  />
-                  {isOnSale && (
+              <div className="md:border-b md:pb-3">
+                <div className="mx-4 grid md:flex justify-between">
+                  <Heading as="h1" size="copy" className="whitespace-normal">
+                    {title}
+                  </Heading>
+                  <Text as="span" className="flex items-center gap-2">
                     <Money
                       withoutTrailingZeros
-                      data={selectedVariant?.compareAtPrice!}
+                      data={selectedVariant?.price!}
                       as="span"
-                      className="opacity-50 strike"
                     />
-                  )}
-                </Text>
+                    {isOnSale && (
+                      <Money
+                        withoutTrailingZeros
+                        data={selectedVariant?.compareAtPrice!}
+                        as="span"
+                        className="opacity-50 strike"
+                      />
+                    )}
+                  </Text>
+                </div>
               </div>
               <ProductForm prouctDescription={descriptionHtml} />
               <div className="grid gap-2">
@@ -256,10 +258,12 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
       <div className="grid gap-4">
         {prouctDescription && (
           <div className="grid gap-2 border-b">
-            <Heading size="fine" className="min-w-[4rem]">
-              Description
-            </Heading>
-            <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
+            <div className="mx-4">
+              <Heading size="fine" className="min-w-[4rem]">
+                Description
+              </Heading>
+              <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
+            </div>
           </div>
         )}
         <ProductOptions
@@ -267,7 +271,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
           searchParamsWithDefaults={searchParamsWithDefaults}
         />
         {selectedVariant && (
-          <div className="grid items-stretch gap-2">
+          <div className="grid items-stretch gap-2 mx-4">
             <AddToCartButton
               lines={[
                 {
@@ -318,132 +322,132 @@ function ProductOptions({
         .reverse()
         .filter((option) => option.values.length > 1)
         .map((option) => (
-          <div
-            key={option.name}
-            className="flex flex-col flex-wrap pb-4 border-b"
-          >
-            <Heading as="legend" size="fine" className="min-w-[4rem] pb-2">
-              {option.name}
-            </Heading>
-            <div className="flex flex-wrap items-baseline">
-              {/**
-               * First, we render a bunch of <Link> elements for each option value.
-               * When the user clicks one of these buttons, it will hit the loader
-               * to get the new data.
-               *
-               * If there are more than 7 values, we render a dropdown.
-               * Otherwise, we just render plain links.
-               */}
-              {option.values.length > 7 ? (
-                <div className="relative w-full">
-                  <Listbox>
-                    {({open}) => (
-                      <>
-                        <Listbox.Button
-                          ref={closeRef}
-                          className={clsx(
-                            'flex items-center justify-between w-full py-3 px-4 border border-primary',
-                            open
-                              ? 'rounded-b md:rounded-t md:rounded-b-none'
-                              : 'rounded',
-                          )}
-                        >
-                          <span>
-                            {searchParamsWithDefaults.get(option.name)}
-                          </span>
-                          <IconCaret direction={open ? 'up' : 'down'} />
-                        </Listbox.Button>
-                        <Listbox.Options
-                          className={clsx(
-                            'border-primary bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t border px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b',
-                            open ? 'max-h-48' : 'max-h-0',
-                          )}
-                        >
-                          {option.values.map((value) => (
-                            <Listbox.Option
-                              key={`option-${option.name}-${value}`}
-                              value={value}
-                            >
-                              {({active}) => (
-                                <ProductOptionLink
-                                  optionName={option.name}
-                                  optionValue={value}
-                                  className={clsx(
-                                    'text-primary w-full p-2 transition rounded flex justify-start items-center text-left cursor-pointer',
-                                    active && 'bg-primary/10',
-                                  )}
-                                  searchParams={searchParamsWithDefaults}
-                                  onClick={() => {
-                                    if (!closeRef?.current) return;
-                                    closeRef.current.click();
-                                  }}
-                                >
-                                  {value}
-                                  {searchParamsWithDefaults.get(option.name) ===
-                                    value && (
-                                    <span className="ml-2">
-                                      <IconCheck />
-                                    </span>
-                                  )}
-                                </ProductOptionLink>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </>
-                    )}
-                  </Listbox>
-                </div>
-              ) : (
-                <>
-                  {option.values.map((value) => {
-                    const checked =
-                      searchParamsWithDefaults.get(option.name) === value;
-                    const id = `option-${option.name}-${value}`;
-                    const image = product.media?.nodes?.find(
-                      (image) => image.alt === value,
-                    );
-
-                    return (
-                      <Text key={id}>
-                        {option.name === 'Size' || !image ? (
-                          <ProductOptionLink
-                            optionName={option.name}
-                            optionValue={value}
-                            searchParams={searchParamsWithDefaults}
+          <div key={option.name} className="border-b pb-4">
+            <div className="flex flex-col flex-wrap mx-4">
+              <Heading as="legend" size="fine" className="min-w-[4rem] pb-2">
+                {option.name}
+              </Heading>
+              <div className="flex flex-wrap items-baseline">
+                {/**
+                 * First, we render a bunch of <Link> elements for each option value.
+                 * When the user clicks one of these buttons, it will hit the loader
+                 * to get the new data.
+                 *
+                 * If there are more than 7 values, we render a dropdown.
+                 * Otherwise, we just render plain links.
+                 */}
+                {option.values.length > 7 ? (
+                  <div className="relative w-full">
+                    <Listbox>
+                      {({open}) => (
+                        <>
+                          <Listbox.Button
+                            ref={closeRef}
                             className={clsx(
-                              'leading-none cursor-pointer transition-all duration-200',
-                              'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border-black border',
-                              checked ? 'bg-black text-white' : '',
-                            )}
-                          />
-                        ) : (
-                          <ProductOptionLink
-                            optionName={option.name}
-                            optionValue={value}
-                            searchParams={searchParamsWithDefaults}
-                            className={clsx(
-                              'leading-none cursor-pointer transition-all duration-200',
-                              'mt-1 mr-1 flex justify-center border',
-                              checked ? 'border-black' : 'border-white',
+                              'flex items-center justify-between w-full py-3 px-4 border border-primary',
+                              open
+                                ? 'rounded-b md:rounded-t md:rounded-b-none'
+                                : 'rounded',
                             )}
                           >
-                            {image?.previewImage && (
-                              <Image
-                                data={image.previewImage}
-                                alt={image.alt!}
-                                className="w-full mx-auto min-w-[50px] max-w-[60px]"
-                                sizes="4vw"
-                                aspectRatio="3/2"
-                              />
+                            <span>
+                              {searchParamsWithDefaults.get(option.name)}
+                            </span>
+                            <IconCaret direction={open ? 'up' : 'down'} />
+                          </Listbox.Button>
+                          <Listbox.Options
+                            className={clsx(
+                              'border-primary bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t border px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b',
+                              open ? 'max-h-48' : 'max-h-0',
                             )}
-                          </ProductOptionLink>
-                        )}
-                      </Text>
-                    );
-                  })}
-                </>
-              )}
+                          >
+                            {option.values.map((value) => (
+                              <Listbox.Option
+                                key={`option-${option.name}-${value}`}
+                                value={value}
+                              >
+                                {({active}) => (
+                                  <ProductOptionLink
+                                    optionName={option.name}
+                                    optionValue={value}
+                                    className={clsx(
+                                      'text-primary w-full p-2 transition rounded flex justify-start items-center text-left cursor-pointer',
+                                      active && 'bg-primary/10',
+                                    )}
+                                    searchParams={searchParamsWithDefaults}
+                                    onClick={() => {
+                                      if (!closeRef?.current) return;
+                                      closeRef.current.click();
+                                    }}
+                                  >
+                                    {value}
+                                    {searchParamsWithDefaults.get(
+                                      option.name,
+                                    ) === value && (
+                                      <span className="ml-2">
+                                        <IconCheck />
+                                      </span>
+                                    )}
+                                  </ProductOptionLink>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </>
+                      )}
+                    </Listbox>
+                  </div>
+                ) : (
+                  <>
+                    {option.values.map((value) => {
+                      const checked =
+                        searchParamsWithDefaults.get(option.name) === value;
+                      const id = `option-${option.name}-${value}`;
+                      const image = product.media?.nodes?.find(
+                        (image) => image.alt === value,
+                      );
+
+                      return (
+                        <Text key={id}>
+                          {option.name === 'Size' || !image ? (
+                            <ProductOptionLink
+                              optionName={option.name}
+                              optionValue={value}
+                              searchParams={searchParamsWithDefaults}
+                              className={clsx(
+                                'leading-none cursor-pointer transition-all duration-200',
+                                'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border-black border',
+                                checked ? 'bg-black text-white' : '',
+                              )}
+                            />
+                          ) : (
+                            <ProductOptionLink
+                              optionName={option.name}
+                              optionValue={value}
+                              searchParams={searchParamsWithDefaults}
+                              className={clsx(
+                                'leading-none cursor-pointer transition-all duration-200',
+                                'mt-1 mr-1 flex justify-center border',
+                                checked ? 'border-black' : 'border-white',
+                              )}
+                            >
+                              {image?.previewImage && (
+                                <Image
+                                  data={image.previewImage}
+                                  alt={image.alt!}
+                                  className="w-full mx-auto min-w-[50px] max-w-[60px]"
+                                  sizes="4vw"
+                                  aspectRatio="3/2"
+                                />
+                              )}
+                            </ProductOptionLink>
+                          )}
+                        </Text>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}
