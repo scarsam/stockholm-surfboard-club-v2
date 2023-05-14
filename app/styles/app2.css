@@ -3477,7 +3477,7 @@ shop-pay-button {
     color: rgb(var(--color-primary) / var(--tw-text-opacity));
   }
 }
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
 
   .dark\:border-white {
     --tw-border-opacity: 1;
@@ -3504,7 +3504,7 @@ shop-pay-button {
     color: rgba(20, 20, 20, var(--tw-text-opacity));
     color: rgb(var(--color-primary) / var(--tw-text-opacity));
   }
-}
+} */
 @media (min-width: 32em) {
 
   .sm\:bottom-auto {
