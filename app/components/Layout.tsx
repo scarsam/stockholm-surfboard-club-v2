@@ -667,7 +667,11 @@ function FooterMenu({
   return (
     <div className="pt-5 md:pt-0">
       {(menu?.items || []).map((item: EnhancedMenuItem) => (
-        <Link to={item.url || ''} key={item.id} className="mr-3 inline-block">
+        <Link
+          to={urlPathname(item.url) || ''}
+          key={item.id}
+          className="mr-3 inline-block"
+        >
           <Text className="flex justify-between uppercase text-sm">
             {item.title}
           </Text>

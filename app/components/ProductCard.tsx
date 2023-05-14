@@ -86,7 +86,11 @@ export function ProductCard({
               {cardLabel}
             </Text>
           </div>
-          <div className={clsx(flexTitleAndPrice ? 'flex px-1' : 'grid')}>
+          <div
+            className={clsx(
+              flexTitleAndPrice ? 'flex px-1 items-center' : 'grid',
+            )}
+          >
             <Text
               className="w-full overflow-hidden whitespace-nowrap text-ellipsis leading-4"
               as="h3"
