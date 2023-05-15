@@ -44,10 +44,7 @@ export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
   const pageTite = page.title.toLowerCase();
-
   const isBgPage = BG_PAGES.some((page) => page === pageTite);
-
-  console.log(isBgPage);
 
   return (
     <div

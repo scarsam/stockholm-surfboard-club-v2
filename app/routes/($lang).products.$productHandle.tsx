@@ -128,8 +128,6 @@ export default function Product() {
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
   // For this to work we depend on every image having altText equal to variant Color
-  const selectedVariantColor = selectedVariant.image?.altText;
-  // const isOutOfStock = !selectedVariant?.availableForSale;
 
   const isOnSale =
     selectedVariant?.price?.amount &&
@@ -315,6 +313,12 @@ function ProductOptions({
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const options = product.options;
+  //@ts-ignore
+  const allVariants = product.allVariants.nodes as ProductVariant[];
+
+  console.log(product);
+
+  console.log(searchParamsWithDefaults);
 
   return (
     <>
@@ -336,7 +340,7 @@ function ProductOptions({
                  * If there are more than 7 values, we render a dropdown.
                  * Otherwise, we just render plain links.
                  */}
-                {option.values.length > 7 ? (
+                {/* {option.values.length > 7 ? (
                   <div className="relative w-full">
                     <Listbox>
                       {({open}) => (
@@ -398,55 +402,79 @@ function ProductOptions({
                     </Listbox>
                   </div>
                 ) : (
-                  <>
-                    {option.values.map((value) => {
-                      const checked =
-                        searchParamsWithDefaults.get(option.name) === value;
-                      const id = `option-${option.name}-${value}`;
-                      const image = product.media?.nodes?.find(
-                        (image) => image.alt === value,
-                      );
+                  <> */}
+                {option.values.map((value) => {
+                  const checked =
+                    searchParamsWithDefaults.get(option.name) === value;
+                  const id = `option-${option.name}-${value}`;
+                  const image = product.media?.nodes?.find(
+                    (image) => image.alt === value,
+                  );
 
-                      return (
-                        <Text key={id}>
-                          {option.name === 'Size' || !image ? (
-                            <ProductOptionLink
-                              optionName={option.name}
-                              optionValue={value}
-                              searchParams={searchParamsWithDefaults}
-                              className={clsx(
-                                'leading-none cursor-pointer transition-all duration-200',
-                                'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border-black border',
-                                checked ? 'bg-black text-white' : '',
-                              )}
-                            />
-                          ) : (
-                            <ProductOptionLink
-                              optionName={option.name}
-                              optionValue={value}
-                              searchParams={searchParamsWithDefaults}
-                              className={clsx(
-                                'leading-none cursor-pointer transition-all duration-200',
-                                'mt-1 mr-1 flex justify-center border',
-                                checked ? 'border-black' : 'border-white',
-                              )}
-                            >
-                              {image?.previewImage && (
-                                <Image
-                                  data={image.previewImage}
-                                  alt={image.alt!}
-                                  className="w-full mx-auto min-w-[50px] max-w-[60px]"
-                                  sizes="4vw"
-                                  aspectRatio="3/2"
-                                />
-                              )}
-                            </ProductOptionLink>
+                  let availableForSale = true;
+
+                  if (option.name === 'Size') {
+                    const color = searchParamsWithDefaults.get('Color');
+
+                    const compareOptions = [
+                      {name: 'Size', value},
+                      {name: 'Color', value: color},
+                    ];
+
+                    const variant = allVariants.find(
+                      ({selectedOptions}) =>
+                        JSON.stringify(selectedOptions) ===
+                        JSON.stringify(compareOptions),
+                    );
+
+                    if (variant) {
+                      availableForSale = variant.availableForSale;
+                    }
+                  }
+
+                  return (
+                    <Text key={id}>
+                      {option.name === 'Size' || !image ? (
+                        <ProductOptionLink
+                          optionName={option.name}
+                          optionValue={value}
+                          searchParams={searchParamsWithDefaults}
+                          className={clsx(
+                            'leading-none cursor-pointer transition-all duration-200',
+                            'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border',
+                            checked ? 'bg-black text-white' : '',
+                            !availableForSale
+                              ? 'pointer-events-none border'
+                              : 'border-black',
                           )}
-                        </Text>
-                      );
-                    })}
-                  </>
-                )}
+                        />
+                      ) : (
+                        <ProductOptionLink
+                          optionName={option.name}
+                          optionValue={value}
+                          searchParams={searchParamsWithDefaults}
+                          className={clsx(
+                            'leading-none cursor-pointer transition-all duration-200',
+                            'mt-1 mr-1 flex justify-center border',
+                            checked ? 'border-black' : 'border-white',
+                          )}
+                        >
+                          {image?.previewImage && (
+                            <Image
+                              data={image.previewImage}
+                              alt={image.alt!}
+                              className="w-full mx-auto min-w-[50px] max-w-[60px]"
+                              sizes="4vw"
+                              aspectRatio="3/2"
+                            />
+                          )}
+                        </ProductOptionLink>
+                      )}
+                    </Text>
+                  );
+                })}
+                {/* </>
+                )} */}
               </div>
             </div>
           </div>
@@ -576,9 +604,21 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
   }
 `;
 
+const PRODUCT_VARIANT_TEST_FRAGMENT = `#graphql
+  fragment ProductVariantTestFragment on ProductVariant {
+    id
+    availableForSale
+    selectedOptions {
+      name
+      value
+    }
+  }
+`;
+
 const PRODUCT_QUERY = `#graphql
   ${MEDIA_FRAGMENT}
   ${PRODUCT_VARIANT_FRAGMENT}
+  ${PRODUCT_VARIANT_TEST_FRAGMENT}
   query Product(
     $country: CountryCode
     $language: LanguageCode
@@ -598,6 +638,11 @@ const PRODUCT_QUERY = `#graphql
       }
       selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions) {
         ...ProductVariantFragment
+      }
+      allVariants: variants(first: 250) {
+        nodes {
+          ...ProductVariantTestFragment
+        }
       }
       media(first: 20) {
         nodes {
