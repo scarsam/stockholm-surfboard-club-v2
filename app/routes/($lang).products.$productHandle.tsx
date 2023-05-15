@@ -277,7 +277,8 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                   quantity: 1,
                 },
               ]}
-              variant={isOutOfStock ? 'secondary' : 'primary'}
+              // variant={isOutOfStock ? 'secondary' : 'primary'}
+              // className={isOutOfStock ? 'secondary' : 'primary'}
               data-test="add-to-cart"
               analytics={{
                 products: [productAnalytics],
@@ -444,7 +445,7 @@ function ProductOptions({
                             'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border',
                             checked ? 'bg-black text-white' : '',
                             !availableForSale
-                              ? 'pointer-events-none border'
+                              ? 'pointer-events-none border text-gray-400'
                               : 'border-black',
                           )}
                         />
