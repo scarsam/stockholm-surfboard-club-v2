@@ -460,6 +460,9 @@ function ProductOptions({
                             'leading-none cursor-pointer transition-all duration-200',
                             'mt-1 mr-1 flex justify-center border',
                             checked ? 'border-black' : 'border-white',
+                            !availableForSale
+                              ? 'pointer-events-none opacity-20'
+                              : '',
                           )}
                         >
                           {image?.previewImage && (
