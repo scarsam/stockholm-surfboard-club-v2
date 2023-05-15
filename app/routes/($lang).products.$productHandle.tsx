@@ -277,8 +277,8 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                   quantity: 1,
                 },
               ]}
-              // variant={isOutOfStock ? 'secondary' : 'primary'}
-              // className={isOutOfStock ? 'secondary' : 'primary'}
+              variant={isOutOfStock ? 'inline' : 'primary'}
+              className={isOutOfStock ? 'secondary' : 'primary'}
               data-test="add-to-cart"
               analytics={{
                 products: [productAnalytics],
@@ -413,24 +413,26 @@ function ProductOptions({
                   );
 
                   let availableForSale = true;
+                  let size, color;
 
                   if (option.name === 'Size') {
-                    const color = searchParamsWithDefaults.get('Color');
+                    color = searchParamsWithDefaults.get('Color');
+                  } else if (option.name === 'Color') {
+                    size = searchParamsWithDefaults.get('Size');
+                  }
+                  const compareOptions = [
+                    {name: 'Size', value: size ?? value},
+                    {name: 'Color', value: color ?? value},
+                  ];
 
-                    const compareOptions = [
-                      {name: 'Size', value},
-                      {name: 'Color', value: color},
-                    ];
+                  const variant = allVariants.find(
+                    ({selectedOptions}) =>
+                      JSON.stringify(selectedOptions) ===
+                      JSON.stringify(compareOptions),
+                  );
 
-                    const variant = allVariants.find(
-                      ({selectedOptions}) =>
-                        JSON.stringify(selectedOptions) ===
-                        JSON.stringify(compareOptions),
-                    );
-
-                    if (variant) {
-                      availableForSale = variant.availableForSale;
-                    }
+                  if (variant) {
+                    availableForSale = variant.availableForSale;
                   }
 
                   return (
