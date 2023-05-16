@@ -336,7 +336,7 @@ function MobileHeader({
 
   return (
     <>
-      <nav className="lg:hidden bg-white relative z-10">
+      <nav className="lg:hidden sticky top-0 bg-white z-50">
         <header
           role="banner"
           className="h-10 flex items-center mx-auto border-b"
@@ -368,7 +368,7 @@ function MobileHeader({
             className="text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
             to="/collections/new"
           >
-            {shop?.name}
+            Stockholm (Surfboard) Club
           </Link>
           <div className="flex h-full items-center">
             <div className="border-r h-full flex items-center justify-center w-10">
@@ -405,7 +405,8 @@ function MobileHeader({
               /> */}
             </div>
             <div className="border-r h-full flex items-center justify-center w-10">
-              <button onClick={openCart} type="button">
+              <CartCount isHome openCart={openCart} />
+              {/* <button onClick={openCart} type="button">
                 <img
                   className="inline mx-1"
                   src={cartIcon}
@@ -413,7 +414,7 @@ function MobileHeader({
                   height="16"
                   alt="cart-icon"
                 />
-              </button>
+              </button> */}
             </div>
           </div>
         </header>
@@ -629,7 +630,7 @@ function Footer({
   return (
     <footer
       role="contentinfo"
-      className="h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between sticky bottom-0 bg-primary z-10"
+      className="h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between md:sticky bottom-0 bg-primary z-10"
     >
       <FooterMenu setModal={setModal} menu={menu} />
       <div className="py-10 md:py-0">
