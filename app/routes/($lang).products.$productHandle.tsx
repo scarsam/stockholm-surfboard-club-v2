@@ -445,7 +445,9 @@ function ProductOptions({
                           className={clsx(
                             'leading-none cursor-pointer transition-all duration-200',
                             'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border',
-                            checked ? 'bg-black text-white' : '',
+                            checked && availableForSale
+                              ? 'bg-black text-white'
+                              : '',
                             !availableForSale
                               ? 'pointer-events-none border text-gray-400'
                               : 'border-black',
@@ -459,7 +461,9 @@ function ProductOptions({
                           className={clsx(
                             'leading-none cursor-pointer transition-all duration-200',
                             'mt-1 mr-1 flex justify-center border',
-                            checked ? 'border-black' : 'border-white',
+                            checked && availableForSale
+                              ? 'border-black'
+                              : 'border-white',
                             !availableForSale
                               ? 'pointer-events-none opacity-20'
                               : '',
