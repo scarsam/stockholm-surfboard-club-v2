@@ -1,9 +1,4 @@
-import {
-  json,
-  LoaderArgs,
-  redirect,
-  type ActionFunction,
-} from '@shopify/remix-oxygen';
+import {json, type ActionFunction} from '@shopify/remix-oxygen';
 
 import type {
   MailingAddressInput,
@@ -14,6 +9,7 @@ import type {
 } from '@shopify/hydrogen/storefront-api-types';
 import invariant from 'tiny-invariant';
 import {assertApiErrors} from '~/lib/utils';
+import {getCustomer} from '../components/Account';
 
 interface ActionData {
   formError?: string;
@@ -21,23 +17,26 @@ interface ActionData {
 
 const badRequest = (data: ActionData) => json(data, {status: 400});
 
+export const handle = {
+  renderInModal: true,
+};
 // export const handle = {
 //   renderInModal: true,
 // };
 
-export async function loader({context, params}: LoaderArgs) {
-  const customerAccessToken = await context.session.get('customerAccessToken');
+// export async function loader({context, params}: LoaderArgs) {
+//   const customerAccessToken = await context.session.get('customerAccessToken');
 
-  if (customerAccessToken) {
-    return redirect(
-      params.lang ? `${params.lang}/collections/new` : '/collections/new',
-    );
-  }
+//   if (customerAccessToken) {
+//     return redirect(
+//       params.lang ? `${params.lang}/collections/new` : '/collections/new',
+//     );
+//   }
 
-  return new Response(null);
-}
+//   return new Response(null);
+// }
 
-export const action: ActionFunction = async ({request, context, params}) => {
+export const action: ActionFunction = async ({request, context}) => {
   const {storefront, session} = context;
   const formData = await request.formData();
 
@@ -46,6 +45,8 @@ export const action: ActionFunction = async ({request, context, params}) => {
 
   const addressId = formData.get('addressId');
   invariant(typeof addressId === 'string', 'You must provide an address id.');
+
+  await getCustomer(context, customerAccessToken);
 
   if (request.method === 'DELETE') {
     try {
@@ -56,8 +57,7 @@ export const action: ActionFunction = async ({request, context, params}) => {
       });
 
       assertApiErrors(data.customerAddressDelete);
-
-      return redirect(params.lang ? `${params.lang}/` : '/');
+      // return redirect(params.lang ? `${params.lang}/${pathname}` : pathname);
     } catch (error: any) {
       return badRequest({formError: error.message});
     }
@@ -110,7 +110,7 @@ export const action: ActionFunction = async ({request, context, params}) => {
         assertApiErrors(data.customerDefaultAddressUpdate);
       }
 
-      return redirect(params.lang ? `${params.lang}/` : '/');
+      return json({error: null, ok: true});
     } catch (error: any) {
       return badRequest({formError: error.message});
     }
@@ -141,7 +141,7 @@ export const action: ActionFunction = async ({request, context, params}) => {
         assertApiErrors(data.customerDefaultAddressUpdate);
       }
 
-      return redirect(params.lang ? `${params.lang}/` : '/');
+      return json({error: null, ok: true});
     } catch (error: any) {
       return badRequest({formError: error.message});
     }

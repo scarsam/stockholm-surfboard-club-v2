@@ -4,7 +4,7 @@ import type {
   Collection,
   ProductConnection,
 } from '@shopify/hydrogen/storefront-api-types';
-import {ChangeEventHandler, Suspense, useRef, useState} from 'react';
+import {Suspense, useRef, useState} from 'react';
 import invariant from 'tiny-invariant';
 import {Input, ProductGrid, Section, Text} from '~/components';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
@@ -12,7 +12,7 @@ import {PAGINATION_SIZE} from '~/lib/const';
 import {useDebounce} from 'react-use';
 
 export default function () {
-  const {searchTerm, products, searchParams} = useLoaderData<typeof loader>();
+  const {searchTerm, products} = useLoaderData<typeof loader>();
   const noResults = products?.nodes?.length === 0;
 
   const submit = useSubmit();

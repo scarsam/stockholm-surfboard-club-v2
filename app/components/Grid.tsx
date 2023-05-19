@@ -1,3 +1,4 @@
+import type {ElementType} from 'react';
 import clsx from 'clsx';
 
 export function Grid({
@@ -9,7 +10,7 @@ export function Grid({
   layout = 'default',
   ...props
 }: {
-  as?: React.ElementType;
+  as?: ElementType;
   className?: string;
   flow?: 'row' | 'col';
   gap?: 'default' | 'blog';

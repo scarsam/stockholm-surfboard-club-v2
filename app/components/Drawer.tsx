@@ -1,4 +1,5 @@
 import {Fragment, useState} from 'react';
+import type {ReactNode} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
 
 import {Heading, IconClose} from '~/components';
@@ -22,7 +23,7 @@ export function Drawer({
   open: boolean;
   onClose: () => void;
   openFrom: 'right' | 'left';
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const offScreen = {
     right: 'translate-x-full',

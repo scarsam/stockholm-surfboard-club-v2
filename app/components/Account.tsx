@@ -1,115 +1,34 @@
-import {
-  Await,
-  Form,
-  Outlet,
-  useLoaderData,
-  useMatches,
-  useOutlet,
-} from '@remix-run/react';
+import {Form, Outlet, useMatches} from '@remix-run/react';
 import type {
-  Collection,
   Customer,
   MailingAddress,
   Order,
 } from '@shopify/hydrogen/storefront-api-types';
-import {Suspense, useState} from 'react';
+import {useState} from 'react';
 import {
   Button,
   OrderCard,
-  PageHeader,
-  Text,
   AccountDetails,
   AccountAddressBook,
-  Modal,
-  ProductSwimlane,
 } from '~/components';
-import {FeaturedCollections} from '~/components/FeaturedCollections';
-import {
-  json,
-  defer,
-  redirect,
-  type LoaderArgs,
-  type AppLoadContext,
-} from '@shopify/remix-oxygen';
-import {flattenConnection} from '@shopify/hydrogen';
-import {getFeaturedData} from '../routes/($lang).featured-products';
-import {doLogout} from '../routes/($lang).account_.private.logout';
+import {type AppLoadContext} from '@shopify/remix-oxygen';
+
+import {doLogout} from '../routes/($lang).account.logout';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
 // Combining json + Response + defer in a loader breaks the
 // types returned by useLoaderData. This is a temporary fix.
-type TmpRemixFix = ReturnType<typeof defer<{isAuthenticated: false}>>;
-
-export async function loader({request, context, params}: LoaderArgs) {
-  const {pathname} = new URL(request.url);
-  const lang = params.lang;
-  const customerAccessToken = await context.session.get('customerAccessToken');
-  const isAuthenticated = Boolean(customerAccessToken);
-  const loginPath = lang ? `/${lang}/` : '/';
-
-  if (!isAuthenticated) {
-    if (/\/account\/login$/.test(pathname)) {
-      return json({isAuthenticated}) as unknown as TmpRemixFix;
-    }
-
-    return redirect(loginPath) as unknown as TmpRemixFix;
-  }
-
-  const customer = await getCustomer(context, customerAccessToken);
-
-  const heading = customer
-    ? customer.firstName
-      ? `Welcome, ${customer.firstName}.`
-      : `Welcome to your account.`
-    : 'Account Details';
-
-  const orders = flattenConnection(customer.orders) as Order[];
-
-  return defer({
-    isAuthenticated,
-    customer,
-    heading,
-    orders,
-    addresses: flattenConnection(customer.addresses) as MailingAddress[],
-    featuredData: getFeaturedData(context.storefront),
-  });
-}
 
 export default function Authenticated() {
-  const data = useLoaderData<typeof loader>();
-  const outlet = useOutlet();
-  const matches = useMatches();
-
-  // routes that export handle { renderInModal: true }
-  const renderOutletInModal = matches.some((match) => {
-    return match?.handle?.renderInModal;
-  });
+  // const data = useLoaderData<typeof loader>();
+  const [root] = useMatches();
 
   // Public routes
-  if (!data.isLoggedIn) {
+  if (!root?.data?.isLoggedIn) {
     return <Outlet />;
   }
 
-  // console.log(data);
-  // console.log(renderOutletInModal);
-
-  // // Authenticated routes
-  // if (outlet) {
-  //   if (renderOutletInModal) {
-  //     return (
-  //       <>
-  //         <Modal cancelLink="/account">
-  //           <Outlet context={{customer: data.customer}} />
-  //         </Modal>
-  //         <Account {...(data as Account)} />
-  //       </>
-  //     );
-  //   } else {
-  //     return <Outlet context={{customer: data.customer}} />;
-  //   }
-  // }
-
-  return <Account {...(data as Account)} />;
+  return <AccountWrapper {...(root?.data as Account)} />;
 }
 
 interface Account {
@@ -120,13 +39,7 @@ interface Account {
   // featuredData: any; // @todo: help please
 }
 
-function Account({
-  customer,
-  orders,
-  heading,
-  addresses,
-}: // featuredData,
-Account) {
+function AccountWrapper({customer, orders, addresses}: Account) {
   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
   return (
     <div className="grid grid-cols-1 grid-rows-[1fr_auto]">
@@ -161,14 +74,11 @@ Account) {
       </div>
       <div className="grid gap-4 p-4">
         {activeTab === 'orders' && orders ? (
-          <AccountOrderHistory orders={orders as Order[]} />
+          <AccountOrderHistory orders={orders} />
         ) : (
           <>
-            <AccountDetails customer={customer as Customer} />
-            <AccountAddressBook
-              addresses={addresses as MailingAddress[]}
-              customer={customer as Customer}
-            />
+            <AccountDetails customer={customer} />
+            <AccountAddressBook addresses={addresses} customer={customer} />
           </>
         )}
 
@@ -319,6 +229,7 @@ export async function getCustomer(
   const data = await storefront.query<{
     customer: Customer;
   }>(CUSTOMER_QUERY, {
+    cache: storefront.CacheNone(),
     variables: {
       customerAccessToken,
       country: context.storefront.i18n.country,

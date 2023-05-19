@@ -1,11 +1,7 @@
 import {useState} from 'react';
 
-export const Newsletter = ({handleClose}: {handleClose: () => void}) => {
+export const Newsletter = () => {
   const [email, setEmail] = useState('');
-
-  const handleSignup = () => {
-    handleClose();
-  };
 
   return (
     <>

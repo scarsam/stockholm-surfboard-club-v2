@@ -1,15 +1,9 @@
 import {
   json,
   redirect,
-  type MetaFunction,
   type ActionFunction,
   type AppLoadContext,
-  type LoaderArgs,
 } from '@shopify/remix-oxygen';
-import {Form, useActionData, useLoaderData} from '@remix-run/react';
-import {useState} from 'react';
-import {getInputStyleClasses} from '~/lib/utils';
-import {Link} from '~/components';
 import type {CustomerAccessTokenCreatePayload} from '@shopify/hydrogen/storefront-api-types';
 // import Homepage from '~/routes/($lang)/($lang).index';
 import {type V2_MetaFunction} from '@remix-run/react';
@@ -121,7 +115,7 @@ export default () => {};
 //         <h1 className="text-4xl">Sign in.</h1>
 //         {/* TODO: Add onSubmit to validate _before_ submission with native? */}
 //         <Form
-//           method="post"
+//           method="POST"
 //           noValidate
 //           className="pt-6 pb-8 mt-4 mb-4 space-y-3"
 //         >

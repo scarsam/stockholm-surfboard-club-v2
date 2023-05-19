@@ -1,10 +1,11 @@
+import type {ReactNode} from 'react';
 import {IconClose, Link} from '~/components';
 
 export function Modal({
   children,
   cancelLink,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   cancelLink: string;
 }) {
   return (

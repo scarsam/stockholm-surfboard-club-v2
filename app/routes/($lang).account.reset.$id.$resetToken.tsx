@@ -142,7 +142,7 @@ export default function Reset() {
         <p className="mt-4">Enter a new password for your account.</p>
         {/* TODO: Add onSubmit to validate _before_ submission with native? */}
         <Form
-          method="post"
+          method="POST"
           noValidate
           className="pt-6 pb-8 mt-4 mb-4 space-y-3"
         >

@@ -1,3 +1,4 @@
+import type {ElementType, HTMLAttributes, ReactNode} from 'react';
 import clsx from 'clsx';
 
 import {missingClass, formatText} from '~/lib/utils';
@@ -12,13 +13,13 @@ export function Text({
   children,
   ...props
 }: {
-  as?: React.ElementType;
+  as?: ElementType;
   className?: string;
   color?: 'default' | 'primary' | 'subtle' | 'notice' | 'contrast';
   format?: boolean;
   size?: 'lead' | 'copy' | 'fine';
   width?: 'default' | 'narrow' | 'wide';
-  children: React.ReactNode;
+  children: ReactNode;
   [key: string]: any;
 }) {
   const colors: Record<string, string> = {
@@ -65,12 +66,12 @@ export function Heading({
   width = 'default',
   ...props
 }: {
-  as?: React.ElementType;
-  children: React.ReactNode;
+  as?: ElementType;
+  children: ReactNode;
   format?: boolean;
   size?: 'display' | 'heading' | 'lead' | 'copy' | 'fine';
   width?: 'default' | 'narrow' | 'wide';
-} & React.HTMLAttributes<HTMLHeadingElement>) {
+} & HTMLAttributes<HTMLHeadingElement>) {
   const sizes = {
     display: 'font-bold text-display',
     heading: 'font-bold text-heading',
@@ -109,8 +110,8 @@ export function Section({
   padding = 'all',
   ...props
 }: {
-  as?: React.ElementType;
-  children?: React.ReactNode;
+  as?: ElementType;
+  children?: ReactNode;
   className?: string;
   divider?: 'none' | 'top' | 'bottom' | 'both';
   display?: 'grid' | 'flex';
@@ -166,7 +167,7 @@ export function PageHeader({
   variant = 'default',
   ...props
 }: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
   heading?: string;
   variant?: 'default' | 'blogPost' | 'allCollections';

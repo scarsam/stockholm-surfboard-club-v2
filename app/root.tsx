@@ -1,61 +1,44 @@
 import {
   defer,
   type LinksFunction,
-  type MetaFunction,
   type LoaderArgs,
   type AppLoadContext,
-  json,
 } from '@shopify/remix-oxygen';
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
   useLoaderData,
   useMatches,
+  useRouteError,
 } from '@remix-run/react';
-import {
-  ShopifySalesChannel,
-  Seo,
-  type SeoHandleFunction,
-  flattenConnection,
-} from '@shopify/hydrogen';
+import {ShopifySalesChannel, Seo, flattenConnection} from '@shopify/hydrogen';
 import {Layout} from '~/components';
 import {GenericError} from './components/GenericError';
 import {NotFound} from './components/NotFound';
-
 import styles from './styles/app.css';
 import favicon from '../public/favicon.svg';
-
-import {DEFAULT_LOCALE, parseMenu, type EnhancedMenu} from './lib/utils';
+import {seoPayload} from '~/lib/seo.server';
+import {
+  DEFAULT_LOCALE,
+  parseMenu,
+  getCartId,
+  type EnhancedMenu,
+} from './lib/utils';
 import invariant from 'tiny-invariant';
 import {
   Shop,
   Cart,
-  Customer,
-  MailingAddress,
   Order,
+  MailingAddress,
 } from '@shopify/hydrogen/storefront-api-types';
 import {useAnalytics} from './hooks/useAnalytics';
-import type {StorefrontContext} from './lib/type';
 import {countries} from './data/countries';
-import {doLogout} from './routes/($lang).account_.private.logout';
+import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
-import {useRouteError, isRouteErrorResponse} from '@remix-run/react';
-
-const seo: SeoHandleFunction<typeof loader> = ({data, pathname}) => ({
-  title: data?.layout?.shop?.name,
-  titleTemplate: '%s | Stockholm Surfboard Club',
-  description: data?.layout?.shop?.description,
-  handle: '@stockholmsurfboardclub',
-  url: `https://stockholmsurfboardclub${pathname}`,
-});
-
-export const handle = {
-  seo,
-};
 
 export const links: LinksFunction = () => {
   return [
@@ -72,13 +55,14 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export async function loader({context}: LoaderArgs) {
-  const [cartId, layout] = await Promise.all([
-    context.session.get('cartId'),
+export async function loader({request, context}: LoaderArgs) {
+  const cartId = getCartId(request);
+  const [customerAccessToken, layout] = await Promise.all([
+    context.session.get('customerAccessToken'),
     getLayoutData(context),
   ]);
 
-  const customerAccessToken = await context.session.get('customerAccessToken');
+  const seo = seoPayload.root({shop: layout.shop, url: request.url});
 
   let customer;
   let orders;
@@ -93,25 +77,26 @@ export async function loader({context}: LoaderArgs) {
   }
 
   return defer({
+    isLoggedIn: Boolean(customerAccessToken),
     layout,
     customer,
     orders,
     addresses,
     featuredData,
+    countries: {...countries},
     selectedLocale: context.storefront.i18n,
     cart: cartId ? getCart(context, cartId) : undefined,
-    isLoggedIn: !!customerAccessToken,
-    countries: {...countries},
     analytics: {
       shopifySalesChannel: ShopifySalesChannel.hydrogen,
       shopId: layout.shop.id,
     },
+    seo,
   });
 }
 
 export default function App() {
   const data = useLoaderData<typeof loader>();
-  const locale = data.selectedLocale ?? DEFAULT_LOCALE;
+  const locale = data?.selectedLocale ?? DEFAULT_LOCALE;
   const hasUserConsent = true;
 
   useAnalytics(hasUserConsent, locale);
@@ -119,6 +104,8 @@ export default function App() {
   return (
     <html lang={locale.language}>
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Seo />
         <Meta />
         <Links />
@@ -126,7 +113,7 @@ export default function App() {
       <body>
         <Layout
           layout={data.layout as LayoutData}
-          key={`${locale.language}-${locale.country}`}
+          // key={`${locale.language}-${locale.country}`}
         >
           <Outlet />
         </Layout>
@@ -137,55 +124,47 @@ export default function App() {
   );
 }
 
-// export function CatchBoundary() {
-//   const [root] = useMatches();
-//   const caught = useCatch();
-//   const isNotFound = caught.status === 404;
-//   const locale = root.data?.selectedLocale ?? DEFAULT_LOCALE;
-
-//   return (
-//     <html lang={locale.language}>
-//       <head>
-//         <title>{isNotFound ? 'Not found' : 'Error'}</title>
-//         <Meta />
-//         <Links />
-//       </head>
-//       <body>
-//         <Layout
-//           layout={root?.data?.layout}
-//           key={`${locale.language}-${locale.country}`}
-//         >
-//           {isNotFound ? (
-//             <NotFound type={caught.data?.pageType} />
-//           ) : (
-//             <GenericError
-//               error={{message: `${caught.status} ${caught.data}`}}
-//             />
-//           )}
-//         </Layout>
-//         <Scripts />
-//       </body>
-//     </html>
-//   );
-// }
-
-export function ErrorBoundary() {
-  const error = useRouteError();
+export function ErrorBoundary({error}: {error: Error}) {
   const [root] = useMatches();
   const locale = root?.data?.selectedLocale ?? DEFAULT_LOCALE;
+  const routeError = useRouteError();
+  const isRouteError = isRouteErrorResponse(routeError);
+
+  let title = 'Error';
+  let pageType = 'page';
+
+  if (isRouteError) {
+    title = 'Not found';
+    if (routeError.status === 404) pageType = routeError.data || pageType;
+  }
 
   return (
     <html lang={locale.language}>
       <head>
-        <title>Error</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        {title}
         <Meta />
         <Links />
       </head>
       <body>
-        <Layout layout={root?.data?.layout}>
-          {isRouteErrorResponse(error) && <GenericError error={error} />}
+        <Layout
+          layout={root?.data?.layout}
+          key={`${locale.language}-${locale.country}`}
+        >
+          {isRouteError ? (
+            <>
+              {routeError.status === 404 ? (
+                <NotFound type={pageType} />
+              ) : (
+                <GenericError
+                  error={{message: `${routeError.status} ${routeError.data}`}}
+                />
+              )}
+            </>
+          ) : (
+            <GenericError error={error instanceof Error ? error : undefined} />
+          )}
         </Layout>
         <Scripts />
       </body>
@@ -204,6 +183,16 @@ const LAYOUT_QUERY = `#graphql
       id
       name
       description
+      primaryDomain {
+        url
+      }
+      brand {
+       logo {
+         image {
+          url
+         }
+       }
+     }
     }
     headerMenu: menu(handle: $headerMenuHandle) {
       id
@@ -214,7 +203,7 @@ const LAYOUT_QUERY = `#graphql
         }
       }
     }
-    filterMenu :menu(handle: $filterMenuHandle) {
+    filterMenu: menu(handle: $filterMenuHandle) {
       id
       items {
         ...MenuItem
@@ -406,84 +395,7 @@ const CART_QUERY = `#graphql
   }
 `;
 
-const CUSTOMER_QUERY = `#graphql
-  query CustomerDetails(
-    $customerAccessToken: String!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    customer(customerAccessToken: $customerAccessToken) {
-      firstName
-      lastName
-      phone
-      email
-      defaultAddress {
-        id
-        formatted
-        firstName
-        lastName
-        company
-        address1
-        address2
-        country
-        province
-        city
-        zip
-        phone
-      }
-      addresses(first: 6) {
-        edges {
-          node {
-            id
-            formatted
-            firstName
-            lastName
-            company
-            address1
-            address2
-            country
-            province
-            city
-            zip
-            phone
-          }
-        }
-      }
-      orders(first: 250, sortKey: PROCESSED_AT, reverse: true) {
-        edges {
-          node {
-            id
-            orderNumber
-            processedAt
-            financialStatus
-            fulfillmentStatus
-            currentTotalPrice {
-              amount
-              currencyCode
-            }
-            lineItems(first: 2) {
-              edges {
-                node {
-                  variant {
-                    image {
-                      url
-                      altText
-                      height
-                      width
-                    }
-                  }
-                  title
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export async function getCart({storefront}: StorefrontContext, cartId: string) {
+export async function getCart({storefront}: AppLoadContext, cartId: string) {
   invariant(storefront, 'missing storefront client in cart query');
 
   const {cart} = await storefront.query<{cart?: Cart}>(CART_QUERY, {
@@ -496,30 +408,4 @@ export async function getCart({storefront}: StorefrontContext, cartId: string) {
   });
 
   return cart;
-}
-
-export async function getCustomer(
-  context: AppLoadContext,
-  customerAccessToken: string,
-) {
-  const {storefront} = context;
-
-  const data = await storefront.query<{
-    customer: Customer;
-  }>(CUSTOMER_QUERY, {
-    variables: {
-      customerAccessToken,
-      country: context.storefront.i18n.country,
-      language: context.storefront.i18n.language,
-    },
-  });
-
-  /**
-   * If the customer failed to load, we assume their access token is invalid.
-   */
-  if (!data || !data.customer) {
-    throw await doLogout(context);
-  }
-
-  return data.customer;
 }

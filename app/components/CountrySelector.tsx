@@ -5,6 +5,7 @@ import {Localizations, Locale, CartAction} from '~/lib/type';
 import {DEFAULT_LOCALE} from '~/lib/utils';
 import clsx from 'clsx';
 import {CartBuyerIdentityInput} from '@shopify/hydrogen/storefront-api-types';
+import type {ReactNode} from 'react';
 
 export function CountrySelector() {
   const [root] = useMatches();
@@ -23,11 +24,13 @@ export function CountrySelector() {
     ? `${defaultLocale?.language}-${defaultLocale?.country}`
     : '';
 
+  const isDone = fetcher.state === 'idle' && fetcher.data != null;
+
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.type !== 'done') {
+    if (fetcher.state === 'idle' && !isDone) {
       fetcher.load('/api/countries');
     }
-  }, [fetcher]);
+  }, [fetcher, isDone]);
 
   const closeDropdown = useCallback(() => {
     closeRef.current?.removeAttribute('open');
@@ -119,14 +122,14 @@ function ChangeLocaleForm({
   buyerIdentity,
   redirectTo,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   buyerIdentity: CartBuyerIdentityInput;
   redirectTo: string;
 }) {
   const fetcher = useFetcher();
 
   return (
-    <fetcher.Form action="/cart" method="post">
+    <fetcher.Form action="/cart" method="POST">
       <input
         type="hidden"
         name="cartAction"

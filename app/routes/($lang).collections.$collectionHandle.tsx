@@ -3,7 +3,6 @@ import {useLoaderData} from '@remix-run/react';
 import type {
   Collection as CollectionType,
   CollectionConnection,
-  Filter,
 } from '@shopify/hydrogen/storefront-api-types';
 import {
   flattenConnection,
@@ -11,7 +10,7 @@ import {
   type SeoHandleFunction,
 } from '@shopify/hydrogen';
 import invariant from 'tiny-invariant';
-import {PageHeader, Section, Text, SortFilter} from '~/components';
+import {Section} from '~/components';
 import {ProductGrid} from '~/components/ProductGrid';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 
@@ -155,8 +154,7 @@ export async function loader({params, request, context}: LoaderArgs) {
 }
 
 export default function Collection() {
-  const {collection, collections, appliedFilters} =
-    useLoaderData<typeof loader>();
+  const {collection} = useLoaderData<typeof loader>();
 
   return (
     <>

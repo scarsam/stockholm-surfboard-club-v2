@@ -1,4 +1,6 @@
+import type {ReactNode} from 'react';
 import {useLocation, useMatches} from '@remix-run/react';
+import {parse as parseCookie} from 'worktop/cookie';
 import type {
   MenuItem,
   Menu,
@@ -18,7 +20,7 @@ export const urlPathname = (url?: string | Maybe<string>) =>
 // @ts-expect-error types not available
 import typographicBase from 'typographic-base';
 import {countries} from '~/data/countries';
-import {I18nLocale, Locale} from './type';
+import {I18nLocale} from './type';
 
 export interface EnhancedMenuItem extends MenuItem {
   to: string;
@@ -40,7 +42,7 @@ export function missingClass(string?: string, prefix?: string) {
   return string.match(regex) === null;
 }
 
-export function formatText(input?: string | React.ReactNode) {
+export function formatText(input?: string | ReactNode) {
   if (!input) {
     return;
   }
@@ -315,4 +317,14 @@ export function isLocalPath(url: string) {
   }
 
   return false;
+}
+
+/**
+ * Shopify's 'Online Store' stores cart IDs in a 'cart' cookie.
+ * By doing the same, merchants can switch from the Online Store to Hydrogen
+ * without customers losing carts.
+ */
+export function getCartId(request: Request) {
+  const cookies = parseCookie(request.headers.get('Cookie') || '');
+  return cookies.cart ? `gid://shopify/Cart/${cookies.cart}` : undefined;
 }

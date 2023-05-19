@@ -1,14 +1,6 @@
-import {
-  json,
-  redirect,
-  type ActionFunction,
-  type LoaderArgs,
-} from '@shopify/remix-oxygen';
-import {Form, useActionData, useFetcher} from '@remix-run/react';
+import {useFetcher} from '@remix-run/react';
 import {useState} from 'react';
-import {Link} from '~/components';
-import {getInputStyleClasses, usePrefixPathWithLocale} from '~/lib/utils';
-import type {CustomerRecoverPayload} from '@shopify/hydrogen/storefront-api-types';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 import {type V2_MetaFunction} from '@remix-run/react';
 
 export const meta: V2_MetaFunction = () => {
@@ -39,7 +31,7 @@ export function ResetPassword() {
       ) : (
         <>
           {/* TODO: Add onSubmit to validate _before_ submission with native? */}
-          <fetcher.Form method="post" action={path} className="w-full">
+          <fetcher.Form method="POST" action={path} className="w-full">
             {fetcher.data?.formError && (
               <div className="flex items-center justify-center mb-6 bg-zinc-500">
                 <p className="m-4 text-s text-contrast">

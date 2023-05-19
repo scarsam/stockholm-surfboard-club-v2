@@ -1,15 +1,15 @@
-import {Form, useFetcher} from '@remix-run/react';
+import {useFetcher} from '@remix-run/react';
 import type {
   Customer,
   MailingAddress,
 } from '@shopify/hydrogen/storefront-api-types';
 import {Button, Text} from '~/components';
 
-import {useActionData, useTransition} from '@remix-run/react';
-import {flattenConnection} from '@shopify/hydrogen';
+import {useNavigation} from '@remix-run/react';
 
 import {usePrefixPathWithLocale} from '~/lib/utils';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import type {Dispatch, SetStateAction} from 'react';
 
 export function AccountAddressBook({
   customer,
@@ -32,6 +32,7 @@ export function AccountAddressBook({
           )}
           <div>
             <EditAddress
+              addresses={addresses}
               editMode={editMode}
               setEditMode={setEditMode}
               customer={customer}
@@ -41,6 +42,7 @@ export function AccountAddressBook({
             <div className="grid grid-cols-1 mt-2 gap-2">
               {customer.defaultAddress && (
                 <Address
+                  addresses={addresses}
                   customer={customer}
                   address={customer.defaultAddress}
                   defaultAddress
@@ -50,6 +52,7 @@ export function AccountAddressBook({
                 .filter((address) => address.id !== customer.defaultAddress?.id)
                 .map((address) => (
                   <Address
+                    addresses={addresses}
                     customer={customer}
                     key={address.id}
                     address={address}
@@ -65,13 +68,16 @@ export function AccountAddressBook({
 
 function Address({
   address,
+  addresses,
   customer,
   defaultAddress,
 }: {
   address: MailingAddress;
+  addresses: MailingAddress[];
   customer: Customer;
   defaultAddress?: boolean;
 }) {
+  const fetcher = useFetcher();
   const [editMode, setEditMode] = useState(false);
   const path = usePrefixPathWithLocale(`/account/address/delete`);
 
@@ -96,18 +102,22 @@ function Address({
 
       <div className="flex flex-col font-medium mt-2 items-baseline">
         <EditAddress
+          addresses={addresses}
           customer={customer}
           addressId={address.id}
           editMode={editMode}
           setEditMode={setEditMode}
         />
         {!editMode && (
-          <Form className="mt-2" action={path} method="delete">
+          <fetcher.Form className="mt-2" action={path} method="DELETE">
             <input type="hidden" name="addressId" value={address.id} />
-            <button className="border border-black uppercase py-2 px-10">
+            <Button
+              type="submit"
+              className="border bg-white border-black uppercase py-2 px-10"
+            >
               Remove
-            </button>
-          </Form>
+            </Button>
+          </fetcher.Form>
         )}
       </div>
     </div>
@@ -117,19 +127,22 @@ function Address({
 export default function EditAddress({
   customer,
   addressId,
+  addresses,
   editMode,
   setEditMode,
 }: {
   editMode: boolean;
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setEditMode: Dispatch<SetStateAction<boolean>>;
+  addresses: MailingAddress[];
   customer: Customer;
   addressId?: string;
 }) {
   const fetcher = useFetcher();
-  const transition = useTransition();
-  const addresses = flattenConnection(customer.addresses);
+  const transition = useNavigation();
+  // const addresses = flattenConnection(customer.addresses);
   const defaultAddress = customer.defaultAddress;
 
+  // fetcher.
   /**
    * When a refresh happens (or a user visits this link directly), the URL
    * is actually stale because it contains a special token. This means the data
@@ -141,6 +154,15 @@ export default function EditAddress({
   const address = addresses.find((address) =>
     address.id!.startsWith(normalizedAddress),
   );
+
+  // console.log(fetcher);
+  const isDone = fetcher.state === 'idle' && fetcher.data != null;
+
+  useEffect(() => {
+    if (isDone) {
+      setEditMode(false);
+    }
+  }, [isDone, setEditMode]);
 
   // It's not using the $id in the action - so it's unecessary atm!
   const path = usePrefixPathWithLocale(`/account/address/uselessId`);
@@ -325,13 +347,13 @@ export default function EditAddress({
             </Button>
           </div>
           <div className="mb-4">
-            <button
+            <Button
               type="button"
               onClick={() => setEditMode(false)}
-              className="border border-black uppercase py-2 px-10 w-full"
+              className="border bg-white border-black uppercase py-2 px-10 w-full"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </fetcher.Form>
       )}

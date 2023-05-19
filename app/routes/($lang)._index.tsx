@@ -1,23 +1,17 @@
-import {
-  ActionFunction,
-  AppLoadContext,
-  defer,
-  json,
-  redirect,
-  type LoaderArgs,
-} from '@shopify/remix-oxygen';
+import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {Suspense} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {ProductSwimlane, FeaturedCollections, Hero} from '~/components';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
-import {getHeroPlaceholder} from '~/lib/placeholders';
+// import {getHeroPlaceholder} from '~/lib/placeholders';
+import {seoPayload} from '~/lib/seo.server';
 import type {
   CollectionConnection,
-  CustomerAccessTokenCreatePayload,
-  Metafield,
   ProductConnection,
 } from '@shopify/hydrogen/storefront-api-types';
 import {AnalyticsPageType} from '@shopify/hydrogen';
+import {routeHeaders, CACHE_SHORT} from '~/data/cache';
+import {type CollectionHero} from '~/components/Hero';
 
 interface HomeSeoData {
   shop: {
@@ -26,17 +20,7 @@ interface HomeSeoData {
   };
 }
 
-export interface CollectionHero {
-  byline: Metafield;
-  cta: Metafield;
-  handle: string;
-  heading: Metafield;
-  height?: 'full';
-  loading?: 'eager' | 'lazy';
-  spread: Metafield;
-  spreadSecondary: Metafield;
-  top?: boolean;
-}
+export const headers = routeHeaders;
 
 export async function loader({params, context}: LoaderArgs) {
   const {language, country} = context.storefront.i18n;
@@ -57,83 +41,79 @@ export async function loader({params, context}: LoaderArgs) {
     variables: {handle: 'freestyle'},
   });
 
-  const customerAccessToken = await context.session.get('customerAccessToken');
+  const seo = seoPayload.home();
 
-  // if (customerAccessToken) {
-  //   return redirect(params.lang ? `${params.lang}/` : '/');
-  // }
-
-  return defer({
-    shop,
-    primaryHero: hero,
-    customerAccessToken,
-    // These different queries are separated to illustrate how 3rd party content
-    // fetching can be optimized for both above and below the fold.
-    featuredProducts: context.storefront.query<{
-      products: ProductConnection;
-    }>(HOMEPAGE_FEATURED_PRODUCTS_QUERY, {
-      variables: {
-        /**
-         * Country and language properties are automatically injected
-         * into all queries. Passing them is unnecessary unless you
-         * want to override them from the following default:
-         */
-        country,
-        language,
-      },
-    }),
-    secondaryHero: context.storefront.query<{hero: CollectionHero}>(
-      COLLECTION_HERO_QUERY,
-      {
+  return defer(
+    {
+      shop,
+      primaryHero: hero,
+      // These different queries are separated to illustrate how 3rd party content
+      // fetching can be optimized for both above and below the fold.
+      featuredProducts: context.storefront.query<{
+        products: ProductConnection;
+      }>(HOMEPAGE_FEATURED_PRODUCTS_QUERY, {
         variables: {
-          handle: 'backcountry',
+          /**
+           * Country and language properties are automatically injected
+           * into all queries. Passing them is unnecessary unless you
+           * want to override them from the following default:
+           */
           country,
           language,
         },
-      },
-    ),
-    featuredCollections: context.storefront.query<{
-      collections: CollectionConnection;
-    }>(FEATURED_COLLECTIONS_QUERY, {
-      variables: {
-        country,
-        language,
-      },
-    }),
-    tertiaryHero: context.storefront.query<{hero: CollectionHero}>(
-      COLLECTION_HERO_QUERY,
-      {
+      }),
+      secondaryHero: context.storefront.query<{hero: CollectionHero}>(
+        COLLECTION_HERO_QUERY,
+        {
+          variables: {
+            handle: 'backcountry',
+            country,
+            language,
+          },
+        },
+      ),
+      featuredCollections: context.storefront.query<{
+        collections: CollectionConnection;
+      }>(FEATURED_COLLECTIONS_QUERY, {
         variables: {
-          handle: 'winter-2022',
           country,
           language,
         },
+      }),
+      tertiaryHero: context.storefront.query<{hero: CollectionHero}>(
+        COLLECTION_HERO_QUERY,
+        {
+          variables: {
+            handle: 'winter-2022',
+            country,
+            language,
+          },
+        },
+      ),
+      analytics: {
+        pageType: AnalyticsPageType.home,
       },
-    ),
-    analytics: {
-      pageType: AnalyticsPageType.home,
+      seo,
     },
-  });
+    {
+      headers: {
+        'Cache-Control': CACHE_SHORT,
+      },
+    },
+  );
 }
 
 export default function Homepage() {
   const {
     primaryHero,
-    secondaryHero,
-    tertiaryHero,
+    // secondaryHero,
+    // tertiaryHero,
     featuredCollections,
     featuredProducts,
   } = useLoaderData<typeof loader>();
 
   // TODO: skeletons vs placeholders
   // const skeletons = getHeroPlaceholder([{}, {}, {}]);
-
-  // TODO: analytics
-  // useServerAnalytics({
-  //   shopify: {
-  //     pageType: ShopifyAnalyticsConstants.pageType.home,
-  //   },
-  // });
 
   return (
     <>
@@ -157,8 +137,8 @@ export default function Homepage() {
           </Await>
         </Suspense>
       )}
-
-      {/* {secondaryHero && (
+      {/*
+      {secondaryHero && (
         <Suspense fallback={<Hero {...skeletons[1]} />}>
           <Await resolve={secondaryHero}>
             {({hero}) => {
@@ -252,7 +232,7 @@ const COLLECTION_HERO_QUERY = `#graphql
   }
 `;
 
-// @see: https://shopify.dev/api/storefront/latest/queries/products
+// @see: https://shopify.dev/api/storefront/2023-04/queries/products
 export const HOMEPAGE_FEATURED_PRODUCTS_QUERY = `#graphql
   ${PRODUCT_CARD_FRAGMENT}
   query homepageFeaturedProducts($country: CountryCode, $language: LanguageCode)
@@ -265,7 +245,7 @@ export const HOMEPAGE_FEATURED_PRODUCTS_QUERY = `#graphql
   }
 `;
 
-// @see: https://shopify.dev/api/storefront/latest/queries/collections
+// @see: https://shopify.dev/api/storefront/2023-04/queries/collections
 export const FEATURED_COLLECTIONS_QUERY = `#graphql
   query homepageFeaturedCollections($country: CountryCode, $language: LanguageCode)
   @inContext(country: $country, language: $language) {

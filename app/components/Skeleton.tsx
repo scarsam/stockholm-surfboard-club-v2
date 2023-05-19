@@ -1,3 +1,4 @@
+import type {ElementType} from 'react';
 import clsx from 'clsx';
 
 /**
@@ -10,7 +11,7 @@ export function Skeleton({
   className,
   ...props
 }: {
-  as?: React.ElementType;
+  as?: ElementType;
   width?: string;
   height?: string;
   className?: string;

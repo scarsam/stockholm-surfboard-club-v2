@@ -132,7 +132,7 @@ function useDataFromMatches(dataKey: string): Record<string, unknown> {
  * export function AddToCartButton({
  *   ...
  *   return (
- *     <fetcher.Form action="/cart" method="post">
+ *     <fetcher.Form action="/cart" method="POST">
  *       <input type="hidden" name="cartAction" value={CartAction.ADD_TO_CART} />
  *
  * // You can add additional data as hidden form inputs and it will also be collected
@@ -144,7 +144,7 @@ function useDataFromMatches(dataKey: string): Record<string, unknown> {
  *   };
  *
  *   return (
- *     <fetcher.Form action="/cart" method="post">
+ *     <fetcher.Form action="/cart" method="POST">
  *       <input type="hidden" name="cartAction" value={CartAction.ADD_TO_CART} />
  *       <input type="hidden" name="analytics" value={JSON.stringify(analytics)} />
  *
@@ -176,7 +176,7 @@ function useDataFromFetchers({
   const data: Record<string, unknown> = {};
 
   for (const fetcher of fetchers) {
-    const formData = fetcher.submission?.formData;
+    const formData = fetcher?.formData;
     const fetcherData = fetcher.data;
     if (
       formData &&

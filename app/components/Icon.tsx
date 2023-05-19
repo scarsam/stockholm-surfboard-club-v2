@@ -1,3 +1,5 @@
+import {JSX} from 'react';
+import type {ComponentProps} from 'react';
 import clsx from 'clsx';
 
 type IconProps = JSX.IntrinsicElements['svg'] & {
@@ -181,7 +183,7 @@ export function IconSearch(props: IconProps) {
 export function IconCheck({
   stroke = 'currentColor',
   ...props
-}: React.ComponentProps<typeof Icon>) {
+}: ComponentProps<typeof Icon>) {
   return (
     <Icon {...props} fill="transparent" stroke={stroke}>
       <title>Check</title>
@@ -199,7 +201,7 @@ export function IconCheck({
 export function IconXMark({
   stroke = 'currentColor',
   ...props
-}: React.ComponentProps<typeof Icon>) {
+}: ComponentProps<typeof Icon>) {
   return (
     <Icon {...props} fill="transparent" stroke={stroke}>
       <title>Delete</title>

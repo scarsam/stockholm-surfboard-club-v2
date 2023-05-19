@@ -14,7 +14,7 @@ export const handle = {
   seo,
 };
 
-export async function loader({request, params, context}: LoaderArgs) {
+export async function loader({params, context}: LoaderArgs) {
   invariant(params.pageHandle, 'Missing page handle');
 
   const {page} = await context.storefront.query<{page: PageType}>(PAGE_QUERY, {

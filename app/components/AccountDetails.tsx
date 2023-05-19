@@ -1,8 +1,8 @@
-import {Form, useActionData, useFetcher, useTransition} from '@remix-run/react';
+import {useFetcher, useNavigation} from '@remix-run/react';
 import type {Customer} from '@shopify/hydrogen/storefront-api-types';
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
-import {Button, Link, Text} from '~/components';
+import {Button, Text} from '~/components';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
 export interface ActionData {
@@ -21,17 +21,26 @@ export interface ActionData {
 
 export function AccountDetails({customer}: {customer: Customer}) {
   const fetcher = useFetcher();
-  const transition = useTransition();
+  // const newsletter = useActionData();
+  const transition = useNavigation();
   const [editMode, setEditMode] = useState(false);
   const editStyle = editMode
     ? 'text-black text-[16px]'
     : 'p-0 border-0 text-black';
 
+  const isDone = fetcher.state === 'idle' && fetcher.data != null;
+
+  // console.log('3', customer);
+  // console.log(isDone);
+  // console.log(fetcher);
+  // console.log(transition);
+
   useEffect(() => {
-    if (fetcher.type === 'done') {
+    if (isDone) {
+      // fetcher.load('/?index');
       setEditMode(false);
     }
-  }, [fetcher.type]);
+  }, [isDone]);
 
   const path = usePrefixPathWithLocale(`/account/edit`);
   return (
@@ -187,13 +196,13 @@ export function AccountDetails({customer}: {customer: Customer}) {
                 </Button>
               </div>
               <div className="mb-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setEditMode(false)}
-                  className="border border-black uppercase py-2 px-10 w-full"
+                  className="border bg-white border-black uppercase py-2 px-10 w-full"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </>
           ) : (
@@ -215,9 +224,7 @@ export function AccountDetails({customer}: {customer: Customer}) {
 
 function Password({
   name,
-  passwordError,
   label,
-  editMode,
 }: {
   name: string;
   passwordError?: string;

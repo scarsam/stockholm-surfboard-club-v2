@@ -2,6 +2,7 @@ import type {CartLineInput} from '@shopify/hydrogen/storefront-api-types';
 import {useFetcher, useMatches} from '@remix-run/react';
 import {Button} from '~/components';
 import {CartAction} from '~/lib/type';
+import type {ReactNode} from 'react';
 
 export function AddToCartButton({
   children,
@@ -13,7 +14,7 @@ export function AddToCartButton({
   disabled,
   ...props
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   lines: CartLineInput[];
   className?: string;
   variant?: 'primary' | 'secondary' | 'inline';

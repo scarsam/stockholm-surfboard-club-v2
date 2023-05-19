@@ -1,13 +1,6 @@
-import {useMemo, useState, Suspense, useEffect} from 'react';
-// import {useLocalization, fetchSync, useNavigate} from '@shopify/hydrogen';
-import type {
-  Country,
-  CountryCode,
-} from '@shopify/hydrogen/storefront-api-types';
 import {CountrySelector} from '../CountrySelector';
-import {useFetcher} from '@remix-run/react';
 
-export const Location = ({handleClose}: {handleClose: () => void}) => {
+export const Location = () => {
   // Todo: Figure out why this is cached even if disabling cache
   // const sessionCountry = fetchSync('/api/countryCode');
   // const defaultCountry = sessionCountry.ok

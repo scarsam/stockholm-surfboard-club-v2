@@ -5,9 +5,7 @@ import {Heading, ProductCard, Section} from '~/components';
 const mockProducts = new Array(12).fill('');
 
 export function ProductSwimlane({
-  title = 'Featured Products',
   products = mockProducts,
-  count = 12,
   ...props
 }: {
   title?: string;

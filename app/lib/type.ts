@@ -1,4 +1,3 @@
-import type {LoaderArgs} from '@shopify/remix-oxygen';
 import {Storefront as HydrogenStorefront} from '@shopify/hydrogen';
 import {
   CountryCode,

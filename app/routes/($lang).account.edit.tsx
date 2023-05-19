@@ -1,20 +1,13 @@
-import {json, redirect, type ActionFunction} from '@shopify/remix-oxygen';
-import {
-  useActionData,
-  Form,
-  useOutletContext,
-  useTransition,
-} from '@remix-run/react';
+import {json, type ActionFunction} from '@shopify/remix-oxygen';
+
 import type {
   Customer,
   CustomerUpdateInput,
   CustomerUpdatePayload,
 } from '@shopify/hydrogen/storefront-api-types';
-import clsx from 'clsx';
 import invariant from 'tiny-invariant';
-import {Button, Text} from '~/components';
-import {getInputStyleClasses, assertApiErrors} from '~/lib/utils';
-import {getCustomer} from './($lang).account';
+import {assertApiErrors} from '~/lib/utils';
+import {getCustomer} from '../components/Account';
 
 export interface AccountOutletContext {
   customer: Customer;
@@ -43,11 +36,11 @@ const formDataHas = (formData: FormData, key: string) => {
   return typeof value === 'string' && value.length > 0;
 };
 
-export const handle = {
-  renderInModal: true,
-};
+// export const handle = {
+//   renderInModal: true,
+// };
 
-export const action: ActionFunction = async ({request, context, params}) => {
+export const action: ActionFunction = async ({request, context}) => {
   const formData = await request.formData();
 
   const customerAccessToken = await context.session.get('customerAccessToken');
@@ -109,10 +102,7 @@ export const action: ActionFunction = async ({request, context, params}) => {
 
     assertApiErrors(data.customerUpdate);
 
-    const path = new URL(request.headers.get('referer') || '');
-    const pathname = path.pathname;
-
-    return redirect(params.lang ? `/${params.lang}${pathname}` : pathname);
+    return json({error: null, ok: true});
   } catch (error: any) {
     return badRequest({formError: error.message});
   }
@@ -138,7 +128,7 @@ export const action: ActionFunction = async ({request, context, params}) => {
 //       <Text className="mt-4 mb-6" as="h3" size="lead">
 //         Update your profile
 //       </Text>
-//       <Form method="post">
+//       <Form method="POST">
 //         {actionData?.formError && (
 //           <div className="flex items-center justify-center mb-6 bg-red-100 rounded">
 //             <p className="m-4 text-sm text-red-900">{actionData.formError}</p>

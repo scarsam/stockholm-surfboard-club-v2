@@ -1,7 +1,6 @@
 import {
   type EnhancedMenu,
   type EnhancedMenuItem,
-  useIsHomePath,
   urlPathname,
   isCurrentPath,
 } from '~/lib/utils';
@@ -13,15 +12,12 @@ import {
   useMatches,
   useLocation,
 } from '@remix-run/react';
-import {useWindowScroll} from 'react-use';
-import {Fragment, Suspense, useEffect, useMemo, useState} from 'react';
+import {Fragment, Suspense, useEffect, useMemo} from 'react';
+import type {ReactNode, Dispatch, SetStateAction} from 'react';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 import type {LayoutData} from '../root';
-import {
-  CustomerAccessTokenCreatePayload,
-  QueryRoot,
-} from '@shopify/hydrogen/storefront-api-types';
+import {QueryRoot} from '@shopify/hydrogen/storefront-api-types';
 import cartIcon from '../../public/cart-icon.svg';
 import emptyCartIcon from '../../public/empty-cart-icon.svg';
 import search from '../../public/search-icon.svg';
@@ -29,13 +25,7 @@ import account from '../../public/account-icon.svg';
 import globe from '../../public/globe-icon.svg';
 import {useModal} from './Modals/useModal';
 import Authenticated from './Account';
-import {
-  ActionFunction,
-  AppLoadContext,
-  json,
-  LoaderArgs,
-  redirect,
-} from '@shopify/remix-oxygen';
+
 import {Session} from './Session';
 
 export const handle = {
@@ -46,7 +36,7 @@ export function Layout({
   children,
   layout,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   layout: LayoutData;
 }) {
   const {Modal, setModal} = useModal();
@@ -84,11 +74,9 @@ function Header({
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
-  setModal: React.Dispatch<
-    React.SetStateAction<'location' | 'newsletter' | undefined>
-  >;
+  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
 }) {
-  const isHome = useIsHomePath();
+  // const isHome = useIsHomePath();
 
   const {
     isOpen: isCartOpen,
@@ -177,7 +165,7 @@ function AccountDrawer({
   return (
     <Drawer open={isOpen} onClose={onClose} openFrom="right">
       <div className="grid">
-        {root.data.isLoggedIn ? (
+        {root.data?.isLoggedIn ? (
           <Authenticated />
         ) : (
           <Session onClose={onClose} name={shop?.name} />
@@ -252,12 +240,9 @@ export function MenuDrawer({
 }
 
 function MenuMobileNav({
-  shop,
   filter,
   menu,
   onClose,
-  openCart,
-  openMenu,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
@@ -321,10 +306,8 @@ function MenuMobileNav({
 }
 
 function MobileHeader({
-  shop,
   openCart,
   openMenu,
-  onClose,
 }: {
   shop: QueryRoot['shop'];
   openCart: () => void;
@@ -424,7 +407,6 @@ function MobileHeader({
 }
 
 function DesktopHeader({
-  shop,
   filter,
   menu,
   openCart,
@@ -436,13 +418,11 @@ function DesktopHeader({
   menu: EnhancedMenu;
   openCart: () => void;
   openAccount: () => void;
-  setModal: React.Dispatch<
-    React.SetStateAction<'location' | 'newsletter' | undefined>
-  >;
+  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
 }) {
   const {pathname} = useLocation();
   const params = useParams();
-  const {y} = useWindowScroll();
+  // const {y} = useWindowScroll();
 
   return (
     <nav className="hidden lg:block bg-white sticky top-0 z-50">
@@ -507,6 +487,7 @@ function DesktopHeader({
             </button>
             <button
               className="flex self-stretch items-center mx-1"
+              type="button"
               onClick={() => openAccount()}
             >
               <img
@@ -621,11 +602,9 @@ function Footer({
   setModal,
 }: {
   menu?: EnhancedMenu;
-  setModal: React.Dispatch<
-    React.SetStateAction<'location' | 'newsletter' | undefined>
-  >;
+  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
 }) {
-  const isHome = useIsHomePath();
+  // const isHome = useIsHomePath();
 
   return (
     <footer
@@ -640,30 +619,28 @@ function Footer({
   );
 }
 
-const FooterLink = ({item}: {item: EnhancedMenuItem}) => {
-  if (item.to.startsWith('http')) {
-    return (
-      <a href={item.to} target={item.target} rel="noopener noreferrer">
-        {item.title}
-      </a>
-    );
-  }
+// const FooterLink = ({item}: {item: EnhancedMenuItem}) => {
+//   if (item.to.startsWith('http')) {
+//     return (
+//       <a href={item.to} target={item.target} rel="noopener noreferrer">
+//         {item.title}
+//       </a>
+//     );
+//   }
 
-  return (
-    <Link to={item.to} target={item.target} prefetch="intent">
-      {item.title}
-    </Link>
-  );
-};
+//   return (
+//     <Link to={item.to} target={item.target} prefetch="intent">
+//       {item.title}
+//     </Link>
+//   );
+// };
 
 function FooterMenu({
   menu,
   setModal,
 }: {
   menu?: EnhancedMenu;
-  setModal: React.Dispatch<
-    React.SetStateAction<'location' | 'newsletter' | undefined>
-  >;
+  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
 }) {
   return (
     <div className="pt-5 md:pt-0">

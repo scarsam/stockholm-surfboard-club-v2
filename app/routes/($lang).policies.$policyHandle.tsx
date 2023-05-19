@@ -6,7 +6,7 @@ import invariant from 'tiny-invariant';
 import {ShopPolicy} from '@shopify/hydrogen/storefront-api-types';
 import {type V2_MetaFunction} from '@remix-run/react';
 
-export async function loader({request, params, context}: LoaderArgs) {
+export async function loader({params, context}: LoaderArgs) {
   invariant(params.policyHandle, 'Missing policy handle');
   const handle = params.policyHandle;
 

@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react';
 import {SyntheticEvent, useMemo, useState} from 'react';
 import {Menu} from '@headlessui/react';
 
@@ -25,7 +26,7 @@ import {
 type Props = {
   filters: Filter[];
   appliedFilters?: AppliedFilter[];
-  children: React.ReactNode;
+  children: ReactNode;
   collections?: Collection[];
 };
 
@@ -72,8 +73,8 @@ export function SortFilter({
 export function FiltersDrawer({
   filters = [],
   appliedFilters = [],
-  collections = [],
-}: {
+}: // collections = [],
+{
   filters: Filter[];
   appliedFilters: AppliedFilter[];
   collections: Collection[];
@@ -115,20 +116,20 @@ export function FiltersDrawer({
     }
   };
 
-  const collectionsMarkup = collections.map((collection) => {
-    return (
-      <li key={collection.handle} className="pb-4">
-        <Link
-          to={`/collections/${collection.handle}`}
-          className="focus:underline hover:underline"
-          key={collection.handle}
-          prefetch="intent"
-        >
-          {collection.title}
-        </Link>
-      </li>
-    );
-  });
+  // const collectionsMarkup = collections.map((collection) => {
+  //   return (
+  //     <li key={collection.handle} className="pb-4">
+  //       <Link
+  //         to={`/collections/${collection.handle}`}
+  //         className="focus:underline hover:underline"
+  //         key={collection.handle}
+  //         prefetch="intent"
+  //       >
+  //         {collection.title}
+  //       </Link>
+  //     </li>
+  //   );
+  // });
 
   return (
     <>

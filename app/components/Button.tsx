@@ -1,6 +1,7 @@
 import {forwardRef} from 'react';
 import {Link} from '@remix-run/react';
 import clsx from 'clsx';
+import type {ElementType} from 'react';
 
 import {missingClass} from '~/lib/utils';
 
@@ -13,7 +14,7 @@ export const Button = forwardRef(
       width = 'auto',
       ...props
     }: {
-      as?: React.ElementType;
+      as?: ElementType;
       className?: string;
       variant?: 'primary' | 'secondary' | 'inline';
       width?: 'auto' | 'full';

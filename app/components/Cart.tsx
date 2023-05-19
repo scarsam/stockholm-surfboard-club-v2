@@ -2,15 +2,7 @@ import clsx from 'clsx';
 import {useRef} from 'react';
 import {useScroll} from 'react-use';
 import {flattenConnection, Image, Money} from '@shopify/hydrogen';
-import {
-  Button,
-  Heading,
-  IconRemove,
-  Text,
-  Link,
-  FeaturedProducts,
-} from '~/components';
-import {getInputStyleClasses} from '~/lib/utils';
+import {Heading, Text, Link, FeaturedProducts} from '~/components';
 import type {
   Cart as CartType,
   CartCost,
@@ -20,7 +12,7 @@ import type {
 import {useFetcher, useMatches} from '@remix-run/react';
 import {CartAction} from '~/lib/type';
 import {DrawerHeader} from './CartHeader';
-
+import type {ReactNode} from 'react';
 type Layouts = 'page' | 'drawer';
 
 export function Cart({
@@ -77,7 +69,7 @@ export function CartDetails({
         <CartSummary cost={cart.cost} layout={layout}>
           {/* <CartDiscounts discountCodes={cart.discountCodes} /> */}
           <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
-          {!root.data.isLoggedIn && (
+          {!root.data?.isLoggedIn && (
             <button
               onClick={openAccount}
               className="border border-black uppercase py-2 px-10 w-full"
@@ -92,74 +84,74 @@ export function CartDetails({
   );
 }
 
-/**
- * Temporary discount UI
- * @param discountCodes the current discount codes applied to the cart
- * @todo rework when a design is ready
- */
-function CartDiscounts({
-  discountCodes,
-}: {
-  discountCodes: CartType['discountCodes'];
-}) {
-  const codes = discountCodes?.map(({code}) => code).join(', ') || null;
+// /**
+//  * Temporary discount UI
+//  * @param discountCodes the current discount codes applied to the cart
+//  * @todo rework when a design is ready
+//  */
+// function CartDiscounts({
+//   discountCodes,
+// }: {
+//   discountCodes: CartType['discountCodes'];
+// }) {
+//   const codes = discountCodes?.map(({code}) => code).join(', ') || null;
 
-  return (
-    <>
-      {/* Have existing discount, display it with a remove option */}
-      <dl className={codes ? 'grid' : 'hidden'}>
-        <div className="flex items-center justify-between font-medium">
-          <Text as="dt">Discount(s)</Text>
-          <div className="flex items-center justify-between">
-            <UpdateDiscountForm>
-              <button>
-                <IconRemove
-                  aria-hidden="true"
-                  style={{height: 18, marginRight: 4}}
-                />
-              </button>
-            </UpdateDiscountForm>
-            <Text as="dd">{codes}</Text>
-          </div>
-        </div>
-      </dl>
+//   return (
+//     <>
+//       {/* Have existing discount, display it with a remove option */}
+//       <dl className={codes ? 'grid' : 'hidden'}>
+//         <div className="flex items-center justify-between font-medium">
+//           <Text as="dt">Discount(s)</Text>
+//           <div className="flex items-center justify-between">
+//             <UpdateDiscountForm>
+//               <button>
+//                 <IconRemove
+//                   aria-hidden="true"
+//                   style={{height: 18, marginRight: 4}}
+//                 />
+//               </button>
+//             </UpdateDiscountForm>
+//             <Text as="dd">{codes}</Text>
+//           </div>
+//         </div>
+//       </dl>
 
-      {/* No discounts, show an input to apply a discount */}
-      <UpdateDiscountForm>
-        <div
-          className={clsx(
-            codes ? 'hidden' : 'flex',
-            'items-center gap-4 justify-between text-copy',
-          )}
-        >
-          <input
-            className={getInputStyleClasses()}
-            type="text"
-            name="discountCode"
-            placeholder="Discount code"
-          />
-          <button className="flex justify-end font-medium whitespace-nowrap">
-            Apply Discount
-          </button>
-        </div>
-      </UpdateDiscountForm>
-    </>
-  );
-}
+//       {/* No discounts, show an input to apply a discount */}
+//       <UpdateDiscountForm>
+//         <div
+//           className={clsx(
+//             codes ? 'hidden' : 'flex',
+//             'items-center gap-4 justify-between text-copy',
+//           )}
+//         >
+//           <input
+//             className={getInputStyleClasses()}
+//             type="text"
+//             name="discountCode"
+//             placeholder="Discount code"
+//           />
+//           <button className="flex justify-end font-medium whitespace-nowrap">
+//             Apply Discount
+//           </button>
+//         </div>
+//       </UpdateDiscountForm>
+//     </>
+//   );
+// }
 
-function UpdateDiscountForm({children}: {children: React.ReactNode}) {
-  const fetcher = useFetcher();
-  return (
-    <fetcher.Form action="/cart" method="post">
-      <input
-        type="hidden"
-        name="cartAction"
-        value={CartAction.UPDATE_DISCOUNT}
-      />
-      {children}
-    </fetcher.Form>
-  );
-}
+// function UpdateDiscountForm({children}: {children: React.ReactNode}) {
+//   const fetcher = useFetcher();
+//   return (
+//     <fetcher.Form action="/cart" method="POST">
+//       <input
+//         type="hidden"
+//         name="cartAction"
+//         value={CartAction.UPDATE_DISCOUNT}
+//       />
+//       {children}
+//     </fetcher.Form>
+//   );
+// }
 
 function CartLines({
   layout = 'drawer',
@@ -217,7 +209,7 @@ function CartSummary({
   layout,
   children = null,
 }: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   cost: CartCost;
   layout: Layouts;
 }) {
@@ -307,7 +299,7 @@ function ItemRemoveButton({lineIds}: {lineIds: CartLine['id'][]}) {
   const fetcher = useFetcher();
 
   return (
-    <fetcher.Form action="/cart" method="post">
+    <fetcher.Form action="/cart" method="POST">
       <input
         type="hidden"
         name="cartAction"
@@ -374,13 +366,13 @@ function UpdateCartButton({
   children,
   lines,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   lines: CartLineUpdateInput[];
 }) {
   const fetcher = useFetcher();
 
   return (
-    <fetcher.Form className="flex flex-1" action="/cart" method="post">
+    <fetcher.Form className="flex flex-1" action="/cart" method="POST">
       <input type="hidden" name="cartAction" value={CartAction.UPDATE_CART} />
       <input type="hidden" name="lines" value={JSON.stringify(lines)} />
       {children}

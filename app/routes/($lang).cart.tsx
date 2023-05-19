@@ -1,6 +1,3 @@
-import {CartLoading, Cart} from '~/components';
-import {Await, useMatches} from '@remix-run/react';
-import {Suspense} from 'react';
 import invariant from 'tiny-invariant';
 import {
   json,

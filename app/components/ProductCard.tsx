@@ -71,7 +71,7 @@ export function ProductCard({
             {image && (
               <Image
                 className="w-full object-cover fadeIn"
-                sizes="320px"
+                sizes="600px" // Todo: use a better size?
                 aspectRatio="4/5"
                 data={image}
                 alt={image.altText || `Picture of ${product.title}`}

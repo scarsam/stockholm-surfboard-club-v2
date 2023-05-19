@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useState, JSX} from 'react';
 import type {
   Maybe,
   PageInfo,
@@ -6,7 +6,7 @@ import type {
 } from '@shopify/hydrogen/storefront-api-types';
 
 import {useInView, type IntersectionOptions} from 'react-intersection-observer';
-import {useTransition, useLocation, useNavigate} from '@remix-run/react';
+import {useNavigation, useLocation, useNavigate} from '@remix-run/react';
 
 type Connection = {
   nodes: ProductConnection['nodes'] | any[];
@@ -51,7 +51,7 @@ export function Pagination<Resource extends Connection>({
     startCursor,
   }: PaginationInfo) => JSX.Element | null;
 }) {
-  const transition = useTransition();
+  const transition = useNavigation();
   const isLoading = transition.state === 'loading';
   const autoScrollEnabled = Boolean(autoLoadOnScroll);
   const autoScrollConfig = (

@@ -1,4 +1,4 @@
-import {Form, useActionData, useFetcher} from '@remix-run/react';
+import {useFetcher} from '@remix-run/react';
 import {useState} from 'react';
 import {usePrefixPathWithLocale} from '~/lib/utils';
 
@@ -11,7 +11,7 @@ export function CreateAccount() {
   const path = usePrefixPathWithLocale(`/account/register`);
 
   return (
-    <fetcher.Form method="post" action={path} className="w-full">
+    <fetcher.Form method="POST" action={path} className="w-full">
       {fetcher?.data?.formError && (
         <div className="flex items-center justify-center mb-6 bg-zinc-500">
           <p className="m-4 text-s text-contrast">{fetcher?.data.formError}</p>

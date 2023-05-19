@@ -1,12 +1,11 @@
-import {type ReactNode, useRef, Suspense, useMemo} from 'react';
-import {Listbox} from '@headlessui/react';
+import {type ReactNode, Suspense, useMemo} from 'react';
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
   Await,
   useSearchParams,
   useLocation,
-  useTransition,
+  useNavigation,
 } from '@remix-run/react';
 import {
   AnalyticsPageType,
@@ -19,9 +18,6 @@ import {
 } from '@shopify/hydrogen';
 import {
   Heading,
-  IconCaret,
-  IconCheck,
-  IconClose,
   ProductGallery,
   ProductSwimlane,
   Section,
@@ -120,7 +116,7 @@ export async function loader({params, request, context}: LoaderArgs) {
   });
 }
 
-export default function Product() {
+export default function ProductComponent() {
   const {product, recommended} = useLoaderData<typeof loader>();
   const {media, title, descriptionHtml} = product;
   // const {shippingPolicy, refundPolicy} = shop;
@@ -205,7 +201,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
   const {product, analytics} = useLoaderData<typeof loader>();
 
   const [currentSearchParams] = useSearchParams();
-  const transition = useTransition();
+  const transition = useNavigation();
 
   /**
    * We update `searchParams` with in-flight request data from `transition` (if available)
@@ -312,14 +308,10 @@ function ProductOptions({
   product: ProductType;
   searchParamsWithDefaults: URLSearchParams;
 }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
+  // const closeRef = useRef<HTMLButtonElement>(null);
   const options = product.options;
   //@ts-ignore
   const allVariants = product.allVariants.nodes as ProductVariant[];
-
-  console.log(product);
-
-  console.log(searchParamsWithDefaults);
 
   return (
     <>
