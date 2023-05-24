@@ -155,7 +155,6 @@ export default function EditAddress({
     address.id!.startsWith(normalizedAddress),
   );
 
-  // console.log(fetcher);
   const isDone = fetcher.state === 'idle' && fetcher.data != null;
 
   useEffect(() => {

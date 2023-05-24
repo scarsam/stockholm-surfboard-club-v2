@@ -30,11 +30,6 @@ export function AccountDetails({customer}: {customer: Customer}) {
 
   const isDone = fetcher.state === 'idle' && fetcher.data != null;
 
-  // console.log('3', customer);
-  // console.log(isDone);
-  // console.log(fetcher);
-  // console.log(transition);
-
   useEffect(() => {
     if (isDone) {
       // fetcher.load('/?index');
