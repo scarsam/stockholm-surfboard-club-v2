@@ -13,6 +13,7 @@ import {useFetcher, useMatches} from '@remix-run/react';
 import {CartAction} from '~/lib/type';
 import {DrawerHeader} from './CartHeader';
 import type {ReactNode} from 'react';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 type Layouts = 'page' | 'drawer';
 
 export function Cart({
@@ -299,7 +300,7 @@ function ItemRemoveButton({lineIds}: {lineIds: CartLine['id'][]}) {
   const fetcher = useFetcher();
 
   return (
-    <fetcher.Form action="/cart" method="POST">
+    <fetcher.Form action={usePrefixPathWithLocale('/cart')} method="POST">
       <input
         type="hidden"
         name="cartAction"

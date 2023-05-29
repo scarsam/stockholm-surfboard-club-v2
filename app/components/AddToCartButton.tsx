@@ -3,6 +3,7 @@ import {useFetcher, useMatches} from '@remix-run/react';
 import {Button} from '~/components';
 import {CartAction} from '~/lib/type';
 import type {ReactNode} from 'react';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 
 export function AddToCartButton({
   children,
@@ -28,7 +29,7 @@ export function AddToCartButton({
   const fetcher = useFetcher();
 
   return (
-    <fetcher.Form action="/cart" method="POST">
+    <fetcher.Form action={usePrefixPathWithLocale('/cart')} method="POST">
       <input type="hidden" name="cartAction" value={CartAction.ADD_TO_CART} />
       <input type="hidden" name="countryCode" value={selectedLocale.country} />
       <input type="hidden" name="lines" value={JSON.stringify(lines)} />

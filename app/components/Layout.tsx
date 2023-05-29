@@ -267,7 +267,7 @@ function MenuMobileNav({
               } flex border-b py-2`}
             >
               <Link
-                className="font-bold px-2"
+                className="font-bold px-2 ring-0 focus:ring-0 focus:outline-none focus-within:outline-none"
                 to={urlPathname(menuItem.url)}
                 onClick={onClose}
               >
@@ -282,7 +282,7 @@ function MenuMobileNav({
                       isCurrentPath(pathname, item?.url)
                         ? 'font-semibold'
                         : 'font-medium'
-                    } block whitespace-nowrap mb-2`}
+                    } block whitespace-nowrap mb-2 ring-0 focus:ring-0 focus:outline-none focus-within:outline-none`}
                     to={urlPathname(item.url)}
                   >
                     {item.title}
@@ -348,7 +348,7 @@ function MobileHeader({
             </svg>
           </button>
           <Link
-            className="text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
+            className="text-lg md:text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
             to="/collections/new"
           >
             Stockholm (Surfboard) Club
@@ -609,10 +609,10 @@ function Footer({
   return (
     <footer
       role="contentinfo"
-      className="h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between md:sticky bottom-0 bg-primary z-10"
+      className="md:h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between md:sticky bottom-0 bg-primary z-10 text-center md:text-left"
     >
       <FooterMenu setModal={setModal} menu={menu} />
-      <div className="py-10 md:py-0">
+      <div className="py-5 md:py-0">
         &copy; Stockholm Surfboard Club {new Date().getFullYear()}
       </div>
     </footer>

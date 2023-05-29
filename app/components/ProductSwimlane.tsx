@@ -17,7 +17,7 @@ export function ProductSwimlane({
       <Heading size="fine" className="min-w-[4rem] mx-4">
         You might also like
       </Heading>
-      <div className="swimlane hiddenScroll px-0 mx-4 gap-4">
+      <div className="swimlane hiddenScroll px-4 gap-4">
         {products.map((product) => (
           <ProductCard
             product={product}

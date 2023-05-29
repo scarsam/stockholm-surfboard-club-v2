@@ -66,7 +66,7 @@ export function ProductCard({
         to={`/products/${product.handle}`}
         prefetch="intent"
       >
-        <div className={clsx('grid gap-1', className)}>
+        <div className={clsx(className)}>
           <div className="card-image aspect-[4/5] bg-primary/5">
             {image && (
               <Image
@@ -88,7 +88,9 @@ export function ProductCard({
           </div>
           <div
             className={clsx(
-              flexTitleAndPrice ? 'flex px-1 items-center' : 'grid',
+              flexTitleAndPrice
+                ? 'flex p-1 items-center justify-between'
+                : 'grid py-1',
             )}
           >
             <Text
