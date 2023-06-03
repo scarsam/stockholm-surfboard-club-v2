@@ -1,7 +1,16 @@
-import {useState} from 'react';
+import {useFetcher} from '@remix-run/react';
+import {useEffect, useState} from 'react';
+import {Button} from '~/components';
+import {usePrefixPathWithLocale} from '~/lib/utils';
 
-export const Newsletter = () => {
-  const [email, setEmail] = useState('');
+export const Newsletter = ({handleClose}: {handleClose: () => void}) => {
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    if (fetcher.data?.ok) {
+      handleClose();
+    }
+  }, [fetcher.data, handleClose]);
 
   return (
     <>
@@ -11,24 +20,34 @@ export const Newsletter = () => {
       <p className="text-xs mb-2 text-center text-black">
         Sign up for news and exclusive offers.
       </p>
-      <label className="block mb-2">
-        <p className="text-xs text-[#4D4D4D]">Email*</p>
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="surf@board.com"
-          type="email"
-          className="w-full border border-black p-2"
-        />
-      </label>
-      <button
-        disabled={!email}
-        onClick={() => {}}
-        type="submit"
-        className="bg-black text-white text-xs uppercase w-full py-2 disabled:opacity-50"
+      <fetcher.Form
+        action={usePrefixPathWithLocale('/newsletter')}
+        method="POST"
       >
-        Submit
-      </button>
+        <label className="block mb-2">
+          <p className="text-xs text-[#4D4D4D]">Email*</p>
+          <input
+            required
+            placeholder="surf@board.com"
+            type="email"
+            name="email"
+            className="w-full border border-black p-2"
+          />
+        </label>
+        <Button as="button" type="submit" width="full">
+          Subscribe
+        </Button>
+        {/* <button
+          disabled={!email}
+          onClick={() =>
+            fetch('/api/newsletter', {method: 'POST', body: email})
+          }
+          type="submit"
+          className="bg-black text-white text-xs uppercase w-full py-2 disabled:opacity-50"
+        >
+          Submit
+        </button> */}
+      </fetcher.Form>
     </>
   );
 };

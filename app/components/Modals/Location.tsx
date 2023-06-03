@@ -1,6 +1,6 @@
 import {CountrySelector} from '../CountrySelector';
 
-export const Location = () => {
+export const Location = ({handleClose}: {handleClose: () => void}) => {
   // Todo: Figure out why this is cached even if disabling cache
   // const sessionCountry = fetchSync('/api/countryCode');
   // const defaultCountry = sessionCountry.ok
