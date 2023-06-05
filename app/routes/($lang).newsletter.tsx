@@ -41,8 +41,8 @@ export const action: ActionFunction = async ({request, context}) => {
         }),
       },
     );
-    const data = await response.json();
-    console.log('d', data);
+
+    console.log('d', response);
 
     return json({error: null, ok: true});
   } catch (error: any) {
