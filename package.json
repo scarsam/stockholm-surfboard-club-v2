@@ -26,7 +26,6 @@
     "cross-env": "^7.0.3",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
-    "http2": "^3.3.7",
     "isbot": "^3.6.5",
     "klaviyo-api": "^3.0.0",
     "react": "^18.2.0",
