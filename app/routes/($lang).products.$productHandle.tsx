@@ -75,6 +75,11 @@ export async function loader({params, request, context}: LoaderArgs) {
     selectedOptions.push({name, value});
   });
 
+  //We need to pass a size here, otherwise selectedVariant will always be null
+  if (!selectedOptions.some((opt) => opt.name === 'Size')) {
+    selectedOptions.push({name: 'Size', value: 'S'});
+  }
+
   const {shop, product} = await context.storefront.query<{
     product: ProductType & {selectedVariant?: ProductVariant};
     shop: Shop;
@@ -124,18 +129,11 @@ export default function ProductComponent() {
 
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
-  // For this to work we depend on every image having altText equal to variant Color
 
   const isOnSale =
     selectedVariant?.price?.amount &&
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
-
-  // const filteredMedia = selectedVariantColor
-  //   ? media.nodes.filter((node) => node.alt == selectedVariant.image?.altText)
-  //   : media.nodes;
-
-  // const ggMedia = filteredMedia.length ? filteredMedia : media.nodes;
 
   return (
     <>
@@ -252,8 +250,10 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
   const isOutOfStock = !selectedVariant?.availableForSale;
   const isSizeSelected =
     searchParamsWithDefaults.has('Size') ||
-    product.options.find((option: SelectedOption) => option.name === 'Size')
-      ?.values?.length === 1;
+    !(
+      product.options.find((option: SelectedOption) => option.name === 'Size')
+        ?.values?.length > 1
+    );
 
   const productAnalytics: ShopifyAnalyticsProduct = {
     ...analytics.products[0],
@@ -286,7 +286,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                   quantity: 1,
                 },
               ]}
-              variant={isOutOfStock || !isSizeSelected ? 'inline' : 'primary'}
+              variant={isOutOfStock || !isSizeSelected ? 'outline' : 'primary'}
               className={
                 isOutOfStock || !isSizeSelected ? 'secondary' : 'primary'
               }
@@ -295,21 +295,19 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                 products: [productAnalytics],
                 totalValue: parseFloat(productAnalytics.price),
               }}
-              disabled={isOutOfStock}
+              disabled={isOutOfStock || !isSizeSelected}
             >
-              {!isSizeSelected ? (
-                <Text>Select size</Text>
-              ) : isOutOfStock ? (
-                <Text>Sold out</Text>
-              ) : (
-                <Text
-                  as="span"
-                  width="wide"
-                  className="flex items-center justify-center gap-2 m-auto"
-                >
-                  ADD TO CART
-                </Text>
-              )}
+              <Text
+                as="span"
+                width="wide"
+                className="flex items-center justify-center gap-2 m-auto"
+              >
+                {isOutOfStock
+                  ? 'Sold out'
+                  : !isSizeSelected
+                  ? 'Select size'
+                  : 'ADD TO CART'}
+              </Text>
             </AddToCartButton>
           </div>
         )}

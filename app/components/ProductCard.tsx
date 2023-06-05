@@ -37,6 +37,9 @@ export function ProductCard({
   if (!cardProduct?.variants?.nodes?.length) return null;
 
   const firstVariant = flattenConnection(cardProduct.variants)[0];
+  const variantColor = firstVariant.selectedOptions.find(
+    (opt) => opt.name === 'Color',
+  )?.value;
 
   if (!firstVariant) return null;
   const {image, price, compareAtPrice} = firstVariant;
@@ -63,7 +66,7 @@ export function ProductCard({
     <div className="flex flex-col">
       <Link
         onClick={onClick}
-        to={`/products/${product.handle}`}
+        to={`/products/${product.handle}?Color=${variantColor}`}
         prefetch="intent"
       >
         <div className={clsx(className)}>

@@ -16,7 +16,7 @@ export const Button = forwardRef(
     }: {
       as?: ElementType;
       className?: string;
-      variant?: 'primary' | 'secondary' | 'inline';
+      variant?: 'primary' | 'secondary' | 'inline' | 'outline';
       width?: 'auto' | 'full';
       [key: string]: any;
     },
@@ -24,12 +24,14 @@ export const Button = forwardRef(
   ) => {
     const Component = props?.to ? Link : as;
 
-    const baseButtonClasses = 'inline-block font-medium text-center py-3 px-6';
+    const baseButtonClasses =
+      'inline-block font-medium text-center py-3 px-6 border ease-in-out duration-200';
 
     const variants = {
       primary: `${baseButtonClasses} bg-black text-white`,
       secondary: `${baseButtonClasses} border border-primary/10 bg-contrast text-primary`,
       inline: 'border-b border-primary/10 leading-none pb-1',
+      outline: `${baseButtonClasses} bg-white text-gray-400`,
     };
 
     const widths = {

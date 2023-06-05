@@ -25,8 +25,6 @@ export const handle = {
 //   const pathname = url.pathname;
 //   const hasError = url.searchParams.get('formError');
 
-//   console.log('headers', request.headers.get('referer'));
-
 //   if (hasError) return json({shopName: 'Stockholm Surfboard Club'});
 
 //   return redirect(params.lang ? `${params.lang}/${pathname}` : `${pathname}`);

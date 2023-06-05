@@ -3,6 +3,8 @@ import {useLoaderData} from '@remix-run/react';
 import type {
   Collection as CollectionType,
   CollectionConnection,
+  Product,
+  ProductVariant,
 } from '@shopify/hydrogen/storefront-api-types';
 import {
   flattenConnection,
@@ -13,6 +15,7 @@ import invariant from 'tiny-invariant';
 import {Section} from '~/components';
 import {ProductGrid} from '~/components/ProductGrid';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
+import {useMemo} from 'react';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.collection?.seo?.title,
@@ -139,10 +142,44 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
+  const collectionWithAllProductVariants = () => {
+    const products = collection.products.nodes;
+    const newProducts: Product[] = [];
+
+    products.forEach((product) => {
+      const variants = product.variants.nodes;
+      const usedColors: string[] = [];
+
+      variants.forEach((variant) => {
+        const colorOptionValue = variant.selectedOptions.find(
+          (option) => option.name === 'Color',
+        )?.value;
+
+        if (
+          colorOptionValue &&
+          !usedColors.some((color) => color === colorOptionValue)
+        ) {
+          newProducts.push({
+            ...product,
+            //@ts-ignore
+            variants: {...variants, nodes: [variant]},
+          });
+          usedColors.push(colorOptionValue);
+        }
+      });
+    });
+
+    return {
+      ...collection,
+      products: {...collection.products, nodes: newProducts},
+    };
+  };
+
   const collectionNodes = flattenConnection(collections);
+  const collectionNode = collectionWithAllProductVariants();
 
   return json({
-    collection,
+    collection: collectionNode,
     appliedFilters,
     collections: collectionNodes,
     analytics: {

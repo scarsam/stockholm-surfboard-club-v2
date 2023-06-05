@@ -30,7 +30,6 @@ export const Location = ({handleClose}: {handleClose: () => void}) => {
   //         body: JSON.stringify({countryCode: selectedCountry}),
   //       });
   //     } catch (err) {
-  //       console.log('err', err);
   //     }
   //   }
   //   window.location.href = '/';

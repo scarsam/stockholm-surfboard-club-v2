@@ -82,7 +82,6 @@ export function useAnalytics(hasUserConsent: boolean, locale: I18nLocale) {
  * export default function App() {
  *   const analytics = useDataFromMatches('analytics');
  *
- *   console.log(analytics);
  *   // {
  *   //   shopId: 'gid://shopify/Shop/1',
  *   // }
@@ -156,7 +155,6 @@ function useDataFromMatches(dataKey: string): Record<string, unknown> {
  *     dataKey: 'analytics',
  *   });
  *
- *   console.log(cartData);
  *   // {
  *   //   cartId: 'gid://shopify/Cart/abc123',
  *   //   products: [...]

@@ -18,7 +18,7 @@ export function AddToCartButton({
   children: ReactNode;
   lines: CartLineInput[];
   className?: string;
-  variant?: 'primary' | 'secondary' | 'inline';
+  variant?: 'primary' | 'secondary' | 'inline' | 'outline';
   width?: 'auto' | 'full';
   analytics?: unknown;
   disabled?: boolean;
