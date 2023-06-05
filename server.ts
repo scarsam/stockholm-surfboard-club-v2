@@ -8,6 +8,8 @@ import {createStorefrontClient, storefrontRedirect} from '@shopify/hydrogen';
 import {HydrogenSession} from '~/lib/session.server';
 import {getLocaleFromRequest} from '~/lib/utils';
 import {redirect} from 'react-router';
+// @ts-ignore
+import {ConfigWrapper} from 'klaviyo-api';
 
 /**
  * Export a fetch handler in module format.
@@ -31,6 +33,9 @@ export default {
         caches.open('hydrogen'),
         HydrogenSession.init(request, [env.SESSION_SECRET]),
       ]);
+
+      // Create Klaviyo config
+      ConfigWrapper(env.PRIVATE_KLAVIYO_NEWSLETTER);
 
       /**
        * Create Hydrogen's Storefront client.
