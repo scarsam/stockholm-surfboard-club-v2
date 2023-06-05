@@ -296,16 +296,16 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                 totalValue: parseFloat(productAnalytics.price),
               }}
               disabled={isOutOfStock || !isSizeSelected}
-            >
+            > 
               <Text
                 as="span"
                 width="wide"
                 className="flex items-center justify-center gap-2 m-auto"
               >
-                {isOutOfStock
-                  ? 'Sold out'
-                  : !isSizeSelected
-                  ? 'Select size'
+                {!isSizeSelected
+                  ? 'Select Size'
+                  : isOutOfStock
+                  ? 'Out of stock'
                   : 'ADD TO CART'}
               </Text>
             </AddToCartButton>

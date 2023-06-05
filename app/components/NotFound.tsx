@@ -3,8 +3,9 @@ import {FeaturedSection} from './FeaturedSection';
 import {PageHeader, Text} from './Text';
 
 export function NotFound({type = 'page'}: {type?: string}) {
-  const heading = `We’ve lost this ${type}`;
-  const description = `We couldn’t find the ${type} you’re looking for. Try checking the URL or heading back to the home page.`;
+  const heading = 'Page Not Found (404 Error)';
+  const description =
+    "Oops! It seems like the page you're looking for doesn't exist or has been moved. We apologize for any inconvenience caused.";
 
   return (
     <>
@@ -13,10 +14,12 @@ export function NotFound({type = 'page'}: {type?: string}) {
           {description}
         </Text>
         <Button width="auto" variant="secondary" to={'/'}>
-          Take me to the home page
+          GO TO HOME PAGE
         </Button>
       </PageHeader>
-      <FeaturedSection />
     </>
   );
 }
+
+// Page Not Found (404 Error)
+// Oops! It seems like the page you're looking for doesn't exist or has been moved. We apologize for any inconvenience caused.
