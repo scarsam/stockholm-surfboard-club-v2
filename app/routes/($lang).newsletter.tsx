@@ -12,7 +12,7 @@ export const action: ActionFunction = async ({request, context}) => {
   const email = formData.get('email');
 
   try {
-    await fetch(
+    const response = await fetch(
       'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/',
       {
         method: 'POST',
@@ -41,9 +41,12 @@ export const action: ActionFunction = async ({request, context}) => {
         }),
       },
     );
+    const data = await response.json();
+    console.log('d', data);
 
     return json({error: null, ok: true});
   } catch (error: any) {
+    console.log('error', error);
     return badRequest({
       formError: 'Something went wrong. Please try again later.',
     });
