@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({request, context}) => {
       },
     );
 
-    console.log('d', response);
+    console.log('d', JSON.stringify(response));
 
     return json({error: null, ok: true});
   } catch (error: any) {
