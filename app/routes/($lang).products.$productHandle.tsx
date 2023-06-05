@@ -36,6 +36,7 @@ import type {
   ProductConnection,
   MediaConnection,
   MediaImage,
+  SelectedOption,
 } from '@shopify/hydrogen/storefront-api-types';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import type {Storefront} from '~/lib/type';
@@ -214,7 +215,15 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
       : currentSearchParams;
   }, [currentSearchParams, transition]);
 
-  const firstVariant = product.variants.nodes[0];
+  // Removng the size option since we never want this pre selected
+  const firstVariant = useMemo(() => {
+    const firstVariant = product.variants.nodes[0];
+    const selectedOptions = firstVariant.selectedOptions?.filter(
+      (opt: SelectedOption) => opt.name !== 'Size',
+    );
+
+    return {...firstVariant, selectedOptions};
+  }, [product.variants]);
 
   /**
    * We're making an explicit choice here to display the product options
@@ -241,6 +250,10 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
    */
   const selectedVariant = product.selectedVariant ?? firstVariant;
   const isOutOfStock = !selectedVariant?.availableForSale;
+  const isSizeSelected =
+    searchParamsWithDefaults.has('Size') ||
+    product.options.find((option: SelectedOption) => option.name === 'Size')
+      ?.values?.length === 1;
 
   const productAnalytics: ShopifyAnalyticsProduct = {
     ...analytics.products[0],
@@ -273,8 +286,10 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                   quantity: 1,
                 },
               ]}
-              variant={isOutOfStock ? 'inline' : 'primary'}
-              className={isOutOfStock ? 'secondary' : 'primary'}
+              variant={isOutOfStock || !isSizeSelected ? 'inline' : 'primary'}
+              className={
+                isOutOfStock || !isSizeSelected ? 'secondary' : 'primary'
+              }
               data-test="add-to-cart"
               analytics={{
                 products: [productAnalytics],
@@ -282,7 +297,9 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
               }}
               disabled={isOutOfStock}
             >
-              {isOutOfStock ? (
+              {!isSizeSelected ? (
+                <Text>Select size</Text>
+              ) : isOutOfStock ? (
                 <Text>Sold out</Text>
               ) : (
                 <Text
@@ -325,77 +342,6 @@ function ProductOptions({
                 {option.name}
               </Heading>
               <div className="flex flex-wrap items-baseline">
-                {/**
-                 * First, we render a bunch of <Link> elements for each option value.
-                 * When the user clicks one of these buttons, it will hit the loader
-                 * to get the new data.
-                 *
-                 * If there are more than 7 values, we render a dropdown.
-                 * Otherwise, we just render plain links.
-                 */}
-                {/* {option.values.length > 7 ? (
-                  <div className="relative w-full">
-                    <Listbox>
-                      {({open}) => (
-                        <>
-                          <Listbox.Button
-                            ref={closeRef}
-                            className={clsx(
-                              'flex items-center justify-between w-full py-3 px-4 border border-primary',
-                              open
-                                ? 'rounded-b md:rounded-t md:rounded-b-none'
-                                : 'rounded',
-                            )}
-                          >
-                            <span>
-                              {searchParamsWithDefaults.get(option.name)}
-                            </span>
-                            <IconCaret direction={open ? 'up' : 'down'} />
-                          </Listbox.Button>
-                          <Listbox.Options
-                            className={clsx(
-                              'border-primary bg-contrast absolute bottom-12 z-30 grid h-48 w-full overflow-y-scroll rounded-t border px-2 py-2 transition-[max-height] duration-150 sm:bottom-auto md:rounded-b md:rounded-t-none md:border-t-0 md:border-b',
-                              open ? 'max-h-48' : 'max-h-0',
-                            )}
-                          >
-                            {option.values.map((value) => (
-                              <Listbox.Option
-                                key={`option-${option.name}-${value}`}
-                                value={value}
-                              >
-                                {({active}) => (
-                                  <ProductOptionLink
-                                    optionName={option.name}
-                                    optionValue={value}
-                                    className={clsx(
-                                      'text-primary w-full p-2 transition rounded flex justify-start items-center text-left cursor-pointer',
-                                      active && 'bg-primary/10',
-                                    )}
-                                    searchParams={searchParamsWithDefaults}
-                                    onClick={() => {
-                                      if (!closeRef?.current) return;
-                                      closeRef.current.click();
-                                    }}
-                                  >
-                                    {value}
-                                    {searchParamsWithDefaults.get(
-                                      option.name,
-                                    ) === value && (
-                                      <span className="ml-2">
-                                        <IconCheck />
-                                      </span>
-                                    )}
-                                  </ProductOptionLink>
-                                )}
-                              </Listbox.Option>
-                            ))}
-                          </Listbox.Options>
-                        </>
-                      )}
-                    </Listbox>
-                  </div>
-                ) : (
-                  <> */}
                 {option.values.map((value) => {
                   const checked =
                     searchParamsWithDefaults.get(option.name) === value;
@@ -520,55 +466,6 @@ function ProductOptionLink({
     </Link>
   );
 }
-
-// function ProductDetail({
-//   title,
-//   content,
-//   learnMore,
-// }: {
-//   title: string;
-//   content: string;
-//   learnMore?: string;
-// }) {
-//   return (
-//     <Disclosure key={title} as="div" className="grid w-full gap-2">
-//       {({open}) => (
-//         <>
-//           <Disclosure.Button className="text-left">
-//             <div className="flex justify-between">
-//               <Text size="lead" as="h4">
-//                 {title}
-//               </Text>
-//               <IconClose
-//                 className={clsx(
-//                   'transition-transform transform-gpu duration-200',
-//                   !open && 'rotate-[45deg]',
-//                 )}
-//               />
-//             </div>
-//           </Disclosure.Button>
-
-//           <Disclosure.Panel className={'pb-4 pt-2 grid gap-2'}>
-//             <div
-//               className="prose dark:prose-invert"
-//               dangerouslySetInnerHTML={{__html: content}}
-//             />
-//             {learnMore && (
-//               <div className="">
-//                 <Link
-//                   className="pb-px border-b border-primary/30 text-primary/50"
-//                   to={learnMore}
-//                 >
-//                   Learn more
-//                 </Link>
-//               </div>
-//             )}
-//           </Disclosure.Panel>
-//         </>
-//       )}
-//     </Disclosure>
-//   );
-// }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
   fragment ProductVariantFragment on ProductVariant {
