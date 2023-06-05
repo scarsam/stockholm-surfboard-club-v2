@@ -23,7 +23,7 @@ export function NotFound({type = 'page'}: {type?: string}) {
           <Button
             width="full"
             variant="secondary"
-            to={'/'}
+            to={'/collections/new'}
             className="min-w-[300px]"
           >
             GO TO HOME PAGE
@@ -33,6 +33,3 @@ export function NotFound({type = 'page'}: {type?: string}) {
     </PageHeader>
   );
 }
-
-// Page Not Found (404 Error)
-// Oops! It seems like the page you're looking for doesn't exist or has been moved. We apologize for any inconvenience caused.
