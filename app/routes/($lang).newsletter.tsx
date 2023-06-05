@@ -11,7 +11,7 @@ export const action: ActionFunction = async ({request, context}) => {
 
   const email = formData.get('email');
 
-  // console.log('env', context.env);
+  console.log('env', context.env);
 
   try {
     await fetch(
