@@ -35,7 +35,7 @@ export const Newsletter = ({handleClose}: {handleClose: () => void}) => {
           />
         </label>
         <Button as="button" type="submit" width="full">
-          Subscribe
+          SUBSCRIBE
         </Button>
         {/* <button
           disabled={!email}

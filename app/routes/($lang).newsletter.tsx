@@ -11,13 +11,15 @@ export const action: ActionFunction = async ({request, context}) => {
 
   const email = formData.get('email');
 
+  // console.log('env', context.env);
+
   try {
     await fetch(
       'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/',
       {
         method: 'POST',
         headers: {
-          Authorization: context.env?.PRIVATE_KLAVIYO_NEWSLETTER,
+          Authorization: `${context.env?.PRIVATE_KLAVIYO_NEWSLETTER}`,
           accept: 'application/json',
           revision: '2023-02-22',
           'content-type': 'application/json',
