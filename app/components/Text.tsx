@@ -170,7 +170,7 @@ export function PageHeader({
   children?: ReactNode;
   className?: string;
   heading?: string;
-  variant?: 'default' | 'blogPost' | 'allCollections';
+  variant?: 'default' | 'blogPost' | 'allCollections' | 'none';
   [key: string]: any;
 }) {
   const variants: Record<string, string> = {
@@ -179,6 +179,7 @@ export function PageHeader({
       'grid md:text-center w-full gap-4 p-6 py-8 md:p-8 lg:p-12 md:justify-items-center',
     allCollections:
       'flex justify-between items-baseline gap-8 p-6 md:p-8 lg:p-12',
+    none: '',
   };
 
   const styles = clsx(variants[variant], className);
