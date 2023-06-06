@@ -37,16 +37,6 @@ export const Newsletter = ({handleClose}: {handleClose: () => void}) => {
         <Button as="button" type="submit" width="full">
           SUBSCRIBE
         </Button>
-        {/* <button
-          disabled={!email}
-          onClick={() =>
-            fetch('/api/newsletter', {method: 'POST', body: email})
-          }
-          type="submit"
-          className="bg-black text-white text-xs uppercase w-full py-2 disabled:opacity-50"
-        >
-          Submit
-        </button> */}
       </fetcher.Form>
     </>
   );

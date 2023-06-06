@@ -145,6 +145,7 @@ export async function loader({params, request, context}: LoaderArgs) {
   const collectionWithAllProductVariants = () => {
     const products = collection.products.nodes;
     const newProducts: Product[] = [];
+    const isSurfboard = collection.handle === 'surfboards';
 
     products.forEach((product) => {
       const variants = product.variants.nodes;
@@ -156,15 +157,18 @@ export async function loader({params, request, context}: LoaderArgs) {
         )?.value;
 
         if (
-          colorOptionValue &&
-          !usedColors.some((color) => color === colorOptionValue)
+          (colorOptionValue &&
+            !usedColors.some((color) => color === colorOptionValue)) ||
+          isSurfboard
         ) {
           newProducts.push({
             ...product,
             //@ts-ignore
             variants: {...variants, nodes: [variant]},
           });
-          usedColors.push(colorOptionValue);
+          if (colorOptionValue) {
+            usedColors.push(colorOptionValue);
+          }
         }
       });
     });
