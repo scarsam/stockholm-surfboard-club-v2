@@ -81,7 +81,7 @@ export function ProductGallery({
           : [
               isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
               isFirst || isFourth ? '' : 'md:aspect-[4/5]',
-              'aspect-square snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
+              'aspect-[4/5] snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
             ].join(' ');
 
         !shouldHideImage && i++;
@@ -97,7 +97,7 @@ export function ProductGallery({
               <img
                 src={data.image!.url}
                 alt={data.image!.altText!}
-                className="w-full h-full aspect-square fadeIn object-cover"
+                className="w-full h-full aspect-[4/5] fadeIn object-cover"
               />
             )}
             {/* <MediaFile

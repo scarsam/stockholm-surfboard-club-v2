@@ -296,7 +296,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
                 totalValue: parseFloat(productAnalytics.price),
               }}
               disabled={isOutOfStock || !isSizeSelected}
-            > 
+            >
               <Text
                 as="span"
                 width="wide"
