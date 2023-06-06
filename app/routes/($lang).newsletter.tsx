@@ -9,7 +9,7 @@ const badRequest = (data: ActionData) => json(data, {status: 400});
 export const action: ActionFunction = async ({request, context}) => {
   const formData = await request.formData();
 
-  const email = formData.get('email');
+  const formEmail = formData.get('email');
 
   try {
     const response = await fetch(
@@ -33,7 +33,7 @@ export const action: ActionFunction = async ({request, context}) => {
                   channels: {
                     email: ['MARKETING'],
                   },
-                  email,
+                  email: formEmail,
                 },
               ],
             },
