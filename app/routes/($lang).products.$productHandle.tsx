@@ -264,7 +264,7 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
     <div className="grid pb-4 border-b">
       <div className="grid gap-4">
         {prouctDescription && (
-          <div className="grid gap-2 border-b">
+          <div className="grid gap-2 border-b pb-2">
             <div className="mx-4">
               <Heading size="fine" className="min-w-[4rem]">
                 Description

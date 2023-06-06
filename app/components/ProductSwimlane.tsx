@@ -18,10 +18,10 @@ export function ProductSwimlane({
         You might also like
       </Heading>
       <div className="swimlane hiddenScroll px-4 gap-4">
-        {products.map((product) => (
+        {products.map((product, i) => (
           <ProductCard
             product={product}
-            key={product.id}
+            key={`${product.id}-${i}`}
             className="snap-start w-40"
           />
         ))}

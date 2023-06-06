@@ -60,7 +60,7 @@ export default function AllProducts() {
           }) => {
             const itemsMarkup = nodes.map((product, i) => (
               <ProductCard
-                key={product.id}
+                key={`${product.id}-${i}`}
                 product={product}
                 loading={getImageLoadingPriority(i)}
               />

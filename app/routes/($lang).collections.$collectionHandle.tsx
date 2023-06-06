@@ -20,7 +20,7 @@ import {useMemo} from 'react';
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.collection?.seo?.title,
   description: data?.collection?.seo?.description,
-  titleTemplate: '%s | Collection',
+  titleTemplate: '%s',
   media: {
     type: 'image',
     url: data?.collection?.image?.url,

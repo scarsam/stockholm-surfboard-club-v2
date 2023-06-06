@@ -66,7 +66,7 @@ export function ProductGrid({
       <Grid layout="products" {...props}>
         {products.map((product, i) => (
           <ProductCard
-            key={product.id}
+            key={`${product.id}-${i}`}
             product={product}
             loading={getImageLoadingPriority(i)}
             flexTitleAndPrice
