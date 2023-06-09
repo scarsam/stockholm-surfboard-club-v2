@@ -609,7 +609,7 @@ function Footer({
   return (
     <footer
       role="contentinfo"
-      className="md:h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between md:sticky bottom-0 bg-primary z-10 text-center md:text-left"
+      className="md:h-10 flex flex-col md:flex-row border-t items-center px-2 justify-between md:sticky bottom-0 bg-white z-10 text-center md:text-left"
     >
       <FooterMenu setModal={setModal} menu={menu} />
       <div className="py-5 md:py-0">
