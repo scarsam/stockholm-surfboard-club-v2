@@ -322,7 +322,7 @@ function MobileHeader({
       <nav className="lg:hidden sticky top-0 bg-white z-50">
         <header
           role="banner"
-          className="h-10 flex items-center mx-auto border-b"
+          className="h-10 flex items-center mx-auto border-b border-t"
         >
           <button
             onClick={openMenu}
