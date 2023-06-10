@@ -2151,7 +2151,7 @@ a.active {
   top: 40px;
 }
 .top-nav {
-  top: 3rem;
+  /* top: 3rem; */
   top: var(--height-nav);
 }
 .-z-10 {
@@ -4101,7 +4101,7 @@ shop-pay-button {
   }
 
   .md\:pt-nav {
-    padding-top: 3rem;
+    /* padding-top: 3rem; */
     padding-top: var(--height-nav);
   }
 

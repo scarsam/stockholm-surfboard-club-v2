@@ -1,6 +1,7 @@
 import type {Maybe, MediaEdge} from '@shopify/hydrogen/storefront-api-types';
 import {ATTR_LOADING_EAGER} from '~/lib/const';
 import type {MediaImage} from '@shopify/hydrogen/storefront-api-types';
+import {Image} from '@shopify/hydrogen';
 
 /**
  * A client component that defines a media gallery for hosting images, 3D models, and videos of products
@@ -81,7 +82,7 @@ export function ProductGallery({
           : [
               isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
               isFirst || isFourth ? '' : 'md:aspect-[4/5]',
-              'aspect-[4/5] snap-center card-image bg-white dark:bg-contrast/10 w-mobileGallery md:w-full',
+              'aspect-[4/5] snap-center card-image bg-white dark:bg-contrast/10 w-screen md:w-full',
             ].join(' ');
 
         !shouldHideImage && i++;
@@ -94,7 +95,7 @@ export function ProductGallery({
           >
             {/* TODO: Replace with MediaFile when it's available */}
             {(med as MediaImage).image && (
-              <img
+              <Image
                 src={data.image!.url}
                 alt={data.image!.altText!}
                 className="w-full h-full aspect-[4/5] fadeIn object-cover"

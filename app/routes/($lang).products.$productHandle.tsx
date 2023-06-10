@@ -137,17 +137,17 @@ export default function ProductComponent() {
 
   return (
     <>
-      <Section padding="none" className="p-2 lg:p-0">
+      <Section padding="none">
         <div className="grid items-start md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
             color={selectedVariant.image?.altText}
             media={media.nodes}
-            className="md:w-full lg:col-span-2"
+            className="w-screen md:w-full lg:col-span-2 gap-0 md:gap-4 px-0"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
             <section className="flex flex-col w-full gap-4 md:px-0">
-              <div className="md:border-b md:pb-3">
-                <div className="mx-4 grid md:flex justify-between">
+              <div className="md:border-b py-3">
+                <div className="mx-4 grid md:flex justify-between grid-flow-col">
                   <Heading as="h1" size="copy" className="whitespace-normal">
                     {title}
                   </Heading>
@@ -380,7 +380,7 @@ function ProductOptions({
                           searchParams={searchParamsWithDefaults}
                           className={clsx(
                             'leading-none cursor-pointer transition-all duration-200',
-                            'px-1 py-3 px-5 mt-1 mr-1 flex justify-center border',
+                            'px-3 py-3 md:px-4 xl:px-5 mt-1 mr-1 flex justify-center border',
                             checked && availableForSale
                               ? 'bg-black text-white'
                               : '',

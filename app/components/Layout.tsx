@@ -22,6 +22,7 @@ import cartIcon from '../../public/cart-icon.svg';
 import emptyCartIcon from '../../public/empty-cart-icon.svg';
 import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
+import logo from '../../public/stockholm-surfboard-logo.svg';
 import globe from '../../public/globe-icon.svg';
 import {useModal} from './Modals/useModal';
 import Authenticated from './Account';
@@ -351,7 +352,7 @@ function MobileHeader({
             className="text-lg md:text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
             to="/collections/new"
           >
-            Stockholm (Surfboard) Club
+            <img alt="Stockholm (Surfboard) Club" src={logo} />
           </Link>
           <div className="flex h-full items-center">
             <div className="border-r h-full flex items-center justify-center w-10">
@@ -435,7 +436,7 @@ function DesktopHeader({
           className="text-2xl text-[#ED1C24] font-semibold"
           to="/collections/new"
         >
-          Stockholm (Surfboard) Club
+          <img alt="Stockholm (Surfboard) Club" src={logo} />
         </Link>
         <div className="flex items-center">
           {menu?.items.map((menuItem) => (
