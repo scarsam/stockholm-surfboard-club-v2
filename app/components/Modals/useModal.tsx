@@ -1,20 +1,25 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Newsletter} from './Newsletter';
 import {Location} from './Location';
+import {SizeGuide} from './SizeGuide';
 
 export const modals = {
   location: Location,
   newsletter: Newsletter,
+  sizeGuide: SizeGuide,
 };
 
 export const useModal = () => {
-  const [modal, setModal] = useState<keyof typeof modals>();
+  const [modal, setModal] = useState<{name: keyof typeof modals; data?: any}>();
 
   useEffect(() => {
     document.body.style.overflow = modal ? 'hidden' : 'unset';
   }, [modal]);
 
-  const RenderModal = useMemo(() => (modal ? modals[modal] : null), [modal]);
+  const RenderModal = useMemo(
+    () => (modal ? modals[modal.name] : null),
+    [modal],
+  );
 
   return {
     setModal,
@@ -24,7 +29,7 @@ export const useModal = () => {
           {modal ? (
             <div className="h-full w-full bg-[#E6E6E6]/90 fixed left-0 top-0 bottom-0 z-50">
               <div className="flex items-center justify-center min-h-screen">
-                <div className="w-full bg-white p-2 border border-black relative max-w-[370px] min-h-min">
+                <div className="w-full bg-white p-2 border border-black relative max-w-[390px] min-h-min">
                   <button
                     onClick={() => setModal(undefined)}
                     className="absolute right-0 -top-6 font-mono"
@@ -53,7 +58,10 @@ export const useModal = () => {
                     </svg>
                   </button>
                   {RenderModal ? (
-                    <RenderModal handleClose={() => setModal(undefined)} />
+                    <RenderModal
+                      handleClose={() => setModal(undefined)}
+                      data={modal.data}
+                    />
                   ) : null}
                 </div>
               </div>

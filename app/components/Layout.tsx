@@ -419,7 +419,9 @@ function DesktopHeader({
   menu: EnhancedMenu;
   openCart: () => void;
   openAccount: () => void;
-  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
+  setModal: Dispatch<
+    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+  >;
 }) {
   const {pathname} = useLocation();
   const params = useParams();
@@ -477,7 +479,7 @@ function DesktopHeader({
                 />
               </button>
             </Form>
-            <button onClick={() => setModal('location')} type="button">
+            <button onClick={() => setModal({name: 'location'})} type="button">
               <img
                 className="flex self-stretch items-center hover:cursor-pointer mx-1"
                 src={globe}
@@ -603,7 +605,9 @@ function Footer({
   setModal,
 }: {
   menu?: EnhancedMenu;
-  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
+  setModal: Dispatch<
+    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+  >;
 }) {
   // const isHome = useIsHomePath();
 
@@ -641,7 +645,9 @@ function FooterMenu({
   setModal,
 }: {
   menu?: EnhancedMenu;
-  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
+  setModal: Dispatch<
+    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+  >;
 }) {
   return (
     <div className="pt-5 md:pt-0">
@@ -657,7 +663,7 @@ function FooterMenu({
         </Link>
       ))}
       <button
-        onClick={() => setModal('newsletter')}
+        onClick={() => setModal({name: 'newsletter'})}
         className="mr-3 inline-block"
       >
         <Text className="flex justify-between uppercase text-sm">

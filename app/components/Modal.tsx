@@ -1,12 +1,12 @@
 import type {ReactNode} from 'react';
-import {IconClose, Link} from '~/components';
+import {Button, IconClose, Link} from '~/components';
 
 export function Modal({
   children,
   cancelLink,
 }: {
   children: ReactNode;
-  cancelLink: string;
+  cancelLink?: string;
 }) {
   return (
     <div
@@ -31,12 +31,17 @@ export function Modal({
             tabIndex={0}
           >
             <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-              <Link
-                to={cancelLink}
-                className="p-4 -m-4 transition text-primary hover:text-primary/50"
-              >
+              {cancelLink && (
+                <Link
+                  to={cancelLink}
+                  className="p-4 -m-4 transition text-primary hover:text-primary/50"
+                >
+                  <IconClose aria-label="Close panel" />
+                </Link>
+              )}
+              <Button className="p-4 -m-4 transition text-primary hover:text-primary/50">
                 <IconClose aria-label="Close panel" />
-              </Link>
+              </Button>
             </div>
             {children}
           </div>

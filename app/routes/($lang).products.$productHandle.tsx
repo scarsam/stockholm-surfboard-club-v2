@@ -1,4 +1,4 @@
-import {type ReactNode, Suspense, useMemo} from 'react';
+import {type ReactNode, Suspense, useMemo, useEffect, Dispatch, SetStateAction} from 'react';
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
@@ -25,6 +25,7 @@ import {
   Text,
   Link,
   AddToCartButton,
+  Button,
 } from '~/components';
 import invariant from 'tiny-invariant';
 import clsx from 'clsx';
@@ -41,6 +42,8 @@ import type {
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import type {Storefront} from '~/lib/type';
 import type {Product} from 'schema-dts';
+import {parseSizeGuide} from '~/lib/utils';
+import { useModal } from '~/components/Modals/useModal';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => {
   const media = flattenConnection<MediaConnection>(data.product.media).find(
@@ -96,6 +99,13 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
+  if (product.sizeGuide) {
+    product.parsedSizeGuide = parseSizeGuide(
+      //@ts-ignore
+      product.sizeGuide?.reference?.fields?.[0]?.value,
+    );
+  }
+
   const recommended = getRecommendedProducts(context.storefront, product.id);
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
@@ -135,8 +145,12 @@ export default function ProductComponent() {
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
+    const {Modal, setModal} = useModal()
+
+
   return (
     <>
+      <Modal/>
       <Section padding="none">
         <div className="grid items-start md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
@@ -168,7 +182,7 @@ export default function ProductComponent() {
                   </Text>
                 </div>
               </div>
-              <ProductForm prouctDescription={descriptionHtml} />
+              <ProductForm prouctDescription={descriptionHtml} setModal={setModal} />
               <div className="grid gap-2">
                 <Suspense fallback={<Skeleton className="h-32" />}>
                   <Await
@@ -194,9 +208,11 @@ export default function ProductComponent() {
 
 type ProductFormProps = {
   prouctDescription: string;
+  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide' | undefined, data?: any}>
+>;
 };
 
-export function ProductForm({prouctDescription}: ProductFormProps) {
+export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
   const {product, analytics} = useLoaderData<typeof loader>();
 
   const [currentSearchParams] = useSearchParams();
@@ -260,16 +276,30 @@ export function ProductForm({prouctDescription}: ProductFormProps) {
     quantity: 1,
   };
 
+  const sizeGuide = product.parsedSizeGuide
+
+
   return (
     <div className="grid pb-4 border-b">
       <div className="grid gap-4">
         {prouctDescription && (
-          <div className="grid gap-2 border-b pb-2">
+          <div className="grid gap-2 border-b pb-4">
             <div className="mx-4">
               <Heading size="fine" className="min-w-[4rem]">
                 Description
               </Heading>
               <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
+              {sizeGuide && (
+                <div className='pt-4'>
+                  <Button 
+                    as="span" 
+                    className="text-fine subpixel-antialiased underline underline-offset-4 cursor-pointer" 
+                    variant="inline" 
+                    onClick={() => setModal({name: "sizeGuide", data: sizeGuide})}>
+                    Size Guide
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -328,7 +358,7 @@ function ProductOptions({
   //@ts-ignore
   const allVariants = product.allVariants.nodes as ProductVariant[];
 
-  return (
+  return(
     <>
       {[...options]
         .reverse()
@@ -425,7 +455,7 @@ function ProductOptions({
             </div>
           </div>
         ))}
-    </>
+    </>,
   );
 }
 
@@ -528,6 +558,18 @@ const PRODUCT_QUERY = `#graphql
       vendor
       handle
       descriptionHtml
+      sizeGuide: metafield(namespace: "custom", key: "size_guide") {
+        reference {
+          ...on Metaobject{
+            fields {
+              key
+              type
+              value
+              
+            } 
+          }
+        }
+      }
       description
       options {
         name

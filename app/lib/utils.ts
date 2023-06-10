@@ -328,3 +328,20 @@ export function getCartId(request: Request) {
   const cookies = parseCookie(request.headers.get('Cookie') || '');
   return cookies.cart ? `gid://shopify/Cart/${cookies.cart}` : undefined;
 }
+
+export const parseSizeGuide = (string: string) => {
+  /// REGEXP
+  const listRegexp = /(?<=<List>\s)((.|\n)*)(?=\s<\/List>)/gm;
+  const sizeRegexp = /(?<=<Sizes>\s)((.|\n)*)(?=\s<\/Sizes>)/gm;
+  const newLineRegexp = /\r?\n/;
+
+  // LIST
+  const listString = string.match(listRegexp)?.[0];
+  const listItems = listString?.split(newLineRegexp);
+
+  // SIZES
+  const sizeString = string.match(sizeRegexp)?.[0];
+  const sizeItems = sizeString?.split(newLineRegexp);
+
+  return {listItems, sizeItems};
+};
