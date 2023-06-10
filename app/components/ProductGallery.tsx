@@ -2,6 +2,10 @@ import type {Maybe, MediaEdge} from '@shopify/hydrogen/storefront-api-types';
 import {ATTR_LOADING_EAGER} from '~/lib/const';
 import type {MediaImage} from '@shopify/hydrogen/storefront-api-types';
 import {Image} from '@shopify/hydrogen';
+import {useDebounce} from 'react-use';
+import {useRef, useState} from 'react';
+import {Button} from './Button';
+import clsx from 'clsx';
 
 /**
  * A client component that defines a media gallery for hosting images, 3D models, and videos of products
@@ -9,12 +13,26 @@ import {Image} from '@shopify/hydrogen';
 export function ProductGallery({
   media,
   className,
-  color,
 }: {
   media: MediaEdge['node'][];
   className?: string;
-  color?: Maybe<string> | undefined;
 }) {
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useDebounce(
+    () => {
+      const ref = containerRef.current;
+      if (ref) {
+        const index = Math.floor(scrollLeft / ref.offsetWidth);
+        setActiveImageIndex(index);
+      }
+    },
+    100,
+    [scrollLeft],
+  );
+
   if (!media.length) {
     return null;
   }
@@ -23,11 +41,12 @@ export function ProductGallery({
 
   return (
     <div
-      className={`swimlane md:grid-flow-row hiddenScroll md:p-0 md:overflow-x-auto md:grid-cols-2 ${className}`}
+      ref={containerRef}
+      onScroll={(event) => setScrollLeft(event.currentTarget.scrollLeft)}
+      id="container"
+      className={`swimlane md:grid-flow-row hiddenScroll md:p-0 md:overflow-x-auto md:grid-cols-2 ${className} relative`}
     >
-      {media.map((med) => {
-        const shouldHideImage = color && med.alt !== color;
-
+      {media.map((med, index) => {
         let mediaProps: Record<string, any> = {};
         const isFirst = i === 0;
         const isFourth = i === 3;
@@ -77,18 +96,17 @@ export function ProductGallery({
           mediaProps.loading = ATTR_LOADING_EAGER;
         }
 
-        const style = shouldHideImage
-          ? 'hidden'
-          : [
-              isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
-              isFirst || isFourth ? '' : 'md:aspect-[4/5]',
-              'aspect-[4/5] snap-center card-image bg-white dark:bg-contrast/10 w-screen md:w-full',
-            ].join(' ');
+        const style = [
+          isFullWidth ? 'md:col-span-2' : 'md:col-span-1',
+          isFirst || isFourth ? '' : 'md:aspect-[4/5]',
+          'aspect-[4/5] snap-center card-image bg-white dark:bg-contrast/10 w-screen md:w-full',
+        ].join(' ');
 
-        !shouldHideImage && i++;
+        i++;
 
         return (
           <div
+            id={`image-${index}`}
             className={style}
             // @ts-ignore
             key={med.id || med.image.id}
@@ -120,6 +138,35 @@ export function ProductGallery({
           </div>
         );
       })}
+      <div
+        className="sticky md:invisible"
+        style={{
+          top: '100%',
+          height: 'max-content',
+          right: '50%',
+          transform: 'translateX(50%)',
+          zIndex: 10,
+        }}
+      >
+        <div className="flex mb-4">
+          {media.map((item, i) => (
+            <Button
+              key={item.id}
+              variant="inline"
+              onClick={() => {
+                const ref = containerRef.current;
+                if (ref) {
+                  ref.scrollLeft = ref.offsetWidth * i;
+                }
+              }}
+              className={clsx(
+                'px-1 py-1 border-2 border-b-2 border-red-600 mx-1',
+                activeImageIndex === i && 'bg-red-600',
+              )}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

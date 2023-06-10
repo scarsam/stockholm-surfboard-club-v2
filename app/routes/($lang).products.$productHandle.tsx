@@ -1,4 +1,4 @@
-import {type ReactNode, Suspense, useMemo, useEffect, Dispatch, SetStateAction} from 'react';
+import {type ReactNode, Suspense, useMemo, Dispatch, SetStateAction} from 'react';
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
@@ -106,6 +106,7 @@ export async function loader({params, request, context}: LoaderArgs) {
     );
   }
 
+
   const recommended = getRecommendedProducts(context.storefront, product.id);
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
@@ -134,9 +135,9 @@ export async function loader({params, request, context}: LoaderArgs) {
 
 export default function ProductComponent() {
   const {product, recommended} = useLoaderData<typeof loader>();
-  const {media, title, descriptionHtml} = product;
-  // const {shippingPolicy, refundPolicy} = shop;
+  const {Modal, setModal} = useModal()
 
+  const {media, title, descriptionHtml} = product as ProductType;
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
 
@@ -145,7 +146,12 @@ export default function ProductComponent() {
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
-    const {Modal, setModal} = useModal()
+  const galleryMedia = useMemo(() => media.nodes.reduce((mediaNodesArray, mediaNode) => {
+    if (mediaNode.alt === selectedVariant.image?.altText) {
+      mediaNodesArray.push(mediaNode);
+    }
+    return mediaNodesArray;
+  }, [] as any[]), [media])
 
 
   return (
@@ -154,8 +160,7 @@ export default function ProductComponent() {
       <Section padding="none">
         <div className="grid items-start md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
-            color={selectedVariant.image?.altText}
-            media={media.nodes}
+            media={galleryMedia}
             className="w-screen md:w-full lg:col-span-2 gap-0 md:gap-4 px-0"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
