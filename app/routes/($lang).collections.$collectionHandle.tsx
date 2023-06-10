@@ -145,32 +145,37 @@ export async function loader({params, request, context}: LoaderArgs) {
   const collectionWithAllProductVariants = () => {
     const products = collection.products.nodes;
     const newProducts: Product[] = [];
-    const isSurfboard = collection.handle === 'surfboards';
 
     products.forEach((product) => {
       const variants = product.variants.nodes;
       const usedColors: string[] = [];
 
-      variants.forEach((variant) => {
-        const colorOptionValue = variant.selectedOptions.find(
-          (option) => option.name === 'Color',
-        )?.value;
+      const hasColorOption = product.variants.nodes[0]?.selectedOptions.some(
+        (option) => option.name === 'Color',
+      );
 
-        if (
-          (colorOptionValue &&
-            !usedColors.some((color) => color === colorOptionValue)) ||
-          isSurfboard
-        ) {
-          newProducts.push({
-            ...product,
-            //@ts-ignore
-            variants: {...variants, nodes: [variant]},
-          });
-          if (colorOptionValue) {
-            usedColors.push(colorOptionValue);
+      if (!hasColorOption) newProducts.push(product);
+      else {
+        variants.forEach((variant) => {
+          const colorOptionValue = variant.selectedOptions.find(
+            (option) => option.name === 'Color',
+          )?.value;
+
+          if (
+            colorOptionValue &&
+            !usedColors.some((color) => color === colorOptionValue)
+          ) {
+            newProducts.push({
+              ...product,
+              //@ts-ignore
+              variants: {...variants, nodes: [variant]},
+            });
+            if (colorOptionValue) {
+              usedColors.push(colorOptionValue);
+            }
           }
-        }
-      });
+        });
+      }
     });
 
     return {
