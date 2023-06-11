@@ -99,11 +99,11 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
-  if (product.sizeGuide) {
-    product.parsedSizeGuide = parseSizeGuide(
-      //@ts-ignore
-      product.sizeGuide?.reference?.fields?.[0]?.value,
-    );
+ //@ts-ignore
+  const sizeGuide =  product.sizeGuide?.reference?.fields?.[0]?.value
+
+  if (sizeGuide) {
+    product.parsedSizeGuide = parseSizeGuide(sizeGuide);
   }
 
 

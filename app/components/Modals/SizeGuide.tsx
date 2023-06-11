@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 
 export const SizeGuide = ({data}: {handleClose: () => void; data: any}) => {
-  const sizeItems = data.sizeItems as string[];
-  const listItems = data.listItems as string[];
+  const sizeItems: string[] | undefined = data?.sizeItems;
+  const listItems: string[] | undefined = data?.listItems;
 
   return (
     <>
