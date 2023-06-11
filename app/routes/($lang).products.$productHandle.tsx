@@ -283,7 +283,6 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
 
   const sizeGuide = product.parsedSizeGuide
 
-
   return (
     <div className="grid pb-4 border-b">
       <div className="grid gap-4">
