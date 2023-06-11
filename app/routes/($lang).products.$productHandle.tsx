@@ -213,8 +213,7 @@ export default function ProductComponent() {
 
 type ProductFormProps = {
   prouctDescription: string;
-  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide' | undefined, data?: any}>
->;
+  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide'; data?: any} | undefined>>;
 };
 
 export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
