@@ -102,7 +102,7 @@ export async function loader({params, request, context}: LoaderArgs) {
 
 
   const metaObjectReference = product.sizeGuide?.reference as Metaobject
-  const sizeGuide = metaObjectReference.field?.value
+  const sizeGuide = metaObjectReference?.field?.value
 
   if (sizeGuide) {
     product.parsedSizeGuide = parseSizeGuide(sizeGuide);
