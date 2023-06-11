@@ -100,7 +100,6 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
-
   const metaObjectReference = product.sizeGuide?.reference as Metaobject
   const sizeGuide = metaObjectReference?.field?.value
 
