@@ -335,13 +335,17 @@ export const parseSizeGuide = (string: string) => {
   const sizeRegexp = /(?<=<Sizes>\s)((.|\n)*)(?=\s<\/Sizes>)/gm;
   const newLineRegexp = /\r?\n/;
 
-  // LIST
-  const listString = string.match(listRegexp)?.[0];
-  const listItems = listString?.split(newLineRegexp);
+  try {
+    // LIST
+    const listString = string.match(listRegexp)?.[0];
+    const listItems = listString?.split(newLineRegexp);
 
-  // SIZES
-  const sizeString = string.match(sizeRegexp)?.[0];
-  const sizeItems = sizeString?.split(newLineRegexp);
+    // SIZES
+    const sizeString = string.match(sizeRegexp)?.[0];
+    const sizeItems = sizeString?.split(newLineRegexp);
 
-  return {listItems, sizeItems};
+    return {listItems, sizeItems};
+  } catch (error) {
+    console.log(error);
+  }
 };

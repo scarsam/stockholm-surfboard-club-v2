@@ -103,7 +103,9 @@ export async function loader({params, request, context}: LoaderArgs) {
   const sizeGuide =  product.sizeGuide?.reference?.fields?.[0]?.value
 
   if (sizeGuide) {
-    product.parsedSizeGuide = parseSizeGuide(sizeGuide);
+    const sizes = parseSizeGuide(sizeGuide);
+    console.log(sizes)
+    product.parsedSizeGuide = sizes
   }
 
 
@@ -295,10 +297,10 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
               <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
               {sizeGuide && (
                 <div className='pt-4'>
-                  <Button 
-                    as="span" 
-                    className="text-fine subpixel-antialiased underline underline-offset-4 cursor-pointer" 
-                    variant="inline" 
+                  <Button
+                    as="span"
+                    className="text-fine subpixel-antialiased underline underline-offset-4 cursor-pointer"
+                    variant="inline"
                     onClick={() => setModal({name: "sizeGuide", data: sizeGuide})}>
                     Size Guide
                   </Button>
@@ -569,8 +571,8 @@ const PRODUCT_QUERY = `#graphql
               key
               type
               value
-              
-            } 
+
+            }
           }
         }
       }
