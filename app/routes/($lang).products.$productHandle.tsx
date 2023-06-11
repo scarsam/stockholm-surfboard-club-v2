@@ -147,7 +147,7 @@ export default function ProductComponent() {
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
   const galleryMedia = useMemo(() => media.nodes.reduce((mediaNodesArray, mediaNode) => {
-    if (mediaNode.alt === selectedVariant.image?.altText) {
+    if (!selectedVariant.image?.altText || mediaNode.alt === selectedVariant.image?.altText) {
       mediaNodesArray.push(mediaNode);
     }
     return mediaNodesArray;
