@@ -102,10 +102,10 @@ export async function loader({params, request, context}: LoaderArgs) {
  //@ts-ignore
   const sizeGuide =  product.sizeGuide?.reference?.fields?.[0]?.value
 
+  console.log(JSON.stringify(product))
+
   if (sizeGuide) {
-    const sizes = parseSizeGuide(sizeGuide);
-    console.log(sizes)
-    product.parsedSizeGuide = sizes
+    product.parsedSizeGuide = parseSizeGuide(sizeGuide);
   }
 
 
