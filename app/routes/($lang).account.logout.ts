@@ -18,8 +18,8 @@ export async function doLogout(context: AppLoadContext) {
   });
 }
 
-export async function loader({context}: LoaderArgs) {
-  return redirect(context.storefront.i18n.pathPrefix);
+export async function loader({params}: LoaderArgs) {
+  return redirect(`${params.lang}/collections/new`);
 }
 
 export const action: ActionFunction = async ({context}: ActionArgs) => {

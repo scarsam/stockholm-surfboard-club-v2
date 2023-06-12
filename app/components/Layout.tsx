@@ -24,7 +24,7 @@ import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import logo from '../../public/stockholm-surfboard-logo.svg';
 import globe from '../../public/globe-icon.svg';
-import {useModal} from './Modals/useModal';
+import {modals, useModal} from './Modals/useModal';
 import Authenticated from './Account';
 
 import {Session} from './Session';
@@ -75,7 +75,17 @@ function Header({
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
-  setModal: Dispatch<SetStateAction<'location' | 'newsletter' | undefined>>;
+  setModal: Dispatch<
+    React.Dispatch<
+      React.SetStateAction<
+        | {
+            name: keyof typeof modals;
+            data?: any;
+          }
+        | undefined
+      >
+    >
+  >;
 }) {
   // const isHome = useIsHomePath();
 
@@ -349,7 +359,7 @@ function MobileHeader({
             </svg>
           </button>
           <Link
-            className="text-lg md:text-xl text-[#ED1C24] font-semibold border-r flex-1 h-full items-center flex justify-center"
+            className="py-5 flex-1 h-full items-center flex justify-center select-none"
             to="/collections/new"
           >
             <img alt="Stockholm (Surfboard) Club" src={logo} />
@@ -419,8 +429,14 @@ function DesktopHeader({
   menu: EnhancedMenu;
   openCart: () => void;
   openAccount: () => void;
-  setModal: Dispatch<
-    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+  setModal: React.Dispatch<
+    React.SetStateAction<
+      | {
+          name: keyof typeof modals;
+          data?: any;
+        }
+      | undefined
+    >
   >;
 }) {
   const {pathname} = useLocation();
@@ -434,10 +450,7 @@ function DesktopHeader({
         role="banner"
         className="h-10 px-2 flex items-center justify-between flex-wrap mx-auto"
       >
-        <Link
-          className="text-2xl text-[#ED1C24] font-semibold"
-          to="/collections/new"
-        >
+        <Link className="py-3 select-none" to="/collections/new">
           <img alt="Stockholm (Surfboard) Club" src={logo} />
         </Link>
         <div className="flex items-center">
