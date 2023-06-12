@@ -15,29 +15,43 @@ export function GenericError({error}: {error?: any}) {
 
   return (
     <>
-      <PageHeader heading={heading}>
-        <Text width="narrow" as="p">
-          {description}
-        </Text>
-        {error?.stack && (
-          <pre
-            style={{
-              padding: '2rem',
-              background: 'hsla(10, 50%, 50%, 0.1)',
-              color: 'red',
-              overflow: 'auto',
-              maxWidth: '100%',
-            }}
-            dangerouslySetInnerHTML={{
-              __html: addLinksToStackTrace(error.stack),
-            }}
-          />
-        )}
-        <Button width="auto" variant="secondary" to={'/'}>
-          Take me to the home page
-        </Button>
+      <PageHeader
+        className="flex flex-grow justify-center flex-col items-center"
+        variant="none"
+      >
+        <div className="w-full flex flex-col items-center p-6">
+          <div className="max-w-[1000px]">
+            <Text as="p" className="font-bold">
+              {heading}
+            </Text>
+            <Text as="span">{description}</Text>
+            {error?.stack && (
+              <pre
+                style={{
+                  padding: '2rem',
+                  background: 'hsla(10, 50%, 50%, 0.1)',
+                  color: 'red',
+                  overflow: 'auto',
+                  maxWidth: '100%',
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: addLinksToStackTrace(error.stack),
+                }}
+              />
+            )}
+          </div>
+          <div className="text-center pt-[5rem]">
+            <Button
+              width="full"
+              variant="secondary"
+              to={'/collections/new'}
+              className="min-w-[300px]"
+            >
+              GO TO HOME PAGE
+            </Button>
+          </div>
+        </div>
       </PageHeader>
-      <FeaturedSection />
     </>
   );
 }

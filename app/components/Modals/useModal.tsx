@@ -17,7 +17,7 @@ export const useModal = () => {
   }, [modal]);
 
   const RenderModal = useMemo(
-    () => (modal ? modals[modal.name] : null),
+    () => (modal?.name ? modals[modal.name] : null),
     [modal],
   );
 

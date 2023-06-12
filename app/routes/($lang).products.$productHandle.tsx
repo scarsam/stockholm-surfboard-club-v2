@@ -38,6 +38,7 @@ import type {
   MediaConnection,
   MediaImage,
   SelectedOption,
+  Metaobject,
 } from '@shopify/hydrogen/storefront-api-types';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import type {Storefront} from '~/lib/type';
@@ -99,8 +100,8 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
- //@ts-ignore
-  const sizeGuide =  product.sizeGuide?.reference?.fields?.[0]?.value
+  const metaObjectReference = product.sizeGuide?.reference as Metaobject
+  const sizeGuide = metaObjectReference?.field?.value
 
   if (sizeGuide) {
     product.parsedSizeGuide = parseSizeGuide(sizeGuide);
@@ -213,8 +214,7 @@ export default function ProductComponent() {
 
 type ProductFormProps = {
   prouctDescription: string;
-  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide' | undefined, data?: any}>
->;
+  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide'; data?: any} | undefined>>;
 };
 
 export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
@@ -564,15 +564,12 @@ const PRODUCT_QUERY = `#graphql
       descriptionHtml
       sizeGuide: metafield(namespace: "custom", key: "size_guide") {
         reference {
-          ...on Metaobject{
-            fields {
-              key
-              type
-              value
-
-            }
+        ... on Metaobject {
+          field(key: "text") {
+            value
           }
         }
+      }
       }
       description
       options {
