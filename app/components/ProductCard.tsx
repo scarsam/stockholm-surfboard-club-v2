@@ -37,9 +37,6 @@ export function ProductCard({
   if (!cardProduct?.variants?.nodes?.length) return null;
 
   const firstVariant = flattenConnection(cardProduct.variants)[0];
-  const variantColor = firstVariant.selectedOptions.find(
-    (opt) => opt.name === 'Color',
-  )?.value;
 
   if (!firstVariant) return null;
   const {image, price, compareAtPrice} = firstVariant;
@@ -62,11 +59,30 @@ export function ProductCard({
     quantity: 1,
   };
 
+  const variantColor = firstVariant.selectedOptions.find(
+    (opt) => opt.name === 'Color',
+  )?.value;
+
+  const variantSize = firstVariant.selectedOptions.find(
+    (opt) => opt.name === 'Size',
+  )?.value;
+
+  const queryString = firstVariant.selectedOptions.reduce(
+    (prev, option, index) => {
+      if (option.value) {
+        if (index > 0) prev += '&';
+        prev += `${option.name}=${option.value}`;
+      }
+      return prev;
+    },
+    '',
+  );
+
   return (
     <div className="flex flex-col">
       <Link
         onClick={onClick}
-        to={`/products/${product.handle}?Color=${variantColor}`}
+        to={`/products/${product.handle}?${queryString}`}
         prefetch="intent"
       >
         <div className={clsx(className)}>

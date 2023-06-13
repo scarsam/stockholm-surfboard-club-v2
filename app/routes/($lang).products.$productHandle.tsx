@@ -1,4 +1,12 @@
-import {type ReactNode, Suspense, useMemo, Dispatch, SetStateAction} from 'react';
+import {
+  type ReactNode,
+  Suspense,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+} from 'react';
 import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
@@ -44,7 +52,8 @@ import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import type {Storefront} from '~/lib/type';
 import type {Product} from 'schema-dts';
 import {parseSizeGuide} from '~/lib/utils';
-import { useModal } from '~/components/Modals/useModal';
+import {useModal} from '~/components/Modals/useModal';
+import {useStore} from '~/store';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => {
   const media = flattenConnection<MediaConnection>(data.product.media).find(
@@ -79,11 +88,6 @@ export async function loader({params, request, context}: LoaderArgs) {
     selectedOptions.push({name, value});
   });
 
-  //We need to pass a size here, otherwise selectedVariant will always be null
-  if (!selectedOptions.some((opt) => opt.name === 'Size')) {
-    selectedOptions.push({name: 'Size', value: 'S'});
-  }
-
   const {shop, product} = await context.storefront.query<{
     product: ProductType & {selectedVariant?: ProductVariant};
     shop: Shop;
@@ -100,8 +104,8 @@ export async function loader({params, request, context}: LoaderArgs) {
     throw new Response(null, {status: 404});
   }
 
-  const metaObjectReference = product.sizeGuide?.reference as Metaobject
-  const sizeGuide = metaObjectReference?.field?.value
+  const metaObjectReference = product.sizeGuide?.reference as Metaobject;
+  const sizeGuide = metaObjectReference?.field?.value;
 
   if (sizeGuide) {
     product.parsedSizeGuide = parseSizeGuide(sizeGuide);
@@ -134,8 +138,15 @@ export async function loader({params, request, context}: LoaderArgs) {
 }
 
 export default function ProductComponent() {
+  const location = useLocation();
   const {product, recommended} = useLoaderData<typeof loader>();
-  const {Modal, setModal} = useModal()
+  const {Modal, setModal} = useModal();
+
+  const {setIsSizeSelected} = useStore();
+
+  useEffect(() => {
+    return () => setIsSizeSelected(false);
+  }, [location.pathname, setIsSizeSelected]);
 
   const {media, title, descriptionHtml} = product as ProductType;
   const firstVariant = product.variants.nodes[0];
@@ -146,17 +157,23 @@ export default function ProductComponent() {
     selectedVariant?.compareAtPrice?.amount &&
     selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
 
-  const galleryMedia = useMemo(() => media.nodes.reduce((mediaNodesArray, mediaNode) => {
-    if (!selectedVariant.image?.altText || mediaNode.alt === selectedVariant.image?.altText) {
-      mediaNodesArray.push(mediaNode);
-    }
-    return mediaNodesArray;
-  }, [] as any[]), [media])
-
+  const galleryMedia = useMemo(
+    () =>
+      media.nodes.reduce((mediaNodesArray, mediaNode) => {
+        if (
+          !selectedVariant.image?.altText ||
+          mediaNode.alt === selectedVariant.image?.altText
+        ) {
+          mediaNodesArray.push(mediaNode);
+        }
+        return mediaNodesArray;
+      }, [] as any[]),
+    [media],
+  );
 
   return (
     <>
-      <Modal/>
+      <Modal />
       <Section padding="none">
         <div className="grid items-start md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
@@ -187,7 +204,10 @@ export default function ProductComponent() {
                   </Text>
                 </div>
               </div>
-              <ProductForm prouctDescription={descriptionHtml} setModal={setModal} />
+              <ProductForm
+                prouctDescription={descriptionHtml}
+                setModal={setModal}
+              />
               <div className="grid gap-2">
                 <Suspense fallback={<Skeleton className="h-32" />}>
                   <Await
@@ -213,12 +233,16 @@ export default function ProductComponent() {
 
 type ProductFormProps = {
   prouctDescription: string;
-  setModal: Dispatch<SetStateAction<{name: 'location' | 'newsletter' | 'sizeGuide'; data?: any} | undefined>>;
+  setModal: Dispatch<
+    SetStateAction<
+      {name: 'location' | 'newsletter' | 'sizeGuide'; data?: any} | undefined
+    >
+  >;
 };
 
 export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
   const {product, analytics} = useLoaderData<typeof loader>();
-
+  const {isSizeSelected} = useStore();
   const [currentSearchParams] = useSearchParams();
   const transition = useNavigation();
 
@@ -234,14 +258,7 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
   }, [currentSearchParams, transition]);
 
   // Removng the size option since we never want this pre selected
-  const firstVariant = useMemo(() => {
-    const firstVariant = product.variants.nodes[0];
-    const selectedOptions = firstVariant.selectedOptions?.filter(
-      (opt: SelectedOption) => opt.name !== 'Size',
-    );
-
-    return {...firstVariant, selectedOptions};
-  }, [product.variants]);
+  const firstVariant = product.variants.nodes[0];
 
   /**
    * We're making an explicit choice here to display the product options
@@ -268,19 +285,13 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
    */
   const selectedVariant = product.selectedVariant ?? firstVariant;
   const isOutOfStock = !selectedVariant?.availableForSale;
-  const isSizeSelected =
-    searchParamsWithDefaults.has('Size') ||
-    !(
-      product.options.find((option: SelectedOption) => option.name === 'Size')
-        ?.values?.length > 1
-    );
 
   const productAnalytics: ShopifyAnalyticsProduct = {
     ...analytics.products[0],
     quantity: 1,
   };
 
-  const sizeGuide = product.parsedSizeGuide
+  const sizeGuide = product.parsedSizeGuide;
 
   return (
     <div className="grid pb-4 border-b">
@@ -293,12 +304,15 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
               </Heading>
               <div dangerouslySetInnerHTML={{__html: prouctDescription}} />
               {sizeGuide && (
-                <div className='pt-4'>
+                <div className="pt-4">
                   <Button
                     as="span"
                     className="text-fine subpixel-antialiased underline underline-offset-4 cursor-pointer"
                     variant="inline"
-                    onClick={() => setModal({name: "sizeGuide", data: sizeGuide})}>
+                    onClick={() =>
+                      setModal({name: 'sizeGuide', data: sizeGuide})
+                    }
+                  >
                     Size Guide
                   </Button>
                 </div>
@@ -356,12 +370,12 @@ function ProductOptions({
   product: ProductType;
   searchParamsWithDefaults: URLSearchParams;
 }) {
-  // const closeRef = useRef<HTMLButtonElement>(null);
   const options = product.options;
   //@ts-ignore
   const allVariants = product.allVariants.nodes as ProductVariant[];
+  const {isSizeSelected} = useStore();
 
-  return(
+  return (
     <>
       {[...options]
         .reverse()
@@ -374,25 +388,36 @@ function ProductOptions({
               </Heading>
               <div className="flex flex-wrap items-baseline">
                 {option.values.map((value) => {
-                  const checked =
+                  const isColorOption = option.name === 'Color';
+                  const isSizeOption = option.name === 'Size';
+
+                  let checked =
                     searchParamsWithDefaults.get(option.name) === value;
+
+                  if (isSizeOption && !isSizeSelected && checked) {
+                    checked = false;
+                  }
+
                   const id = `option-${option.name}-${value}`;
                   const image = product.media?.nodes?.find(
                     (image) => image.alt === value,
                   );
 
-                  const isColorOption = option.name === 'Color'
                   let availableForSale = true;
                   let size, color;
 
-                  if (option.name === 'Size') {
+                  if (isSizeOption) {
                     color = searchParamsWithDefaults.get('Color');
                   } else if (isColorOption) {
                     size = searchParamsWithDefaults.get('Size');
                   }
                   const compareOptions = [
-                    {name: 'Size', value: size ?? value},
-                    {name: 'Color', value: color ?? value},
+                    ...(searchParamsWithDefaults.has('Size')
+                      ? [{name: 'Size', value: size ?? value}]
+                      : []),
+                    ...(searchParamsWithDefaults.has('Color')
+                      ? [{name: 'Color', value: color ?? value}]
+                      : []),
                   ];
 
                   const variant = allVariants.find(
@@ -416,26 +441,25 @@ function ProductOptions({
                             'leading-none cursor-pointer transition-all duration-200',
                             'px-3 py-3 md:px-4 xl:px-5 mt-1 mr-1 flex justify-center border',
                             checked && availableForSale
-                              ? 'bg-black text-white' 
-                              : checked && !availableForSale ? "bg-gray-100 text-gray-400"
+                              ? 'bg-black text-white'
+                              : checked && !availableForSale
+                              ? 'bg-gray-100 text-gray-400'
                               : '',
-                            (!availableForSale && !isColorOption)
+                            !availableForSale && !isColorOption
                               ? 'pointer-events-none border text-gray-400'
                               : 'border-black',
                           )}
                         />
                       ) : (
                         <ProductOptionLink
-                          optionName={option.name}  
+                          optionName={option.name}
                           optionValue={value}
                           searchParams={searchParamsWithDefaults}
                           className={clsx(
                             'leading-none cursor-pointer transition-all duration-200',
                             'mt-1 mr-1 flex justify-center border',
-                            checked
-                              ? 'border-black'
-                              : 'border-white',
-                            (!availableForSale && !isColorOption)
+                            checked ? 'border-black' : 'border-white',
+                            !availableForSale && !isColorOption
                               ? 'pointer-events-none opacity-20'
                               : '',
                           )}
@@ -460,7 +484,7 @@ function ProductOptions({
             </div>
           </div>
         ))}
-    </>,
+    </>
   );
 }
 
@@ -487,9 +511,14 @@ function ProductOptionLink({
   const clonedSearchParams = new URLSearchParams(searchParams);
   clonedSearchParams.set(optionName, optionValue);
 
+  const {isSizeSelected, setIsSizeSelected} = useStore();
+
   return (
     <Link
       {...props}
+      onClick={() =>
+        optionName === 'Size' && !isSizeSelected ? setIsSizeSelected(true) : {}
+      }
       preventScrollReset
       prefetch="intent"
       replace
