@@ -4,7 +4,15 @@ import {
   urlPathname,
   isCurrentPath,
 } from '~/lib/utils';
-import {Drawer, useDrawer, Text, Cart, CartLoading, Link} from '~/components';
+import {
+  Drawer,
+  useDrawer,
+  Text,
+  Cart,
+  CartLoading,
+  Link,
+  Button,
+} from '~/components';
 import {
   useParams,
   Form,
@@ -76,14 +84,12 @@ function Header({
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
   setModal: Dispatch<
-    React.Dispatch<
-      React.SetStateAction<
-        | {
-            name: keyof typeof modals;
-            data?: any;
-          }
-        | undefined
-      >
+    SetStateAction<
+      | {
+          name: 'location' | 'newsletter' | 'sizeGuide';
+          data?: any;
+        }
+      | undefined
     >
   >;
 }) {
@@ -138,6 +144,7 @@ function Header({
           onClose={closeMenu}
           openCart={openCart}
           openMenu={openMenu}
+          setModal={setModal}
           filter={filter}
           menu={menu}
           shop={shop}
@@ -225,6 +232,7 @@ export function MenuDrawer({
   filter,
   menu,
   shop,
+  setModal,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -233,6 +241,15 @@ export function MenuDrawer({
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
+  setModal: React.Dispatch<
+    React.SetStateAction<
+      | {
+          name: keyof typeof modals;
+          data?: any;
+        }
+      | undefined
+    >
+  >;
 }) {
   return (
     <Drawer open={isOpen} onClose={onClose} openFrom="left">
@@ -244,6 +261,7 @@ export function MenuDrawer({
           openMenu={openMenu}
           openCart={openCart}
           onClose={onClose}
+          setModal={setModal}
         />
       </div>
     </Drawer>
@@ -254,6 +272,7 @@ function MenuMobileNav({
   filter,
   menu,
   onClose,
+  setModal,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
@@ -261,57 +280,56 @@ function MenuMobileNav({
   onClose: () => void;
   openCart: () => void;
   openMenu: () => void;
+  setModal: React.Dispatch<
+    React.SetStateAction<
+      | {
+          name: keyof typeof modals;
+          data?: any;
+        }
+      | undefined
+    >
+  >;
 }) {
   const {pathname} = useLocation();
 
   return (
     <ul className="flex flex-col absolute top-[20px] w-full bg-white h-[calc(100%-40px)]">
+      <div className="border-b">
+        {filter?.items.map((item) => (
+          <Link
+            onClick={onClose}
+            key={item.id}
+            className={`${
+              isCurrentPath(pathname, item?.url)
+                ? 'font-semibold'
+                : 'font-medium'
+            } block whitespace-nowrap mb-2 px-2 ring-0 focus:ring-0 focus:outline-none focus-within:outline-none`}
+            to={urlPathname(item.url)}
+          >
+            {item.title}
+          </Link>
+        ))}
+      </div>
       {menu?.items.map((menuItem) => (
         <Fragment key={menuItem.id}>
-          {menuItem?.title === 'Shop' ? (
-            <div
-              key={menuItem.id}
-              className={`${
-                isCurrentPath(pathname, menuItem?.url)
-                  ? 'font-semibold'
-                  : 'font-medium'
-              } flex border-b py-2`}
-            >
-              <Link
-                className="font-bold px-2 ring-0 focus:ring-0 focus:outline-none focus-within:outline-none"
-                to={urlPathname(menuItem.url)}
-                onClick={onClose}
-              >
-                {menuItem.title}
-              </Link>
-              <div className="flex-1 ml-12">
-                {filter?.items.map((item) => (
-                  <Link
-                    onClick={onClose}
-                    key={item.id}
-                    className={`${
-                      isCurrentPath(pathname, item?.url)
-                        ? 'font-semibold'
-                        : 'font-medium'
-                    } block whitespace-nowrap mb-2 ring-0 focus:ring-0 focus:outline-none focus-within:outline-none`}
-                    to={urlPathname(item.url)}
-                  >
-                    {item.title}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <Link
-              className="font-bold px-2 flex items-center h-10 border-b"
-              to={urlPathname(menuItem.url)}
-              onClick={onClose}
-            >
-              {menuItem.title}
-            </Link>
-          )}
+          <Link
+            className="font-bold px-2 flex items-center h-10 border-b"
+            to={urlPathname(menuItem.url)}
+            onClick={onClose}
+          >
+            {menuItem.title}
+          </Link>
         </Fragment>
       ))}
+      <button
+        className="font-bold px-2 flex items-center h-10 border-b"
+        onClick={() => {
+          onClose();
+          setModal({name: 'newsletter'});
+        }}
+      >
+        Newsletter
+      </button>
     </ul>
   );
 }
@@ -454,7 +472,7 @@ function DesktopHeader({
           <img alt="Stockholm (Surfboard) Club" src={logo} />
         </Link>
         <div className="flex items-center">
-          {menu?.items.map((menuItem) => (
+          {/* {menu?.items.map((menuItem) => (
             <Link
               key={`desktop-${menuItem.id}`}
               className={`mx-1 text-black ${
@@ -467,7 +485,7 @@ function DesktopHeader({
               {menuItem.title}
             </Link>
           ))}
-          {/* <button onClick={() => setModal('newsletter')}>
+          <button onClick={() => setModal('newsletter')}>
             <img
               className="inline mx-1 hover:cursor-pointer"
               src={search}
@@ -619,7 +637,13 @@ function Footer({
 }: {
   menu?: EnhancedMenu;
   setModal: Dispatch<
-    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+    SetStateAction<
+      | {
+          name: 'location' | 'newsletter' | 'sizeGuide';
+          data?: any;
+        }
+      | undefined
+    >
   >;
 }) {
   // const isHome = useIsHomePath();
@@ -659,7 +683,13 @@ function FooterMenu({
 }: {
   menu?: EnhancedMenu;
   setModal: Dispatch<
-    SetStateAction<{name: 'location' | 'newsletter' | undefined}>
+    SetStateAction<
+      | {
+          name: 'location' | 'newsletter' | 'sizeGuide';
+          data?: any;
+        }
+      | undefined
+    >
   >;
 }) {
   return (

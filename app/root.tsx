@@ -175,7 +175,7 @@ export function ErrorBoundary({error}: {error: Error}) {
 const LAYOUT_QUERY = `#graphql
   query layoutMenus(
     $language: LanguageCode
-    # $headerMenuHandle: String!
+    $headerMenuHandle: String!
     $filterMenuHandle: String!
     $footerMenuHandle: String!
   ) @inContext(language: $language) {
@@ -194,15 +194,15 @@ const LAYOUT_QUERY = `#graphql
        }
      }
     }
-    # headerMenu: menu(handle: $headerMenuHandle) {
-    #   id
-    #   items {
-    #     ...MenuItem
-    #     items {
-    #       ...MenuItem
-    #     }
-    #   }
-    # }
+    headerMenu: menu(handle: $headerMenuHandle) {
+      id
+      items {
+        ...MenuItem
+        items {
+          ...MenuItem
+        }
+      }
+    }
     filterMenu: menu(handle: $filterMenuHandle) {
       id
       items {
@@ -241,13 +241,13 @@ export interface LayoutData {
 }
 
 async function getLayoutData({storefront}: AppLoadContext) {
-  // const HEADER_MENU_HANDLE = 'main-menu-dev';
+  const HEADER_MENU_HANDLE = 'main-menu-v2';
   const FILTER_MENU_HANDLE = 'filter-menu-v2';
   const FOOTER_MENU_HANDLE = 'footer-v2';
 
   const data = await storefront.query<LayoutData>(LAYOUT_QUERY, {
     variables: {
-      // headerMenuHandle: HEADER_MENU_HANDLE,
+      headerMenuHandle: HEADER_MENU_HANDLE,
       filterMenuHandle: FILTER_MENU_HANDLE,
       footerMenuHandle: FOOTER_MENU_HANDLE,
       language: storefront.i18n.language,
