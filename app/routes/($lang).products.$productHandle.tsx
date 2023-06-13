@@ -107,7 +107,6 @@ export async function loader({params, request, context}: LoaderArgs) {
     product.parsedSizeGuide = parseSizeGuide(sizeGuide);
   }
 
-
   const recommended = getRecommendedProducts(context.storefront, product.id);
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;

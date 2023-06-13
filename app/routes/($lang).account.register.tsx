@@ -61,11 +61,14 @@ export const action: ActionFunction = async ({request, context, params}) => {
     const customerAccessToken = await doLogin(context, {email, password});
     session.set('customerAccessToken', customerAccessToken);
 
-    return redirect(params.lang ? `${params.lang}/` : '/', {
-      headers: {
-        'Set-Cookie': await session.commit(),
+    return json(
+      {status: 'ok'},
+      {
+        headers: {
+          'Set-Cookie': await session.commit(),
+        },
       },
-    });
+    );
   } catch (error: any) {
     if (storefront.isApiError(error)) {
       return badRequest({
