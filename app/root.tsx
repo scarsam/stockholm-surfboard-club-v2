@@ -55,7 +55,7 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export async function loader({request, context}: LoaderArgs) {
+export async function loader({request, params, context}: LoaderArgs) {
   const cartId = getCartId(request);
   const [customerAccessToken, layout] = await Promise.all([
     context.session.get('customerAccessToken'),
@@ -70,7 +70,7 @@ export async function loader({request, context}: LoaderArgs) {
   let featuredData;
 
   if (customerAccessToken) {
-    customer = await getCustomer(context, customerAccessToken);
+    customer = await getCustomer(context, customerAccessToken, params, request);
     orders = flattenConnection(customer.orders) as Order[];
     addresses = flattenConnection(customer.addresses) as MailingAddress[];
     featuredData = getFeaturedData(context.storefront);

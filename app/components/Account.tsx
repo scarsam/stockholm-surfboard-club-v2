@@ -1,4 +1,4 @@
-import {Form, Outlet, useMatches} from '@remix-run/react';
+import {Form, Outlet, Params, useMatches} from '@remix-run/react';
 import type {
   Customer,
   MailingAddress,
@@ -223,6 +223,8 @@ const CUSTOMER_QUERY = `#graphql
 export async function getCustomer(
   context: AppLoadContext,
   customerAccessToken: string,
+  params: Params,
+  request: Request,
 ) {
   const {storefront} = context;
 
@@ -241,7 +243,7 @@ export async function getCustomer(
    * If the customer failed to load, we assume their access token is invalid.
    */
   if (!data || !data.customer) {
-    throw await doLogout(context);
+    throw await doLogout(context, params, request);
   }
 
   return data.customer;

@@ -40,7 +40,7 @@ const formDataHas = (formData: FormData, key: string) => {
 //   renderInModal: true,
 // };
 
-export const action: ActionFunction = async ({request, context}) => {
+export const action: ActionFunction = async ({request, params, context}) => {
   const formData = await request.formData();
 
   const customerAccessToken = await context.session.get('customerAccessToken');
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({request, context}) => {
 
   // Double-check current user is logged in.
   // Will throw a logout redirect if not.
-  await getCustomer(context, customerAccessToken);
+  await getCustomer(context, customerAccessToken, params, request);
 
   if (
     formDataHas(formData, 'newPassword') &&

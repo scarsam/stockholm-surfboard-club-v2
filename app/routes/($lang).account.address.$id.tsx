@@ -36,7 +36,7 @@ export const handle = {
 //   return new Response(null);
 // }
 
-export const action: ActionFunction = async ({request, context}) => {
+export const action: ActionFunction = async ({request, params, context}) => {
   const {storefront, session} = context;
   const formData = await request.formData();
 
@@ -46,7 +46,7 @@ export const action: ActionFunction = async ({request, context}) => {
   const addressId = formData.get('addressId');
   invariant(typeof addressId === 'string', 'You must provide an address id.');
 
-  await getCustomer(context, customerAccessToken);
+  await getCustomer(context, customerAccessToken, params, request);
 
   if (request.method === 'DELETE') {
     try {
