@@ -492,7 +492,7 @@ function DesktopHeader({
                 />
               </button>
             </Form>
-            <button onClick={() => setModal({name: 'location'})} type="button">
+            {/* <button onClick={() => setModal({name: 'location'})} type="button">
               <img
                 className="flex self-stretch items-center hover:cursor-pointer mx-1"
                 src={globe}
@@ -500,7 +500,7 @@ function DesktopHeader({
                 height="16"
                 alt="globe-icon"
               />
-            </button>
+            </button> */}
             <button
               className="flex self-stretch items-center mx-1"
               type="button"
