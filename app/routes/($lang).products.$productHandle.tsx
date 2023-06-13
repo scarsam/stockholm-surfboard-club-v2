@@ -242,7 +242,7 @@ type ProductFormProps = {
 
 export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
   const {product, analytics} = useLoaderData<typeof loader>();
-  const {isSizeSelected} = useStore();
+  const {isSizeSelected: isSelected} = useStore();
   const [currentSearchParams] = useSearchParams();
   const transition = useNavigation();
 
@@ -259,6 +259,13 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
 
   // Removng the size option since we never want this pre selected
   const firstVariant = product.variants.nodes[0];
+
+  const isSizeSelected =
+    isSelected ||
+    !(
+      product.options.find((option: SelectedOption) => option.name === 'Size')
+        ?.values?.length > 1
+    );
 
   /**
    * We're making an explicit choice here to display the product options
