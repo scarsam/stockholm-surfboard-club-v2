@@ -166,7 +166,7 @@ export default function ProductComponent() {
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
             <section className="flex flex-col w-full gap-4 md:px-0">
-              <div className="md:border-b py-3">
+              <div className="border-b pb-3 pt-0 md:py-3">
                 <div className="mx-4 grid md:flex justify-between grid-flow-col">
                   <Heading as="h1" size="copy" className="whitespace-normal">
                     {title}
@@ -382,12 +382,13 @@ function ProductOptions({
                     (image) => image.alt === value,
                   );
 
+                  const isColorOption = option.name === 'Color'
                   let availableForSale = true;
                   let size, color;
 
                   if (option.name === 'Size') {
                     color = searchParamsWithDefaults.get('Color');
-                  } else if (option.name === 'Color') {
+                  } else if (isColorOption) {
                     size = searchParamsWithDefaults.get('Size');
                   }
                   const compareOptions = [
@@ -407,7 +408,7 @@ function ProductOptions({
 
                   return (
                     <Text key={id}>
-                      {option.name === 'Size' || !image ? (
+                      {!isColorOption || !image ? (
                         <ProductOptionLink
                           optionName={option.name}
                           optionValue={value}
@@ -416,25 +417,26 @@ function ProductOptions({
                             'leading-none cursor-pointer transition-all duration-200',
                             'px-3 py-3 md:px-4 xl:px-5 mt-1 mr-1 flex justify-center border',
                             checked && availableForSale
-                              ? 'bg-black text-white'
+                              ? 'bg-black text-white' 
+                              : checked && !availableForSale ? "bg-gray-100 text-gray-400"
                               : '',
-                            !availableForSale
+                            (!availableForSale && !isColorOption)
                               ? 'pointer-events-none border text-gray-400'
                               : 'border-black',
                           )}
                         />
                       ) : (
                         <ProductOptionLink
-                          optionName={option.name}
+                          optionName={option.name}  
                           optionValue={value}
                           searchParams={searchParamsWithDefaults}
                           className={clsx(
                             'leading-none cursor-pointer transition-all duration-200',
                             'mt-1 mr-1 flex justify-center border',
-                            checked && availableForSale
+                            checked
                               ? 'border-black'
                               : 'border-white',
-                            !availableForSale
+                            (!availableForSale && !isColorOption)
                               ? 'pointer-events-none opacity-20'
                               : '',
                           )}
