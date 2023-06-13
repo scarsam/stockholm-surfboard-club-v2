@@ -470,7 +470,7 @@ function ProductOptions({
                               alt={image.alt!}
                               className="w-full mx-auto min-w-[50px] max-w-[60px]"
                               sizes="4vw"
-                              aspectRatio="3/2"
+                              aspectRatio="4/5"
                             />
                           )}
                         </ProductOptionLink>
