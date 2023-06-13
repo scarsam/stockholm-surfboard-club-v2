@@ -74,6 +74,9 @@ export const action: ActionFunction = async ({
 
     session.set('customerAccessToken', accessToken);
 
+    const path = new URL(request.headers.get('referer') || '');
+    const pathname = path.pathname;
+
     return redirect(lang ? `${lang}/collections/new` : '/collections/new', {
       headers: {
         'Set-Cookie': await session.commit(),
