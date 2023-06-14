@@ -142,6 +142,7 @@ function Header({
         <MenuDrawer
           isOpen={isMenuOpen}
           onClose={closeMenu}
+          openAccount={openAccount}
           openCart={openCart}
           openMenu={openMenu}
           setModal={setModal}
@@ -229,6 +230,7 @@ export function MenuDrawer({
   onClose,
   openCart,
   openMenu,
+  openAccount,
   filter,
   menu,
   shop,
@@ -238,6 +240,7 @@ export function MenuDrawer({
   onClose: () => void;
   openCart: () => void;
   openMenu: () => void;
+  openAccount: () => void;
   filter: EnhancedMenu;
   menu: EnhancedMenu;
   shop: QueryRoot['shop'];
@@ -260,6 +263,7 @@ export function MenuDrawer({
           filter={filter}
           openMenu={openMenu}
           openCart={openCart}
+          openAccount={openAccount}
           onClose={onClose}
           setModal={setModal}
         />
@@ -273,6 +277,7 @@ function MenuMobileNav({
   menu,
   onClose,
   setModal,
+  openAccount,
 }: {
   shop: QueryRoot['shop'];
   filter: EnhancedMenu;
@@ -280,6 +285,7 @@ function MenuMobileNav({
   onClose: () => void;
   openCart: () => void;
   openMenu: () => void;
+  openAccount: () => void;
   setModal: React.Dispatch<
     React.SetStateAction<
       | {
@@ -329,6 +335,16 @@ function MenuMobileNav({
         }}
       >
         Newsletter
+      </button>
+      <button
+        className="font-bold px-2 flex items-center h-10 border-b"
+        type="button"
+        onClick={() => {
+          onClose();
+          openAccount();
+        }}
+      >
+        Login
       </button>
     </ul>
   );
@@ -383,7 +399,7 @@ function MobileHeader({
             <img alt="Stockholm (Surfboard) Club" src={logo} />
           </Link>
           <div className="flex h-full items-center">
-            <div className="border-r h-full flex items-center justify-center w-10">
+            <div className="border-l h-full flex items-center justify-center w-10">
               <Form
                 method="GET"
                 action={params.lang ? `/${params.lang}/search` : '/search'}
@@ -416,7 +432,7 @@ function MobileHeader({
                 alt="search-icon"
               /> */}
             </div>
-            <div className="border-r h-full flex items-center justify-center w-10">
+            <div className="h-full flex items-center justify-center w-10">
               <CartCount isHome openCart={openCart} />
               {/* <button onClick={openCart} type="button">
                 <img
