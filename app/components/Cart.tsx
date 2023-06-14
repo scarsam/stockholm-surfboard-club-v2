@@ -253,10 +253,10 @@ function CartLineItem({line}: {line: CartLine}) {
       <div className="flex-shrink">
         {merchandise.image && (
           <Image
-            aspectRatio="3/2"
+            aspectRatio="5/5"
             sizes="200px"
             data={merchandise.image}
-            className="border rounded"
+            className="border"
             alt={merchandise.title}
           />
         )}
@@ -441,7 +441,7 @@ export function CartEmpty({
           <Button onClick={onClose}>Continue shopping</Button>
         </div>
       </section> */}
-      <section className="grid gap-4 pt-2">
+      <section className="grid gap-2 pt-2">
         <FeaturedProducts
           count={4}
           heading="Shop Best Sellers"

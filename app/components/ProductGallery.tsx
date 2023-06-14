@@ -50,7 +50,7 @@ export function ProductGallery({
         let mediaProps: Record<string, any> = {};
         const isFirst = i === 0;
         const isFourth = i === 3;
-        const isFullWidth = i % 3 === 0;
+        const isFullWidth = i % 3 === 0 || media.length === 2;
 
         const data = {
           ...med,

@@ -1,11 +1,5 @@
 import clsx from 'clsx';
-import {
-  flattenConnection,
-  Image,
-  Money,
-  ShopifyAnalyticsProduct,
-  useMoney,
-} from '@shopify/hydrogen';
+import {flattenConnection, Image, Money, useMoney} from '@shopify/hydrogen';
 import type {SerializeFrom} from '@shopify/remix-oxygen';
 import {Text, Link, AddToCartButton} from '~/components';
 import {isDiscounted, isNewArrival} from '~/lib/utils';
@@ -18,7 +12,6 @@ export function ProductCard({
   className,
   loading,
   onClick,
-  quickAdd,
   flexTitleAndPrice,
 }: {
   product: SerializeFrom<Product>;
@@ -49,23 +42,15 @@ export function ProductCard({
     cardLabel = 'New';
   }
 
-  const productAnalytics: ShopifyAnalyticsProduct = {
-    productGid: product.id,
-    variantGid: firstVariant.id,
-    name: product.title,
-    variantName: firstVariant.title,
-    brand: product.vendor,
-    price: firstVariant.price.amount,
-    quantity: 1,
-  };
-
-  const variantColor = firstVariant.selectedOptions.find(
-    (opt) => opt.name === 'Color',
-  )?.value;
-
-  const variantSize = firstVariant.selectedOptions.find(
-    (opt) => opt.name === 'Size',
-  )?.value;
+  // const productAnalytics: ShopifyAnalyticsProduct = {
+  //   productGid: product.id,
+  //   variantGid: firstVariant.id,
+  //   name: product.title,
+  //   variantName: firstVariant.title,
+  //   brand: product.vendor,
+  //   price: firstVariant.price.amount,
+  //   quantity: 1,
+  // };
 
   const queryString = firstVariant.selectedOptions.reduce(
     (prev, option, index) => {
@@ -132,7 +117,7 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      {quickAdd && (
+      {/* {quickAdd && (
         <AddToCartButton
           lines={[
             {
@@ -151,7 +136,7 @@ export function ProductCard({
             Add to Bag
           </Text>
         </AddToCartButton>
-      )}
+      )} */}
     </div>
   );
 }

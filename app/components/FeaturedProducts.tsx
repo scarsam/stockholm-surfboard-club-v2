@@ -52,12 +52,12 @@ export function FeaturedProducts({
 
   return (
     <>
-      <Heading format size="copy" className="t-4">
+      <Heading format size="fine" className="t-4">
         {heading}
       </Heading>
       <div
         className={clsx([
-          `grid grid-cols-2 gap-x-6 gap-y-8`,
+          `grid grid-cols-2 gap-2`,
           layout === 'page' ? 'md:grid-cols-4 sm:grid-col-4' : '',
         ])}
       >
