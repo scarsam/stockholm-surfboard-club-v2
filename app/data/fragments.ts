@@ -42,6 +42,9 @@ export const PRODUCT_CARD_FRAGMENT = `#graphql
     title
     publishedAt
     handle
+    comingSoon: metafield(namespace: "custom", key: "coming_soon") {
+      value
+    }
     variants(first: 100) {
       nodes {
         id

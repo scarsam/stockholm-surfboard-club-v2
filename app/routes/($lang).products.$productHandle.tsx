@@ -111,6 +111,8 @@ export async function loader({params, request, context}: LoaderArgs) {
     product.parsedSizeGuide = parseSizeGuide(sizeGuide);
   }
 
+  product.isComingSoon = !!product.comingSoon?.value;
+
   const recommended = getRecommendedProducts(context.storefront, product.id);
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
@@ -151,6 +153,7 @@ export default function ProductComponent() {
   const {media, title, descriptionHtml} = product as ProductType;
   const firstVariant = product.variants.nodes[0];
   const selectedVariant = product.selectedVariant ?? firstVariant;
+  const isComingSoon = product.isComingSoon;
 
   const isOnSale =
     selectedVariant?.price?.amount &&
@@ -187,21 +190,23 @@ export default function ProductComponent() {
                   <Heading as="h1" size="copy" className="whitespace-normal">
                     {title}
                   </Heading>
-                  <Text as="span" className="flex items-center gap-2">
-                    <Money
-                      withoutTrailingZeros
-                      data={selectedVariant?.price!}
-                      as="span"
-                    />
-                    {isOnSale && (
+                  {!isComingSoon && (
+                    <Text as="span" className="flex items-center gap-2">
                       <Money
                         withoutTrailingZeros
-                        data={selectedVariant?.compareAtPrice!}
+                        data={selectedVariant?.price!}
                         as="span"
-                        className="opacity-50 strike"
                       />
-                    )}
-                  </Text>
+                      {isOnSale && (
+                        <Money
+                          withoutTrailingZeros
+                          data={selectedVariant?.compareAtPrice!}
+                          as="span"
+                          className="opacity-50 strike"
+                        />
+                      )}
+                    </Text>
+                  )}
                 </div>
               </div>
               <ProductForm
@@ -299,6 +304,7 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
   };
 
   const sizeGuide = product.parsedSizeGuide;
+  const isComingSoon = product.isComingSoon;
 
   return (
     <div className="grid pb-4 border-b">
@@ -327,10 +333,12 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
             </div>
           </div>
         )}
-        <ProductOptions
-          product={product}
-          searchParamsWithDefaults={searchParamsWithDefaults}
-        />
+        {!isComingSoon && (
+          <ProductOptions
+            product={product}
+            searchParamsWithDefaults={searchParamsWithDefaults}
+          />
+        )}
         {selectedVariant && (
           <div className="grid items-stretch gap-2 mx-4">
             <AddToCartButton
@@ -356,7 +364,9 @@ export function ProductForm({prouctDescription, setModal}: ProductFormProps) {
                 width="wide"
                 className="flex items-center justify-center gap-2 m-auto"
               >
-                {!isSizeSelected
+                {isComingSoon
+                  ? 'Coming soon'
+                  : !isSizeSelected
                   ? 'Select Size'
                   : isOutOfStock
                   ? 'Out of stock'
@@ -599,6 +609,9 @@ const PRODUCT_QUERY = `#graphql
       vendor
       handle
       descriptionHtml
+      comingSoon: metafield(namespace: "custom", key: "coming_soon") {
+        value
+      }
       sizeGuide: metafield(namespace: "custom", key: "size_guide") {
         reference {
         ... on Metaobject {

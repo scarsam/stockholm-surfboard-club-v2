@@ -40,6 +40,8 @@ export function ProductCard({
     cardLabel = 'Sale';
   } else if (isNewArrival(product.publishedAt)) {
     cardLabel = 'New';
+  } else if (product.isComingSoon) {
+    cardLabel = 'Coming soon';
   }
 
   // const productAnalytics: ShopifyAnalyticsProduct = {
@@ -103,17 +105,22 @@ export function ProductCard({
             >
               {product.title}
             </Text>
-            <div className="flex gap-1">
-              <Text className="flex gap-1">
-                <Money withoutTrailingZeros data={price!} />
-                {isDiscounted(price as MoneyV2, compareAtPrice as MoneyV2) && (
-                  <CompareAtPrice
-                    className={'opacity-50'}
-                    data={compareAtPrice as MoneyV2}
-                  />
-                )}
-              </Text>
-            </div>
+            {!product.isComingSoon && (
+              <div className="flex gap-1">
+                <Text className="flex gap-1">
+                  <Money withoutTrailingZeros data={price!} />
+                  {isDiscounted(
+                    price as MoneyV2,
+                    compareAtPrice as MoneyV2,
+                  ) && (
+                    <CompareAtPrice
+                      className={'opacity-50'}
+                      data={compareAtPrice as MoneyV2}
+                    />
+                  )}
+                </Text>
+              </div>
+            )}
           </div>
         </div>
       </Link>

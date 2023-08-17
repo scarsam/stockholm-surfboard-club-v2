@@ -154,7 +154,11 @@ export async function loader({params, request, context}: LoaderArgs) {
         (option) => option.name === 'Color',
       );
 
-      if (!hasColorOption) newProducts.push(product);
+      if (!hasColorOption)
+        newProducts.push({
+          ...product,
+          isComingSoon: !!product.comingSoon?.value,
+        });
       else {
         variants.forEach((variant) => {
           const colorOptionValue = variant.selectedOptions.find(
@@ -169,6 +173,7 @@ export async function loader({params, request, context}: LoaderArgs) {
               ...product,
               //@ts-ignore
               variants: {...variants, nodes: [variant]},
+              isComingSoon: !!product.comingSoon?.value,
             });
             if (colorOptionValue) {
               usedColors.push(colorOptionValue);
