@@ -102,14 +102,14 @@ export function ProductCard({
             )}
           >
             <Text
-              className="w-full overflow-hidden whitespace-nowrap text-ellipsis leading-4"
+              className="w-full overflow-hidden whitespace-nowrap text-ellipsis leading-4 text-sm md:text-copy"
               as="h3"
             >
               {product.title}
             </Text>
             {!product.isComingSoon && (
               <div className="flex gap-1">
-                <Text className="flex gap-1">
+                <Text className="flex gap-1 text-sm md:text-copy">
                   <Money withoutTrailingZeros data={price!} />
                   {isDiscounted(
                     price as MoneyV2,
