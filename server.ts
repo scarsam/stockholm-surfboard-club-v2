@@ -73,8 +73,8 @@ export default {
       const redirectSites = [
         '/',
         '/collections/vans',
-        'collections/sale',
-        'collections/frontpage',
+        '/collections/sale',
+        '/collections/frontpage',
       ];
       if (redirectSites.includes(url.pathname)) {
         return redirect(`${url.origin}/collections/new`);
