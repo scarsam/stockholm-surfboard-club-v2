@@ -64,10 +64,11 @@ export function getExcerpt(text: string) {
 }
 
 export function isNewArrival(date: string, daysOld = 30) {
-  return (
-    new Date(date).valueOf() >
-    new Date().setDate(new Date().getDate() - daysOld).valueOf()
-  );
+  return false;
+  // return (
+  //   new Date(date).valueOf() >
+  //   new Date().setDate(new Date().getDate() - daysOld).valueOf()
+  // );
 }
 
 export function isDiscounted(price: MoneyV2, compareAtPrice: MoneyV2) {

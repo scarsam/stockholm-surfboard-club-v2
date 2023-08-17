@@ -30,7 +30,7 @@ export function Grid({
   };
 
   const gaps = {
-    default: 'grid gap-x-4 gap-y-2',
+    default: 'grid gap-1 md:gap-x-4 md:gap-y-2',
     blog: 'grid gap-6',
   };
 

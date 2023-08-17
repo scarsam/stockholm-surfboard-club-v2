@@ -215,7 +215,7 @@ export default function Collection() {
           </div>
         )}
       </PageHeader> */}
-      <Section padding="s">
+      <Section padding="none" className="p-1 md:p-4">
         {/* <SortFilter
           filters={collection.products.filters as Filter[]}
           appliedFilters={appliedFilters}
