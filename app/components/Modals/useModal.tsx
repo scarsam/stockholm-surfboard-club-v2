@@ -2,14 +2,17 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Newsletter} from './Newsletter';
 import {Location} from './Location';
 import {SizeGuide} from './SizeGuide';
+import {ProductImages} from './ProductImages';
+import clsx from 'clsx';
 
 export const modals = {
   location: Location,
   newsletter: Newsletter,
   sizeGuide: SizeGuide,
+  productImages: ProductImages,
 };
 
-export const useModal = () => {
+export const useModal = (fullscreen?: boolean) => {
   const [modal, setModal] = useState<{name: keyof typeof modals; data?: any}>();
 
   useEffect(() => {
@@ -21,15 +24,29 @@ export const useModal = () => {
     [modal],
   );
 
+  const className = fullscreen
+    ? ''
+    : clsx('p-2 border border-black relative max-w-[390px]');
+
   return {
     setModal,
     Modal: useCallback(
       () => (
         <>
           {modal ? (
-            <div className="h-full w-full bg-[#E6E6E6]/90 fixed left-0 top-0 bottom-0 z-50">
-              <div className="flex items-center justify-center min-h-screen">
-                <div className="w-full bg-white p-2 border border-black relative max-w-[390px] min-h-min">
+            <div
+              className={clsx(
+                'h-full w-full bg-[#E6E6E6]/90 fixed left-0 top-0 bottom-0 z-50',
+                fullscreen && 'overflow-scroll',
+              )}
+            >
+              <div
+                className={clsx(
+                  'flex items-center justify-center min-h-screen',
+                  className,
+                )}
+              >
+                <div className="w-full bg-white min-h-min">
                   <button
                     onClick={() => setModal(undefined)}
                     className="absolute right-0 -top-6 font-mono"
