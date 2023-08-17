@@ -45,6 +45,7 @@ export const PRODUCT_CARD_FRAGMENT = `#graphql
     comingSoon: metafield(namespace: "custom", key: "coming_soon") {
       value
     }
+    availableForSale
     variants(first: 100) {
       nodes {
         id

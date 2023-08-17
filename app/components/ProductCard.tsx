@@ -42,6 +42,8 @@ export function ProductCard({
     cardLabel = 'New';
   } else if (product.isComingSoon) {
     cardLabel = 'Coming soon';
+  } else if (!product.availableForSale) {
+    cardLabel = 'Out of stock';
   }
 
   // const productAnalytics: ShopifyAnalyticsProduct = {
