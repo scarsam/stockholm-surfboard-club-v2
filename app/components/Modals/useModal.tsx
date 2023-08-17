@@ -40,13 +40,8 @@ export const useModal = (fullscreen?: boolean) => {
                 fullscreen && 'overflow-scroll',
               )}
             >
-              <div
-                className={clsx(
-                  'flex items-center justify-center min-h-screen',
-                  className,
-                )}
-              >
-                <div className="w-full bg-white min-h-min">
+              <div className="flex items-center justify-center min-h-screen">
+                <div className={clsx('w-full bg-white min-h-min', className)}>
                   <button
                     onClick={() => setModal(undefined)}
                     className="absolute right-0 -top-6 font-mono"
