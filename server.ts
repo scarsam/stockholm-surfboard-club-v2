@@ -70,7 +70,13 @@ export default {
 
       const url = new URL(request.url);
 
-      if (url.pathname === '/') {
+      const redirectSites = [
+        '/',
+        '/collections/vans',
+        'collections/sale',
+        'collections/frontpage',
+      ];
+      if (redirectSites.includes(url.pathname)) {
         return redirect(`${url.origin}/collections/new`);
       }
 
