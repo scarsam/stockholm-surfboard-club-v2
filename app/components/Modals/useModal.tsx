@@ -26,7 +26,7 @@ export const useModal = (fullscreen?: boolean) => {
 
   const className = fullscreen
     ? ''
-    : clsx('p-2 border border-black relative max-w-[390px]');
+    : clsx('p-2 border border-black relative max-w-[390px] m-2');
 
   return {
     setModal,
