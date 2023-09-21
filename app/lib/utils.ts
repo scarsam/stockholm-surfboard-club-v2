@@ -346,3 +346,14 @@ export const parseSizeGuide = (string: string) => {
 
   return {listItems, sizeItems};
 };
+
+export function getCookie(key: string) {
+  if (typeof window !== 'undefined') {
+    const cookie = document.cookie.match(
+      '(^|;)\\s*' + key + '\\s*=\\s*([^;]+)',
+    );
+    return !!cookie;
+  }
+
+  return undefined;
+}

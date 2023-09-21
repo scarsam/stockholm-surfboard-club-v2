@@ -31,11 +31,11 @@ import emptyCartIcon from '../../public/empty-cart-icon.svg';
 import search from '../../public/search-icon.svg';
 import account from '../../public/account-icon.svg';
 import logo from '../../public/stockholm-surfboard-logo.svg';
-import globe from '../../public/globe-icon.svg';
 import {modals, useModal} from './Modals/useModal';
 import Authenticated from './Account';
 
 import {Session} from './Session';
+import CookieBanner from './CookieBanner';
 
 export const handle = {
   isPublic: true,
@@ -69,6 +69,7 @@ export function Layout({
           {children}
         </main>
         <Footer setModal={setModal} menu={layout?.footerMenu} />
+        <CookieBanner />
       </div>
     </>
   );

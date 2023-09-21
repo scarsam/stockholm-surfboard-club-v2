@@ -97,9 +97,8 @@ export async function loader({request, params, context}: LoaderArgs) {
 export default function App() {
   const data = useLoaderData<typeof loader>();
   const locale = data?.selectedLocale ?? DEFAULT_LOCALE;
-  const hasUserConsent = true;
 
-  useAnalytics(hasUserConsent, locale);
+  useAnalytics(locale);
 
   return (
     <html lang={locale.language}>

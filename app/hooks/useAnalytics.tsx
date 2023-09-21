@@ -9,8 +9,12 @@ import {
 } from '@shopify/hydrogen';
 import {useEffect} from 'react';
 import {CartAction, I18nLocale} from '../lib/type';
+import {USER_CONSENT_COOKIE_NAME} from '~/lib/const';
+import {getCookie} from '~/lib/utils';
 
-export function useAnalytics(hasUserConsent: boolean, locale: I18nLocale) {
+export function useAnalytics(locale: I18nLocale) {
+  const hasUserConsent = !!getCookie(USER_CONSENT_COOKIE_NAME);
+
   useShopifyCookies({hasUserConsent});
   const location = useLocation();
   const analyticsFromMatches = useDataFromMatches(
