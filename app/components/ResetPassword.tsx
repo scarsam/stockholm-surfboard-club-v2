@@ -22,8 +22,8 @@ export function ResetPassword() {
     <>
       {isSubmitted ? (
         <>
-          <h1 className="text-4xl">Request Sent.</h1>
-          <p className="mt-4">
+          <h1 className="text-xl mt-4">Request Sent.</h1>
+          <p className="mt-2 text-center">
             If that email address is in our system, you will receive an email
             with instructions about how to reset your password in a few minutes.
           </p>

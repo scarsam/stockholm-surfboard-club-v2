@@ -71,7 +71,7 @@ export const action: ActionFunction = async ({
 
     session.set('customerAccessToken', accessToken);
 
-    return redirect(lang ? `${lang}/collections/new` : '/collections/new', {
+    return redirect(lang ? `/${lang}/collections/new` : '/collections/new', {
       headers: {
         'Set-Cookie': await session.commit(),
       },
@@ -138,8 +138,8 @@ export default function Reset() {
   return (
     <div className="flex justify-center my-24 px-4">
       <div className="max-w-md w-full">
-        <h1 className="text-4xl">Reset Password.</h1>
-        <p className="mt-4">Enter a new password for your account.</p>
+        <h1 className="text-2xl">Reset Password.</h1>
+        <p className="mt-2">Enter a new password for your account.</p>
         {/* TODO: Add onSubmit to validate _before_ submission with native? */}
         <Form
           method="POST"
@@ -154,7 +154,7 @@ export default function Reset() {
           <div className="mb-3">
             <input
               ref={passwordInput}
-              className={`mb-1 ${getInputStyleClasses(nativePasswordError)}`}
+              className="w-full mb-3 focus:border-black focus:outline-none ring-black focus:ring-black"
               id="password"
               name="password"
               type="password"
@@ -191,9 +191,7 @@ export default function Reset() {
           <div className="mb-3">
             <input
               ref={passwordConfirmInput}
-              className={`mb-1 ${getInputStyleClasses(
-                nativePasswordConfirmError,
-              )}`}
+              className="w-full mb-6 focus:border-black focus:outline-none ring-black focus:ring-black"
               id="passwordConfirm"
               name="passwordConfirm"
               type="password"
@@ -215,7 +213,7 @@ export default function Reset() {
           </div>
           <div className="flex items-center justify-between">
             <button
-              className="bg-primary text-contrast rounded py-2 px-4 focus:shadow-outline block w-full"
+              className="border border-black uppercase py-2 px-10 w-full"
               type="submit"
             >
               Save

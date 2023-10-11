@@ -32,7 +32,7 @@ export async function loader({request, context, params}: LoaderArgs) {
 
   if (!customerAccessToken) {
     return redirect(
-      params.lang ? `${params.lang}/account/login` : '/account/login',
+      params.lang ? `/${params.lang}/collections/new` : '/collections/new',
     );
   }
 

@@ -12,7 +12,7 @@ export async function loader({context, params}: LoaderArgs) {
 
   if (customerAccessToken) {
     return redirect(
-      params.lang ? `${params.lang}/collections/new` : '/collections/new',
+      params.lang ? `/${params.lang}/collections/new` : '/collections/new',
     );
   }
 

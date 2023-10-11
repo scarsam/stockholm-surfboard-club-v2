@@ -290,6 +290,7 @@ const COLLECTION_QUERY = `#graphql
         pageInfo {
           hasNextPage
           endCursor
+          startCursor
         }
       }
     }
