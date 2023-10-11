@@ -4,6 +4,7 @@ module.exports = {
     v2_errorBoundary: true,
     v2_routeConvention: true,
     v2_meta: true,
+    v2_dev: true,
     unstable_postcss: true,
     unstable_tailwind: true,
     v2_normalizeFormMethod: true,
