@@ -32,7 +32,6 @@ function root({
     title: shop?.name,
     titleTemplate: '%s | Stockholm Surfboard Club',
     description: truncate(shop?.description ?? ''),
-    handle: '@shopify',
     url,
     robots: {
       noIndex: false,
@@ -62,9 +61,9 @@ function root({
 
 function home(): SeoConfig<WebPage> {
   return {
-    title: 'Home',
-    titleTemplate: '%s | Hydrogen Demo Store',
-    description: 'The best place to buy snowboarding products',
+    title: 'New arrivals - Stockholm Surfboard Club',
+    titleTemplate: '%s | Stockholm Surfboard Club',
+    description: 'Buy the latest products from Stockholm Surfboard Club',
     robots: {
       noIndex: false,
       noFollow: false,
