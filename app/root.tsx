@@ -15,7 +15,12 @@ import {
   useMatches,
   useRouteError,
 } from '@remix-run/react';
-import {ShopifySalesChannel, Seo, flattenConnection} from '@shopify/hydrogen';
+import {
+  ShopifySalesChannel,
+  Seo,
+  flattenConnection,
+  useLoadScript,
+} from '@shopify/hydrogen';
 import {Layout} from '~/components';
 import {GenericError} from './components/GenericError';
 import {NotFound} from './components/NotFound';
@@ -39,6 +44,7 @@ import {useAnalytics} from './hooks/useAnalytics';
 import {countries} from './data/countries';
 import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
+import {useEffect} from 'react';
 
 export const links: LinksFunction = () => {
   return [
@@ -99,6 +105,24 @@ export default function App() {
   const locale = data?.selectedLocale ?? DEFAULT_LOCALE;
 
   useAnalytics(locale);
+
+  const scriptStatus = useLoadScript(
+    'https://www.googletagmanager.com/gtag/js?id=G-FC788PJZLH',
+  );
+
+  useEffect(() => {
+    if (scriptStatus === 'done' && window !== undefined) {
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+
+      gtag('config', 'G-FC788PJZLH');
+    }
+  }, [scriptStatus]);
 
   return (
     <html lang={locale.language}>
