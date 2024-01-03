@@ -197,6 +197,7 @@ export default function ProductComponent() {
                         withoutTrailingZeros
                         data={selectedVariant?.price!}
                         as="span"
+                        className={clsx(isOnSale && 'text-red-500')}
                       />
                       {isOnSale && (
                         <Money

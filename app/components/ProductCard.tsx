@@ -34,9 +34,11 @@ export function ProductCard({
   if (!firstVariant) return null;
   const {image, price, compareAtPrice} = firstVariant;
 
+  const isOnSale = isDiscounted(price as MoneyV2, compareAtPrice as MoneyV2);
+
   if (label) {
     cardLabel = label;
-  } else if (isDiscounted(price as MoneyV2, compareAtPrice as MoneyV2)) {
+  } else if (isOnSale) {
     cardLabel = 'Sale';
   } else if (isNewArrival(product.publishedAt)) {
     cardLabel = 'New';
@@ -110,11 +112,12 @@ export function ProductCard({
             {!product.isComingSoon && (
               <div className="flex gap-1">
                 <Text className="flex gap-1 text-sm md:text-copy">
-                  <Money withoutTrailingZeros data={price!} />
-                  {isDiscounted(
-                    price as MoneyV2,
-                    compareAtPrice as MoneyV2,
-                  ) && (
+                  <Money
+                    withoutTrailingZeros
+                    data={price!}
+                    className={clsx(isOnSale && 'text-red-500')}
+                  />
+                  {isOnSale && (
                     <CompareAtPrice
                       className={'opacity-50'}
                       data={compareAtPrice as MoneyV2}
