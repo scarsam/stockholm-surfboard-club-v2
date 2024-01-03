@@ -47,11 +47,12 @@ import type {
   MediaImage,
   SelectedOption,
   Metaobject,
+  MoneyV2,
 } from '@shopify/hydrogen/storefront-api-types';
 import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import type {Storefront} from '~/lib/type';
 import type {Product} from 'schema-dts';
-import {parseSizeGuide} from '~/lib/utils';
+import {isDiscounted, parseSizeGuide} from '~/lib/utils';
 import {useModal} from '~/components/Modals/useModal';
 import {useStore} from '~/store';
 
@@ -155,10 +156,10 @@ export default function ProductComponent() {
   const selectedVariant = product.selectedVariant ?? firstVariant;
   const isComingSoon = product.isComingSoon;
 
-  const isOnSale =
-    selectedVariant?.price?.amount &&
-    selectedVariant?.compareAtPrice?.amount &&
-    selectedVariant?.price?.amount < selectedVariant?.compareAtPrice?.amount;
+  const isOnSale = isDiscounted(
+    selectedVariant.price as MoneyV2,
+    selectedVariant.compareAtPrice as MoneyV2,
+  );
 
   const galleryMedia = useMemo(
     () =>
