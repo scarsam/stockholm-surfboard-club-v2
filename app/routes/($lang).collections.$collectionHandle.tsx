@@ -139,8 +139,6 @@ export async function loader({params, request, context}: LoaderArgs) {
     },
   });
 
-  const {products, ...rest} = collection;
-
   if (!collection) {
     throw new Response(null, {status: 404});
   }
@@ -164,13 +162,11 @@ export async function loader({params, request, context}: LoaderArgs) {
         (option) => option.name === 'Color',
       );
 
-      if (!hasColorOption) {
-        if (variants.length > 0) {
-          newProducts.push({
-            ...product,
-            isComingSoon: !!product.comingSoon?.value,
-          });
-        }
+      if (!hasColorOption && variants.length > 0) {
+        newProducts.push({
+          ...product,
+          isComingSoon: !!product.comingSoon?.value,
+        });
       } else {
         variants.forEach((variant) => {
           const colorOptionValue = variant.selectedOptions.find(
