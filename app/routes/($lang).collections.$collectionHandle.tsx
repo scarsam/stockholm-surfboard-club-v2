@@ -181,7 +181,6 @@ export async function loader({params, request, context}: LoaderArgs) {
             colorOptionValue &&
             !usedColors.some((color) => color === colorOptionValue)
           ) {
-            console.log(JSON.stringify(product, null, 2));
             newProducts.push({
               ...product,
               //@ts-ignore
