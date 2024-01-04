@@ -5,6 +5,7 @@ import type {
   CollectionConnection,
   Product,
   ProductVariant,
+  MoneyV2,
 } from '@shopify/hydrogen/storefront-api-types';
 import {
   flattenConnection,
@@ -15,6 +16,7 @@ import invariant from 'tiny-invariant';
 import {Section} from '~/components';
 import {ProductGrid} from '~/components/ProductGrid';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
+import {isDiscounted} from '~/lib/utils';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.collection?.seo?.title,
@@ -137,6 +139,8 @@ export async function loader({params, request, context}: LoaderArgs) {
     },
   });
 
+  const {products, ...rest} = collection;
+
   if (!collection) {
     throw new Response(null, {status: 404});
   }
@@ -144,21 +148,30 @@ export async function loader({params, request, context}: LoaderArgs) {
   const collectionWithAllProductVariants = () => {
     const products = collection.products.nodes;
     const newProducts: Product[] = [];
+    const onlyDiscountedVariants = collection.handle === 'sale';
 
     products.forEach((product) => {
-      const variants = product.variants.nodes;
+      let variants = product.variants.nodes;
       const usedColors: string[] = [];
+
+      if (onlyDiscountedVariants) {
+        variants = variants.filter((v) =>
+          isDiscounted(v.price as MoneyV2, v.compareAtPrice as MoneyV2),
+        );
+      }
 
       const hasColorOption = product.variants.nodes[0]?.selectedOptions.some(
         (option) => option.name === 'Color',
       );
 
-      if (!hasColorOption)
-        newProducts.push({
-          ...product,
-          isComingSoon: !!product.comingSoon?.value,
-        });
-      else {
+      if (!hasColorOption) {
+        if (variants.length > 0) {
+          newProducts.push({
+            ...product,
+            isComingSoon: !!product.comingSoon?.value,
+          });
+        }
+      } else {
         variants.forEach((variant) => {
           const colorOptionValue = variant.selectedOptions.find(
             (option) => option.name === 'Color',
@@ -168,6 +181,7 @@ export async function loader({params, request, context}: LoaderArgs) {
             colorOptionValue &&
             !usedColors.some((color) => color === colorOptionValue)
           ) {
+            console.log(JSON.stringify(product, null, 2));
             newProducts.push({
               ...product,
               //@ts-ignore
