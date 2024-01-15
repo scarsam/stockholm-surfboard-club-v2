@@ -17,7 +17,7 @@ export const handle = {
 
 //   if (customerAccessToken) {
 //     return redirect(
-//       params.lang ? `${params.lang}/collections/sale` : '/collections/sale',
+//       params.lang ? `${params.lang}/collections/new` : '/collections/new',
 //     );
 //   }
 
