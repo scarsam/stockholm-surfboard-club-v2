@@ -1,7 +1,7 @@
-import {json, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {countries} from '~/data/countries';
 
-export async function loader({context: {storefront}}: LoaderArgs) {
+export async function loader({context: {storefront}}: LoaderFunctionArgs) {
   return json(
     {
       ...countries,

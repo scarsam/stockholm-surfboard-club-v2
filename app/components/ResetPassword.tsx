@@ -1,9 +1,9 @@
 import {useFetcher} from '@remix-run/react';
 import {useState} from 'react';
 import {usePrefixPathWithLocale} from '~/lib/utils';
-import {type V2_MetaFunction} from '@remix-run/react';
+import {type MetaFunction} from '@remix-run/react';
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     {
       title: 'Recover Password',

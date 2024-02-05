@@ -3,7 +3,7 @@ import {Form, useActionData} from '@remix-run/react';
 import {useRef, useState} from 'react';
 import {getInputStyleClasses} from '~/lib/utils';
 import type {CustomerActivatePayload} from '@shopify/hydrogen/storefront-api-types';
-import {type V2_MetaFunction} from '@remix-run/react';
+import {type MetaFunction} from '@remix-run/react';
 
 type ActionData = {
   formError?: string;
@@ -99,7 +99,7 @@ export const action: ActionFunction = async ({
   }
 };
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     {
       title: 'Activate Account',

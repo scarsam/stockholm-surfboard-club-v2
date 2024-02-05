@@ -24,7 +24,7 @@ export const handle = {
 //   renderInModal: true,
 // };
 
-// export async function loader({context, params}: LoaderArgs) {
+// export async function loader({context, params}: LoaderFunctionArgs) {
 //   const customerAccessToken = await context.session.get('customerAccessToken');
 
 //   if (customerAccessToken) {

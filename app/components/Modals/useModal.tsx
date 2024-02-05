@@ -81,7 +81,7 @@ export const useModal = (fullscreen?: boolean) => {
           ) : null}
         </>
       ),
-      [RenderModal, modal],
+      [RenderModal, className, fullscreen, modal],
     ),
   };
 };

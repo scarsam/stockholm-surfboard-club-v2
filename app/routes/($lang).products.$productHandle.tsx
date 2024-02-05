@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
 } from 'react';
-import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
+import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   useLoaderData,
   Await,
@@ -78,7 +78,7 @@ export const handle = {
   seo,
 };
 
-export async function loader({params, request, context}: LoaderArgs) {
+export async function loader({params, request, context}: LoaderFunctionArgs) {
   const {productHandle} = params;
   invariant(productHandle, 'Missing productHandle param, check route filename');
 
@@ -172,7 +172,7 @@ export default function ProductComponent() {
         }
         return mediaNodesArray;
       }, [] as any[]),
-    [media],
+    [media.nodes, selectedVariant.image?.altText],
   );
 
   return (

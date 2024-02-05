@@ -3,8 +3,8 @@ import {
   redirect,
   type ActionFunction,
   type AppLoadContext,
-  type LoaderArgs,
-  type ActionArgs,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
 } from '@shopify/remix-oxygen';
 
 export async function doLogout(
@@ -26,7 +26,7 @@ export async function doLogout(
   });
 }
 
-export async function loader({request, params}: LoaderArgs) {
+export async function loader({request, params}: LoaderFunctionArgs) {
   const path = new URL(request.headers.get('referer') || '');
   const pathname = path.pathname;
 
@@ -37,6 +37,6 @@ export const action: ActionFunction = async ({
   context,
   params,
   request,
-}: ActionArgs) => {
+}: ActionFunctionArgs) => {
   return doLogout(context, params, request);
 };

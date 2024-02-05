@@ -4,7 +4,7 @@ import {Suspense} from 'react';
 import invariant from 'tiny-invariant';
 import {
   json,
-  type ActionArgs,
+  type ActionFunctionArgs,
   type AppLoadContext,
 } from '@shopify/remix-oxygen';
 import type {
@@ -19,7 +19,7 @@ import type {
 import {isLocalPath, getCartId} from '~/lib/utils';
 import {CartAction, type CartActions} from '~/lib/type';
 
-export async function action({request, context}: ActionArgs) {
+export async function action({request, context}: ActionFunctionArgs) {
   const {session, storefront} = context;
   const headers = new Headers();
   let cartId = getCartId(request);

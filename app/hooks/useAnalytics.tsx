@@ -76,7 +76,7 @@ export function useAnalytics(locale: I18nLocale) {
  *   useDataFromMatches
  * } from '@shopify/hydrogen';
  *
- * export async function loader({request, context}: LoaderArgs) {
+ * export async function loader({request, context}: LoaderFunctionArgs) {
  *   return defer({
  *     analytics: {
  *       shopId: 'gid://shopify/Shop/1',
@@ -121,7 +121,7 @@ function useDataFromMatches(dataKey: string): Record<string, unknown> {
  *   useDataFromFetchers
  * } from '@shopify/hydrogen';
  *
- * export async function action({request, context}: ActionArgs) {
+ * export async function action({request, context}: ActionFunctionArgs) {
  *   const cartId = await session.get('cartId');
  *   ...
  *   return json({

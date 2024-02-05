@@ -1,4 +1,4 @@
-import {defer, type LoaderArgs} from '@shopify/remix-oxygen';
+import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {Await, Form, useLoaderData, useSubmit} from '@remix-run/react';
 import type {
   Collection,
@@ -82,7 +82,10 @@ export default function () {
   );
 }
 
-export async function loader({request, context: {storefront}}: LoaderArgs) {
+export async function loader({
+  request,
+  context: {storefront},
+}: LoaderFunctionArgs) {
   const searchParams = new URL(request.url).searchParams;
   const cursor = searchParams.get('cursor')!;
   const qParam = searchParams.get('q')!;

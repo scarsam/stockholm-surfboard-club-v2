@@ -2,7 +2,7 @@ import {
   json,
   type SerializeFrom,
   type LinksFunction,
-  type LoaderArgs,
+  type LoaderFunctionArgs,
 } from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
@@ -12,7 +12,7 @@ import {PageHeader, Section} from '~/components';
 import {ATTR_LOADING_EAGER} from '~/lib/const';
 import styles from '../styles/custom-font.css';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
-import {type V2_MetaFunction} from '@remix-run/react';
+import {type MetaFunction} from '@remix-run/react';
 const BLOG_HANDLE = 'journal';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
@@ -25,7 +25,7 @@ export const handle = {
   seo,
 };
 
-export async function loader({params, context}: LoaderArgs) {
+export async function loader({params, context}: LoaderFunctionArgs) {
   const {language, country} = context.storefront.i18n;
 
   invariant(params.journalHandle, 'Missing journal handle');
@@ -62,7 +62,7 @@ export async function loader({params, context}: LoaderArgs) {
   );
 }
 
-export const meta: V2_MetaFunction<typeof loader> = ({
+export const meta: MetaFunction<typeof loader> = ({
   data,
 }: {
   data: SerializeFrom<typeof loader> | undefined;

@@ -2,12 +2,12 @@ import {
   json,
   redirect,
   type ActionFunction,
-  type LoaderArgs,
+  type LoaderFunctionArgs,
 } from '@shopify/remix-oxygen';
 import type {CustomerRecoverPayload} from '@shopify/hydrogen/storefront-api-types';
-// import {type V2_MetaFunction} from '@remix-run/react';
+// import {type MetaFunction} from '@remix-run/react';
 
-export async function loader({context, params}: LoaderArgs) {
+export async function loader({context, params}: LoaderFunctionArgs) {
   const customerAccessToken = await context.session.get('customerAccessToken');
 
   if (customerAccessToken) {

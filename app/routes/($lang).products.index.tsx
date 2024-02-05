@@ -1,4 +1,4 @@
-import {type LoaderArgs} from '@shopify/remix-oxygen';
+import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 import type {ProductConnection} from '@shopify/hydrogen/storefront-api-types';
 import invariant from 'tiny-invariant';
@@ -16,7 +16,10 @@ import {getImageLoadingPriority} from '~/lib/const';
 
 const PAGE_BY = 8;
 
-export async function loader({request, context: {storefront}}: LoaderArgs) {
+export async function loader({
+  request,
+  context: {storefront},
+}: LoaderFunctionArgs) {
   const variables = getPaginationVariables(request, PAGE_BY);
 
   const data = await storefront.query<{

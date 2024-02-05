@@ -1,5 +1,5 @@
 import {json} from '@shopify/remix-oxygen';
-import {type V2_MetaFunction} from '@remix-run/react';
+import {type MetaFunction} from '@remix-run/react';
 
 import {useLoaderData} from '@remix-run/react';
 import {flattenConnection, Image} from '@shopify/hydrogen';
@@ -54,7 +54,7 @@ export const loader = async ({context: {storefront}}: StorefrontLoaderArgs) => {
   );
 };
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     {
       title: 'All Journals',

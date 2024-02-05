@@ -1,4 +1,4 @@
-import {json, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {flattenConnection} from '@shopify/hydrogen';
 import type {
   CollectionConnection,
@@ -7,12 +7,12 @@ import type {
 import invariant from 'tiny-invariant';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 
-export async function loader({context: {storefront}}: LoaderArgs) {
+export async function loader({context: {storefront}}: LoaderFunctionArgs) {
   return json(await getFeaturedData(storefront));
 }
 
 export async function getFeaturedData(
-  storefront: LoaderArgs['context']['storefront'],
+  storefront: LoaderFunctionArgs['context']['storefront'],
 ) {
   const data = await storefront.query<{
     featuredCollections: CollectionConnection;

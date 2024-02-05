@@ -1,4 +1,4 @@
-import {json, type LoaderArgs} from '@shopify/remix-oxygen';
+import {json, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import type {Page as PageType} from '@shopify/hydrogen/storefront-api-types';
 import {useLoaderData} from '@remix-run/react';
 import invariant from 'tiny-invariant';
@@ -14,7 +14,7 @@ export const handle = {
   seo,
 };
 
-export async function loader({params, context}: LoaderArgs) {
+export async function loader({params, context}: LoaderFunctionArgs) {
   invariant(params.pageHandle, 'Missing page handle');
 
   const {page} = await context.storefront.query<{page: PageType}>(PAGE_QUERY, {

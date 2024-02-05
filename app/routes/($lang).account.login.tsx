@@ -6,13 +6,13 @@ import {
 } from '@shopify/remix-oxygen';
 import type {CustomerAccessTokenCreatePayload} from '@shopify/hydrogen/storefront-api-types';
 // import Homepage from '~/routes/($lang)/($lang).index';
-import {type V2_MetaFunction} from '@remix-run/react';
+import {type MetaFunction} from '@remix-run/react';
 
 export const handle = {
   isPublic: true,
 };
 
-// export async function loader({context, params, request}: LoaderArgs) {
+// export async function loader({context, params, request}: LoaderFunctionArgs) {
 //   const customerAccessToken = await context.session.get('customerAccessToken');
 
 //   if (customerAccessToken) {
@@ -89,7 +89,7 @@ export const shouldRevalidate = () => {
   return false;
 };
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     {
       title: 'Login',
