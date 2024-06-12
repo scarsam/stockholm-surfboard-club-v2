@@ -44,7 +44,7 @@ export function GenericError({error}: {error?: any}) {
             <Button
               width="full"
               variant="secondary"
-              to={'/collections/sale'}
+              to={'/collections/new'}
               className="min-w-[300px]"
             >
               GO TO HOME PAGE

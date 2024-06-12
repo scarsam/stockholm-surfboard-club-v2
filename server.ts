@@ -74,11 +74,11 @@ export default {
         '/',
         '/collections',
         '/collections/vans',
-        // '/collections/sale',
+        // '/collections/new',
         '/collections/frontpage',
       ];
       if (redirectSites.includes(url.pathname)) {
-        return redirect(`${url.origin}/collections/sale`);
+        return redirect(`${url.origin}/collections/new`);
       }
 
       return response;
