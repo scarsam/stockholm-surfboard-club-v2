@@ -23,7 +23,7 @@ export function NotFound({type = 'page'}: {type?: string}) {
           <Button
             width="full"
             variant="secondary"
-            to={'/collections/new'}
+            to={'/collections/sale'}
             className="min-w-[300px]"
           >
             GO TO HOME PAGE
