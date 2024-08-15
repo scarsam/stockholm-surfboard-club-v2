@@ -395,7 +395,7 @@ function MobileHeader({
           </button>
           <Link
             className="py-5 flex-1 h-full items-center flex justify-center select-none"
-            to="/collections/sale"
+            to="/collections/new"
           >
             <img alt="Stockholm (Surfboard) Club" src={logo} />
           </Link>
@@ -485,7 +485,7 @@ function DesktopHeader({
         role="banner"
         className="h-10 px-2 flex items-center justify-between flex-wrap mx-auto"
       >
-        <Link className="py-3 select-none" to="/collections/sale">
+        <Link className="py-3 select-none" to="/collections/new">
           <img alt="Stockholm (Surfboard) Club" src={logo} />
         </Link>
         <div className="flex items-center">
