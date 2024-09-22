@@ -1,16 +1,14 @@
 {
-  "include": [
-    "./**/*.d.ts",
-    "./**/*.ts",
-    "./**/*.tsx",
-  ],
+  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx"],
+  "exclude": ["node_modules", "dist", "playwright.config.ts"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "module": "ES2022",
     "target": "ES2022",
     "strict": true,
     "allowJs": true,
@@ -21,9 +19,6 @@
     "paths": {
       "~/*": ["app/*"]
     },
-
-    // Remix takes care of building everything in `./app` with `remix build`.
-    // Wrangler takes care of building everything in `./worker` with `wrangler start` / `wrangler publish`.
     "noEmit": true
   }
 }

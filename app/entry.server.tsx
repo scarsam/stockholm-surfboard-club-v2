@@ -1,17 +1,37 @@
-import type {EntryContext} from '@shopify/remix-oxygen';
+import type {AppLoadContext, EntryContext} from '@shopify/remix-oxygen';
 import {RemixServer} from '@remix-run/react';
 import isbot from 'isbot';
 import {renderToReadableStream} from 'react-dom/server';
+import {createContentSecurityPolicy} from '@shopify/hydrogen';
 
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
+  context: AppLoadContext,
 ) {
+  const {nonce, header, NonceProvider} = createContentSecurityPolicy({
+    shop: {
+      checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
+      storeDomain: context.env.PUBLIC_STORE_DOMAIN,
+    },
+    scriptSrc: [
+      'self',
+      'https://cdn.shopify.com',
+      'https://shopify.com',
+      'https://www.google-analytics.com',
+      'https://www.googletagmanager.com',
+      ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:*'] : []),
+    ],
+  });
+
   const body = await renderToReadableStream(
-    <RemixServer context={remixContext} url={request.url} />,
+    <NonceProvider>
+      <RemixServer context={remixContext} url={request.url} />
+    </NonceProvider>,
     {
+      nonce,
       signal: request.signal,
       onError(error) {
         // eslint-disable-next-line no-console
@@ -31,3 +51,23 @@ export default async function handleRequest(
     status: responseStatusCode,
   });
 }
+
+// useAnalytics(locale);
+
+// const scriptStatus = useLoadScript(
+//   'https://www.googletagmanager.com/gtag/js?id=G-FC788PJZLH',
+// );
+
+// useEffect(() => {
+//   if (scriptStatus === 'done' && window !== undefined) {
+//     window.dataLayer = window.dataLayer || [];
+
+//     function gtag() {
+//       dataLayer.push(arguments);
+//     }
+
+//     gtag('js', new Date());
+
+//     gtag('config', 'G-FC788PJZLH');
+//   }
+// }, [scriptStatus]);
