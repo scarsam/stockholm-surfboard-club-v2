@@ -4,8 +4,15 @@ import {
   createRequestHandler,
   getStorefrontHeaders,
 } from '@shopify/remix-oxygen';
-import {createStorefrontClient, storefrontRedirect} from '@shopify/hydrogen';
-import {createAppLoadContext} from '~/lib/context';
+import {
+  cartGetIdDefault,
+  cartSetIdDefault,
+  createCartHandler,
+  createCustomerAccountClient,
+  createStorefrontClient,
+  storefrontRedirect,
+} from '@shopify/hydrogen';
+// import {createAppLoadContext} from '~/lib/context';
 
 import {HydrogenSession} from '~/lib/session.server';
 import {getLocaleFromRequest} from '~/lib/utils';
@@ -49,11 +56,43 @@ export default {
       //   storefrontHeaders: getStorefrontHeaders(request),
       // });
 
-      const appLoadContext = await createAppLoadContext(
+      // const appLoadContext = await createAppLoadContext(
+      //   request,
+      //   env,
+      //   executionContext,
+      // );
+
+      /**
+       * Create Hydrogen's Storefront client.
+       */
+      const {storefront} = createStorefrontClient({
+        cache,
+        waitUntil,
+        i18n: getLocaleFromRequest(request),
+        publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+        privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
+        storeDomain: env.PUBLIC_STORE_DOMAIN,
+        storefrontId: env.PUBLIC_STOREFRONT_ID,
+        storefrontHeaders: getStorefrontHeaders(request),
+      });
+
+      /**
+       * Create a client for Customer Account API.
+       */
+      const customerAccount = createCustomerAccountClient({
+        waitUntil,
         request,
-        env,
-        executionContext,
-      );
+        session,
+        customerAccountId: env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+        customerAccountUrl: env.PUBLIC_CUSTOMER_ACCOUNT_API_URL,
+      });
+
+      const cart = createCartHandler({
+        storefront,
+        customerAccount,
+        getCartId: cartGetIdDefault(request.headers),
+        setCartId: cartSetIdDefault(),
+      });
 
       /**
        * Create a Remix request handler and pass
@@ -62,7 +101,14 @@ export default {
       const handleRequest = createRequestHandler({
         build: remixBuild,
         mode: process.env.NODE_ENV,
-        getLoadContext: () => appLoadContext,
+        getLoadContext: () => ({
+          session,
+          waitUntil,
+          storefront,
+          customerAccount,
+          cart,
+          env,
+        }),
       });
 
       const response = await handleRequest(request);
