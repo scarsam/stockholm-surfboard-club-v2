@@ -69,7 +69,7 @@ export function Layout({
           {children}
         </main>
         <Footer setModal={setModal} menu={layout?.footerMenu} />
-        <CookieBanner />
+        {/* <CookieBanner /> */}
       </div>
     </>
   );

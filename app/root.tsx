@@ -45,6 +45,7 @@ import {countries} from './data/countries';
 import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
 import {useEffect} from 'react';
+import {useNonce, Script} from '@shopify/hydrogen';
 
 export const links: LinksFunction = () => {
   return [
@@ -124,6 +125,19 @@ export default function App() {
     }
   }, [scriptStatus]);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://consent.cookiebot.com/uc.js';
+    script.id = 'Cookiebot';
+    script.setAttribute('data-cbid', '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3');
+    script.setAttribute('data-blockingmode', 'auto');
+    script.async = true;
+    script.defer = true;
+    script.type = 'text/javascript';
+
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <html lang={locale.language}>
       <head>
@@ -198,6 +212,15 @@ export function ErrorBoundary({error}: {error: Error}) {
           )}
         </Layout>
         <Scripts />
+        {/* <Script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3"
+          data-blockingmode="auto"
+          type="text/javascript"
+          defer
+          async
+        /> */}
       </body>
     </html>
   );
