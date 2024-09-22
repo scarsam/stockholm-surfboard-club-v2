@@ -11,17 +11,18 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
   useMatches,
   useRouteError,
+  useRouteLoaderData,
 } from '@remix-run/react';
 import {
   ShopifySalesChannel,
   Seo,
   flattenConnection,
   useLoadScript,
+  getSeoMeta,
 } from '@shopify/hydrogen';
-import {Layout} from '~/components';
+import {Layout as PageLayout} from '~/components';
 import {GenericError} from './components/GenericError';
 import {NotFound} from './components/NotFound';
 import styles from './styles/app.css';
@@ -45,6 +46,14 @@ import {countries} from './data/countries';
 import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
 import {useEffect} from 'react';
+
+export const meta = ({data, matches}) => {
+  return getSeoMeta(
+    matches[0].data.seo,
+    // the current route seo data overrides the root route data
+    data.seo,
+  );
+};
 
 export const links: LinksFunction = () => {
   return [
@@ -101,7 +110,11 @@ export async function loader({request, params, context}: LoaderFunctionArgs) {
 }
 
 export default function App() {
-  const data = useLoaderData<typeof loader>();
+  return <Outlet />;
+}
+
+export function Layout({children}: {children?: React.ReactNode}) {
+  const data = useRouteLoaderData<typeof loader>('root');
   const locale = data?.selectedLocale ?? DEFAULT_LOCALE;
 
   useAnalytics(locale);
@@ -133,17 +146,13 @@ export default function App() {
           name="google-site-verification"
           content="JyLUKiFuQI9W0FxCmLSbFCXGmTu7B8b4iQYSmNVslBQ"
         />
-        <Seo />
+        {/* <Seo /> */}
         <Meta />
         <Links />
       </head>
       <body>
-        <Layout
-          layout={data.layout as LayoutData}
-          // key={`${locale.language}-${locale.country}`}
-        >
-          <Outlet />
-        </Layout>
+        {data ? <PageLayout {...data}>{children}</PageLayout> : children}
+
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -179,24 +188,20 @@ export function ErrorBoundary({error}: {error: Error}) {
         <Links />
       </head>
       <body>
-        <Layout
-          layout={root?.data?.layout}
-          key={`${locale.language}-${locale.country}`}
-        >
-          {isRouteError ? (
-            <>
-              {routeError.status === 404 ? (
-                <NotFound type={pageType} />
-              ) : (
-                <GenericError
-                  error={{message: `${routeError.status} ${routeError.data}`}}
-                />
-              )}
-            </>
-          ) : (
-            <GenericError error={error instanceof Error ? error : undefined} />
-          )}
-        </Layout>
+        {isRouteError ? (
+          <>
+            {routeError.status === 404 ? (
+              <NotFound type={pageType} />
+            ) : (
+              <GenericError
+                error={{message: `${routeError.status} ${routeError.data}`}}
+              />
+            )}
+          </>
+        ) : (
+          <GenericError error={error instanceof Error ? error : undefined} />
+        )}
+
         <Scripts />
       </body>
     </html>

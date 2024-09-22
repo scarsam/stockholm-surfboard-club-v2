@@ -7,6 +7,7 @@ import type {Article, Blog} from '@shopify/hydrogen/storefront-api-types';
 import {Grid, PageHeader, Section, Link} from '~/components';
 import {getImageLoadingPriority, PAGINATION_SIZE} from '~/lib/const';
 import {StorefrontLoaderArgs} from '~/lib/type';
+import {getSeoMeta} from '@shopify/hydrogen';
 
 const BLOG_HANDLE = 'Journal';
 
@@ -56,6 +57,7 @@ export const loader = async ({context: {storefront}}: StorefrontLoaderArgs) => {
 
 export const meta: MetaFunction = () => {
   return [
+    getSeoMeta(data.seo),
     {
       title: 'All Journals',
     },

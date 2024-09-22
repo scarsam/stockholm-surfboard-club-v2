@@ -13,6 +13,11 @@ import {
 } from '~/components';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {getImageLoadingPriority} from '~/lib/const';
+import {getSeoMeta} from '@shopify/hydrogen';
+
+export const meta = ({data}) => {
+  return getSeoMeta(data.seo);
+};
 
 const PAGE_BY = 8;
 

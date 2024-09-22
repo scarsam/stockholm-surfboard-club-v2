@@ -17,6 +17,7 @@ import {
 } from '~/components';
 import {getImageLoadingPriority} from '~/lib/const';
 import {Image} from '@shopify/hydrogen';
+import {getSeoMeta} from '@shopify/hydrogen';
 
 const PAGINATION_SIZE = 8;
 
@@ -46,6 +47,7 @@ export const loader = async ({
 
 export const meta: MetaFunction = () => {
   return [
+    getSeoMeta(data.seo),
     {
       title: 'All Collections',
     },

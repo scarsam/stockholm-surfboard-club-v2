@@ -14,6 +14,7 @@ import styles from '../styles/custom-font.css';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
 import {type MetaFunction} from '@remix-run/react';
 const BLOG_HANDLE = 'journal';
+import {getSeoMeta} from '@shopify/hydrogen';
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.article?.seo?.title,
@@ -68,6 +69,7 @@ export const meta: MetaFunction<typeof loader> = ({
   data: SerializeFrom<typeof loader> | undefined;
 }) => {
   return [
+    getSeoMeta(data.seo),
     {
       title: data?.article?.seo?.title ?? 'Article',
       description: data?.article?.seo?.description,

@@ -17,6 +17,11 @@ import {Section} from '~/components';
 import {ProductGrid} from '~/components/ProductGrid';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {isDiscounted} from '~/lib/utils';
+import {getSeoMeta} from '@shopify/hydrogen';
+
+export const meta = ({data}) => {
+  return getSeoMeta(data.seo);
+};
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.collection?.seo?.title,

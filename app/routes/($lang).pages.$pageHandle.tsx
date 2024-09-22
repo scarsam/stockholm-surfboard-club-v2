@@ -4,6 +4,11 @@ import {useLoaderData} from '@remix-run/react';
 import invariant from 'tiny-invariant';
 import type {SeoHandleFunction} from '@shopify/hydrogen';
 import clsx from 'clsx';
+import {getSeoMeta} from '@shopify/hydrogen';
+
+export const meta = ({data}) => {
+  return getSeoMeta(data.seo);
+};
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => ({
   title: data?.page?.seo?.title,

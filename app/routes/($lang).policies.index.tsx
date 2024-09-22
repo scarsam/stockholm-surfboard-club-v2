@@ -5,6 +5,11 @@ import invariant from 'tiny-invariant';
 
 import {PageHeader, Section, Heading, Link} from '~/components';
 import {StorefrontLoaderArgs} from '~/lib/type';
+import {getSeoMeta} from '@shopify/hydrogen';
+
+export const meta = ({data}) => {
+  return getSeoMeta(data.seo);
+};
 
 export const handle = {
   seo: {

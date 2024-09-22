@@ -55,6 +55,11 @@ import type {Product} from 'schema-dts';
 import {isDiscounted, parseSizeGuide} from '~/lib/utils';
 import {useModal} from '~/components/Modals/useModal';
 import {useStore} from '~/store';
+import {getSeoMeta} from '@shopify/hydrogen';
+
+export const meta = ({data}) => {
+  return getSeoMeta(data.seo);
+};
 
 const seo: SeoHandleFunction<typeof loader> = ({data}) => {
   const media = flattenConnection<MediaConnection>(data.product.media).find(

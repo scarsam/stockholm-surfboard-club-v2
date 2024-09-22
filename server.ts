@@ -5,6 +5,8 @@ import {
   getStorefrontHeaders,
 } from '@shopify/remix-oxygen';
 import {createStorefrontClient, storefrontRedirect} from '@shopify/hydrogen';
+import {createAppLoadContext} from '~/lib/context';
+
 import {HydrogenSession} from '~/lib/session.server';
 import {getLocaleFromRequest} from '~/lib/utils';
 import {redirect} from 'react-router';
@@ -35,17 +37,23 @@ export default {
       /**
        * Create Hydrogen's Storefront client.
        */
-      const {storefront} = createStorefrontClient({
-        cache,
-        waitUntil,
-        i18n: getLocaleFromRequest(request),
-        publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-        privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
-        storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
-        storefrontApiVersion: env.PUBLIC_STOREFRONT_API_VERSION || '2023-07',
-        storefrontId: env.PUBLIC_STOREFRONT_ID,
-        storefrontHeaders: getStorefrontHeaders(request),
-      });
+      // const {storefront} = createStorefrontClient({
+      //   cache,
+      //   waitUntil,
+      //   i18n: getLocaleFromRequest(request),
+      //   publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+      //   privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
+      //   storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
+      //   storefrontApiVersion: env.PUBLIC_STOREFRONT_API_VERSION || '2023-07',
+      //   storefrontId: env.PUBLIC_STOREFRONT_ID,
+      //   storefrontHeaders: getStorefrontHeaders(request),
+      // });
+
+      const appLoadContext = await createAppLoadContext(
+        request,
+        env,
+        executionContext,
+      );
 
       /**
        * Create a Remix request handler and pass
@@ -54,10 +62,14 @@ export default {
       const handleRequest = createRequestHandler({
         build: remixBuild,
         mode: process.env.NODE_ENV,
-        getLoadContext: () => ({cache, session, waitUntil, storefront, env}),
+        getLoadContext: () => appLoadContext,
       });
 
       const response = await handleRequest(request);
+
+      if (session.isPending) {
+        response.headers.set('Set-Cookie', await session.commit());
+      }
 
       if (response.status === 404) {
         /**

@@ -2,7 +2,9 @@
 /// <reference types="@shopify/remix-oxygen" />
 /// <reference types="@shopify/oxygen-workers-types" />
 
-import type {Storefront} from '@shopify/hydrogen';
+import type {Storefront, HydrogenSessionData} from '@shopify/hydrogen';
+import type {createAppLoadContext} from '~/lib/context';
+
 import type {HydrogenSession} from '~/lib/session.server';
 
 declare global {
@@ -29,13 +31,15 @@ declare global {
  * Declare local additions to `AppLoadContext` to include the session utilities we injected in `server.ts`.
  */
 declare module '@shopify/remix-oxygen' {
-  export interface AppLoadContext {
+  export interface AppLoadContext
+    extends Awaited<ReturnType<typeof createAppLoadContext>> {
     waitUntil: ExecutionContext['waitUntil'];
     session: HydrogenSession;
     storefront: Storefront;
     cache: Cache;
     env: Env;
   }
+  interface SessionData extends HydrogenSessionData {}
 }
 
 // Needed to make this file a module.
