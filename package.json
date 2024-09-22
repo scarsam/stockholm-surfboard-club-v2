@@ -9,7 +9,8 @@
     "lint": "eslint --no-error-on-unmatched-pattern --ext .js,.ts,.jsx,.tsx app",
     "lint:fix": "eslint app --fix",
     "format": "prettier --write --ignore-unknown .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "update:hydrogen": "shopify hydrogen upgrade"
   },
   "browserslist": [
     "defaults"
