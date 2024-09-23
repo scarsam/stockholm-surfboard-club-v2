@@ -347,13 +347,36 @@ export const parseSizeGuide = (string: string) => {
   return {listItems, sizeItems};
 };
 
-export function getCookie(key: string) {
-  if (typeof window !== 'undefined') {
-    const cookie = document.cookie.match(
-      '(^|;)\\s*' + key + '\\s*=\\s*([^;]+)',
-    );
-    return !!cookie;
+export type CookieConsent = {
+  necessary: boolean;
+  preferences: boolean;
+  statistics: boolean;
+  marketing: boolean;
+};
+
+export function getCookiebotConsent(): CookieConsent {
+  const consent: CookieConsent = {
+    necessary: false,
+    preferences: false,
+    statistics: false,
+    marketing: false,
+  };
+
+  try {
+    if (typeof window !== 'undefined') {
+      // @ts-ignore
+      const cookiebotConsent = window.Cookiebot?.consent;
+
+      if (cookiebotConsent) {
+        consent.necessary = !!cookiebotConsent['necessary'];
+        consent.preferences = !!cookiebotConsent['preferences'];
+        consent.statistics = !!cookiebotConsent['statistics'];
+        consent.marketing = !!cookiebotConsent['marketing'];
+      }
+    }
+  } catch (error) {
+    return consent;
   }
 
-  return undefined;
+  return consent;
 }

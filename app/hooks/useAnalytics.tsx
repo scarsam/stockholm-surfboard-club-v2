@@ -8,15 +8,17 @@ import {
   ShopifyPageViewPayload,
   useShopifyCookies,
 } from '@shopify/hydrogen';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {CartAction, I18nLocale} from '../lib/type';
-import {USER_CONSENT_COOKIE_NAME} from '~/lib/const';
-import {getCookie} from '~/lib/utils';
+import {CookieConsent, getCookiebotConsent} from '~/lib/utils';
 
 export function useAnalytics(locale: I18nLocale) {
-  const hasUserConsent = !!getCookie(USER_CONSENT_COOKIE_NAME);
+  const [consent, setConsent] = useState<CookieConsent>(getCookiebotConsent());
 
-  useShopifyCookies({hasUserConsent});
+  const hasShopifyConsent = consent.marketing;
+
+  useShopifyCookies({hasUserConsent: hasShopifyConsent});
+
   const location = useLocation();
   const analyticsFromMatches = useDataFromMatches(
     'analytics',
@@ -26,8 +28,20 @@ export function useAnalytics(locale: I18nLocale) {
     ...analyticsFromMatches,
     currency: locale.currency,
     acceptedLanguage: locale.language,
-    hasUserConsent,
+    hasUserConsent: hasShopifyConsent,
   };
+
+  useEffect(() => {
+    function getConsent() {
+      setConsent(getCookiebotConsent());
+    }
+
+    window.addEventListener('CookiebotOnConsentReady', getConsent);
+
+    return () => {
+      window.removeEventListener('CookiebotOnConsentReady', getConsent);
+    };
+  }, []);
 
   // Page view analytics
   // We want useEffect to execute only when location changes
