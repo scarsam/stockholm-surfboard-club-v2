@@ -63,6 +63,50 @@ function useCookieBot(cbid = '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3') {
   }, [cbid]);
 }
 
+type GTMEvent = {
+  eventName: string;
+  value: string;
+  currency: string;
+  items: Array<{
+    name: string;
+    id: string;
+    price: string;
+    quantity?: number;
+    category?: string;
+  }>;
+};
+
+function addGTMEvent(event: GTMEvent) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    // @ts-ignore
+    window.dataLayer = window.dataLayer || [];
+    // @ts-ignore
+
+    window.dataLayer.push({
+      event: event.eventName,
+      ecommerce: {
+        currency: event.currency, //'currency_code',  ISO 4217 currency code
+        value: event.value, // Total value of the event (e.g., purchase amount)
+        items: event.items.map((item) => ({
+          item_name: item.name, //'product_name',  Required. Verify against actual product object.
+          item_id: item.id, //'product_variant_id',  Required. Verify against actual product object.
+          price: item.price, //product_price,  Required.
+          quantity: item.quantity, // product_quantity,  Required.
+          item_category: item.category, //'product_category',  Optional.
+        })),
+      },
+    });
+  } catch (error) {
+    //TODO: handle error
+  }
+}
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 export function useAnalytics(locale: I18nLocale) {
   const [consent, setConsent] = useState<CookieConsent>(getCookiebotConsent());
 
@@ -110,6 +154,28 @@ export function useAnalytics(locale: I18nLocale) {
       eventName: AnalyticsEventName.PAGE_VIEW,
       payload,
     });
+
+    if (hasAnalyticsConsent && isProduction) {
+      const product = payload.products?.[0];
+
+      if (product) {
+        addGTMEvent({
+          eventName: 'view_item',
+          value: product.price,
+          currency: locale.currency,
+          items: [
+            {
+              name: product.name,
+              id: product.variantGid ?? product.productGid,
+              price: product.price,
+              quantity: product.quantity,
+              category: product.category,
+            },
+          ],
+        });
+      }
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
@@ -130,6 +196,27 @@ export function useAnalytics(locale: I18nLocale) {
       eventName: AnalyticsEventName.ADD_TO_CART,
       payload: addToCartPayload,
     });
+
+    if (hasAnalyticsConsent && isProduction) {
+      const product = cartData.products?.[0];
+
+      if (product) {
+        addGTMEvent({
+          eventName: 'add_to_cart',
+          value: product.price,
+          currency: locale.currency,
+          items: [
+            {
+              name: product.name,
+              id: product.variantGid ?? product.productGid,
+              price: product.price,
+              quantity: product.quantity,
+              category: product.category,
+            },
+          ],
+        });
+      }
+    }
   }
 }
 
