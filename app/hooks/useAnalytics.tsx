@@ -12,12 +12,66 @@ import {useEffect, useState} from 'react';
 import {CartAction, I18nLocale} from '../lib/type';
 import {CookieConsent, getCookiebotConsent} from '~/lib/utils';
 
+function useGTM(gtmId: string, hasAnalyticsConsent: boolean) {
+  useEffect(() => {
+    if (typeof window !== 'undefined' && hasAnalyticsConsent) {
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+
+      const firstScript = document.getElementsByTagName('script')[0];
+
+      if (firstScript?.parentNode) {
+        firstScript.parentNode.insertBefore(script, firstScript);
+      } else {
+        document.head
+          ? document.head.appendChild(script)
+          : document.body.appendChild(script);
+      }
+
+      return () => {
+        if (firstScript?.parentNode) {
+          firstScript.parentNode?.removeChild(script);
+        } else {
+          document.head
+            ? document.head.removeChild(script)
+            : document.body.removeChild(script);
+        }
+      };
+    }
+  }, [gtmId, hasAnalyticsConsent]);
+}
+
+function useCookieBot(cbid = '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3') {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://consent.cookiebot.com/uc.js';
+      script.id = 'Cookiebot';
+      script.setAttribute('data-cbid', cbid);
+      script.setAttribute('data-blockingmode', 'auto');
+      script.async = true;
+      script.defer = true;
+      script.type = 'text/javascript';
+
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
+  }, [cbid]);
+}
+
 export function useAnalytics(locale: I18nLocale) {
   const [consent, setConsent] = useState<CookieConsent>(getCookiebotConsent());
 
-  const hasShopifyConsent = consent.marketing;
+  const hasAnalyticsConsent = consent.marketing;
 
-  useShopifyCookies({hasUserConsent: hasShopifyConsent});
+  useShopifyCookies({hasUserConsent: hasAnalyticsConsent});
+
+  useGTM('G-FC788PJZLH', hasAnalyticsConsent);
+  useCookieBot();
 
   const location = useLocation();
   const analyticsFromMatches = useDataFromMatches(
@@ -28,7 +82,7 @@ export function useAnalytics(locale: I18nLocale) {
     ...analyticsFromMatches,
     currency: locale.currency,
     acceptedLanguage: locale.language,
-    hasUserConsent: hasShopifyConsent,
+    hasUserConsent: hasAnalyticsConsent,
   };
 
   useEffect(() => {

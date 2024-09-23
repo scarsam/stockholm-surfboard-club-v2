@@ -45,7 +45,7 @@ import {countries} from './data/countries';
 import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
 import {useEffect} from 'react';
-import {useNonce, Script} from '@shopify/hydrogen';
+
 
 export const links: LinksFunction = () => {
   return [
@@ -107,36 +107,6 @@ export default function App() {
 
   useAnalytics(locale);
 
-  const scriptStatus = useLoadScript(
-    'https://www.googletagmanager.com/gtag/js?id=G-FC788PJZLH',
-  );
-
-  useEffect(() => {
-    if (scriptStatus === 'done' && window !== undefined) {
-      window.dataLayer = window.dataLayer || [];
-
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-
-      gtag('js', new Date());
-
-      gtag('config', 'G-FC788PJZLH');
-    }
-  }, [scriptStatus]);
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://consent.cookiebot.com/uc.js';
-    script.id = 'Cookiebot';
-    script.setAttribute('data-cbid', '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3');
-    script.setAttribute('data-blockingmode', 'auto');
-    script.async = true;
-    script.defer = true;
-    script.type = 'text/javascript';
-
-    document.body.appendChild(script);
-  }, []);
 
   return (
     <html lang={locale.language}>
