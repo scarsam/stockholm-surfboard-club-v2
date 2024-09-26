@@ -114,7 +114,7 @@ export function useAnalytics(locale: I18nLocale) {
 
   useShopifyCookies({hasUserConsent: hasAnalyticsConsent});
 
-  useGTM('G-FC788PJZLH', hasAnalyticsConsent);
+  useGTM('GTM-KMJNN3XH', hasAnalyticsConsent);
   useCookieBot();
 
   const location = useLocation();
