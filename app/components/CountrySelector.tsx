@@ -1,39 +1,34 @@
-import {useFetcher, useLocation, useMatches} from '@remix-run/react';
-import {Button, IconCheck} from '~/components';
-import {useCallback, useEffect, useRef} from 'react';
-import {Localizations, Locale, CartAction} from '~/lib/type';
-import {DEFAULT_LOCALE} from '~/lib/utils';
-import clsx from 'clsx';
-import {CartBuyerIdentityInput} from '@shopify/hydrogen/storefront-api-types';
-import type {ReactNode} from 'react';
+import { Form, useMatches, useLocation, useFetcher } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import type { Locale } from "~/data/countries";
 
 export function CountrySelector() {
   const [root] = useMatches();
   const fetcher = useFetcher();
   const closeRef = useRef<HTMLDetailsElement>(null);
   const selectedLocale = root.data?.selectedLocale ?? DEFAULT_LOCALE;
-  const {pathname, search} = useLocation();
+  const { pathname, search } = useLocation();
   const pathWithoutLocale = `${pathname.replace(
     selectedLocale.pathPrefix,
-    '',
+    ""
   )}${search}`;
 
   const countries = (fetcher.data ?? {}) as Localizations;
-  const defaultLocale = countries?.['default'];
+  const defaultLocale = countries?.["default"];
   const defaultLocalePrefix = defaultLocale
     ? `${defaultLocale?.language}-${defaultLocale?.country}`
-    : '';
+    : "";
 
-  const isDone = fetcher.state === 'idle' && fetcher.data != null;
+  const isDone = fetcher.state === "idle" && fetcher.data != null;
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && !isDone) {
-      fetcher.load('/api/countries');
+    if (fetcher.state === "idle" && !isDone) {
+      fetcher.load("/api/countries");
     }
   }, [fetcher, isDone]);
 
   const closeDropdown = useCallback(() => {
-    closeRef.current?.removeAttribute('open');
+    closeRef.current?.removeAttribute("open");
   }, []);
 
   return (
@@ -98,9 +93,9 @@ function Country({
     >
       <Button
         className={clsx([
-          'text-black',
-          'w-full p-2 transition flex justify-start border-t border-black',
-          'items-center text-left cursor-pointer py-2 px-4',
+          "text-black",
+          "w-full p-2 transition flex justify-start border-t border-black",
+          "items-center text-left cursor-pointer py-2 px-4",
         ])}
         type="submit"
         variant="primary"
@@ -155,7 +150,7 @@ function getCountryUrlPath({
   pathWithoutLocale: string;
   defaultLocalePrefix: string;
 }) {
-  let countryPrefixPath = '';
+  let countryPrefixPath = "";
   const countryLocalePrefix = `${countryLocale.language}-${countryLocale.country}`;
 
   if (countryLocalePrefix !== defaultLocalePrefix) {

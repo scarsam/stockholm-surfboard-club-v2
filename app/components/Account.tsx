@@ -199,14 +199,14 @@ const CUSTOMER_QUERY = `#graphql
             lineItems(first: 2) {
               edges {
                 node {
-                  variant {
-                    image {
-                      url
-                      altText
-                      height
-                      width
-                    }
-                  }
+                  # variant {
+                  #   image {
+                  #     url
+                  #     altText
+                  #     height
+                  #     width
+                  #   }
+                  # }
                   title
                 }
               }
