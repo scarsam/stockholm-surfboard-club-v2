@@ -46,7 +46,6 @@ import {getCustomer} from './components/Account';
 import {getFeaturedData} from './routes/($lang).featured-products';
 import {useEffect} from 'react';
 
-
 export const links: LinksFunction = () => {
   return [
     {rel: 'stylesheet', href: styles},
@@ -107,7 +106,6 @@ export default function App() {
 
   useAnalytics(locale);
 
-
   return (
     <html lang={locale.language}>
       <head>
@@ -116,6 +114,10 @@ export default function App() {
         <meta
           name="google-site-verification"
           content="JyLUKiFuQI9W0FxCmLSbFCXGmTu7B8b4iQYSmNVslBQ"
+        />
+        <meta
+          name="p:domain_verify"
+          content="247ec89364b4e8a69d6d23eb306533f4"
         />
         <Seo />
         <Meta />
