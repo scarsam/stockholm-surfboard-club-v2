@@ -8,12 +8,14 @@ import type {
   CartCost,
   CartLine,
   CartLineUpdateInput,
+  Cart,
 } from '@shopify/hydrogen/storefront-api-types';
 import {useFetcher, useMatches} from '@remix-run/react';
 import {CartAction} from '~/lib/type';
 import {DrawerHeader} from './CartHeader';
 import type {ReactNode} from 'react';
 import {usePrefixPathWithLocale} from '~/lib/utils';
+import {addGTMEvent} from '~/hooks/useAnalytics';
 type Layouts = 'page' | 'drawer';
 
 export function Cart({
@@ -69,7 +71,7 @@ export function CartDetails({
       {!isZeroCost && (
         <CartSummary cost={cart.cost} layout={layout}>
           {/* <CartDiscounts discountCodes={cart.discountCodes} /> */}
-          <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
+          <CartCheckoutActions checkoutUrl={cart.checkoutUrl} cart={cart} />
           {!root.data?.isLoggedIn && (
             <button
               onClick={openAccount}
@@ -187,8 +189,36 @@ function CartLines({
   );
 }
 
-function CartCheckoutActions({checkoutUrl}: {checkoutUrl: string}) {
+function CartCheckoutActions({
+  checkoutUrl,
+  cart,
+}: {
+  checkoutUrl: string;
+  cart: Cart;
+}) {
   if (!checkoutUrl) return null;
+
+  function handleClick() {
+    const items = cart.lines.edges.map((edge) => {
+      const line = edge.node;
+      const merchandise = line.merchandise;
+
+      return {
+        name: merchandise.product.title,
+        id: merchandise.product.id,
+        price: merchandise.price.amount,
+        quantity: line.quantity,
+        category: '',
+      };
+    });
+
+    addGTMEvent({
+      eventName: 'begin_checkout',
+      value: cart.cost.totalAmount.amount,
+      currency: cart.cost.totalAmount.currencyCode,
+      items,
+    });
+  }
 
   return (
     <div className="flex flex-col mt-2">
@@ -196,6 +226,7 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl: string}) {
         <button
           type="submit"
           className="border bg-black text-white uppercase py-2 px-10 w-full"
+          onClick={handleClick}
         >
           Continue to Checkout
         </button>
@@ -290,15 +321,40 @@ function CartLineItem({line}: {line: CartLine}) {
               <CartLineQuantityAdjust line={line} />
             </div>
           </div>
-          <ItemRemoveButton lineIds={[id]} />
+          <ItemRemoveButton lineIds={[id]} line={line} />
         </div>
       </div>
     </li>
   );
 }
 
-function ItemRemoveButton({lineIds}: {lineIds: CartLine['id'][]}) {
+function ItemRemoveButton({
+  lineIds,
+  line,
+}: {
+  lineIds: CartLine['id'][];
+  line: CartLine;
+}) {
   const fetcher = useFetcher();
+
+  function handleClick() {
+    const merchandise = line.merchandise;
+
+    addGTMEvent({
+      eventName: 'remove_from_cart',
+      value: line.cost.totalAmount.amount,
+      currency: merchandise.price.currencyCode,
+      items: [
+        {
+          name: merchandise.product.title,
+          id: merchandise.product.id,
+          price: merchandise.price.amount,
+          quantity: line.quantity,
+          category: '',
+        },
+      ],
+    });
+  }
 
   return (
     <fetcher.Form action={usePrefixPathWithLocale('/cart')} method="POST">
@@ -311,6 +367,7 @@ function ItemRemoveButton({lineIds}: {lineIds: CartLine['id'][]}) {
       <button
         className="flex items-center justify-center underline"
         type="submit"
+        onClick={handleClick}
       >
         Remove
       </button>

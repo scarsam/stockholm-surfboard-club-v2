@@ -76,7 +76,7 @@ type GTMEvent = {
   }>;
 };
 
-function addGTMEvent(event: GTMEvent) {
+export function addGTMEvent(event: GTMEvent) {
   if (typeof window === 'undefined') {
     return;
   }
