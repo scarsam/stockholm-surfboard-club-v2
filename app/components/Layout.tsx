@@ -35,7 +35,6 @@ import {modals, useModal} from './Modals/useModal';
 import Authenticated from './Account';
 
 import {Session} from './Session';
-import CookieBanner from './CookieBanner';
 
 export const handle = {
   isPublic: true,
@@ -69,7 +68,6 @@ export function Layout({
           {children}
         </main>
         <Footer setModal={setModal} menu={layout?.footerMenu} />
-        {/* <CookieBanner /> */}
       </div>
     </>
   );
