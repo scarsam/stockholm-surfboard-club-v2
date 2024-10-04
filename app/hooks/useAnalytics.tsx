@@ -12,9 +12,9 @@ import {useEffect, useState} from 'react';
 import {CartAction, I18nLocale} from '../lib/type';
 import {CookieConsent, getCookiebotConsent} from '~/lib/utils';
 
-function useGTM(gtmId: string, hasAnalyticsConsent: boolean) {
+function useGTM(gtmId: string) {
   useEffect(() => {
-    if (typeof window !== 'undefined' && hasAnalyticsConsent) {
+    if (typeof window !== 'undefined') {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
@@ -39,29 +39,29 @@ function useGTM(gtmId: string, hasAnalyticsConsent: boolean) {
         }
       };
     }
-  }, [gtmId, hasAnalyticsConsent]);
+  }, [gtmId]);
 }
 
-function useCookieBot(cbid = '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3') {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const script = document.createElement('script');
-      script.src = 'https://consent.cookiebot.com/uc.js';
-      script.id = 'Cookiebot';
-      script.setAttribute('data-cbid', cbid);
-      script.setAttribute('data-blockingmode', 'auto');
-      script.async = true;
-      script.defer = true;
-      script.type = 'text/javascript';
+// function useCookieBot(cbid = '9bf1083c-0f1f-4b2d-9b4f-c20b694fcfc3') {
+//   useEffect(() => {
+//     if (typeof window !== 'undefined') {
+//       const script = document.createElement('script');
+//       script.src = 'https://consent.cookiebot.com/uc.js';
+//       script.id = 'Cookiebot';
+//       script.setAttribute('data-cbid', cbid);
+//       script.setAttribute('data-blockingmode', 'auto');
+//       script.async = true;
+//       script.defer = true;
+//       script.type = 'text/javascript';
 
-      document.body.appendChild(script);
+//       document.body.appendChild(script);
 
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
-  }, [cbid]);
-}
+//       return () => {
+//         document.body.removeChild(script);
+//       };
+//     }
+//   }, [cbid]);
+// }
 
 type GTMEvent = {
   eventName: string;
@@ -114,8 +114,8 @@ export function useAnalytics(locale: I18nLocale) {
 
   useShopifyCookies({hasUserConsent: hasAnalyticsConsent});
 
-  useGTM('GTM-KMJNN3XH', hasAnalyticsConsent);
-  useCookieBot();
+  useGTM('GTM-KMJNN3XH');
+  // useCookieBot();
 
   const location = useLocation();
   const analyticsFromMatches = useDataFromMatches(
