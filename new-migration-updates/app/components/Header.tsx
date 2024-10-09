@@ -27,8 +27,9 @@ export function Header({
   const {shop, filterMenu} = header;
 
   return (
-    <header className="hidden lg:block bg-white sticky top-0 z-50">
+    <header className="bg-white sticky top-0 z-50 border-[#e5e7eb] border-b">
       <div className="h-10 px-2 flex items-center justify-between flex-wrap mx-auto">
+        <HeaderMenuMobileToggle />
         <NavLink
           prefetch="intent"
           to="/collections/new"
@@ -60,50 +61,41 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport} border-y px-2 w-full overflow-x-auto gap-1 border-[#e5e7eb]`;
+  const className = `header-menu-${viewport} border-t px-2 w-full overflow-x-auto border-[#e5e7eb]`;
   const {close} = useAside();
 
   return (
     <nav className={className} role="navigation">
-      {viewport === 'mobile' && (
-        <NavLink
-          end
-          onClick={close}
-          prefetch="intent"
-          style={activeLinkStyle}
-          to="/"
-        >
-          Home
-        </NavLink>
-      )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
+      <div className="flex flex-col mt-5 lg:mt-0 lg:flex-row gap-1">
+        {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+          if (!item.url) return null;
 
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
-          <NavLink
-            className={({isActive}) =>
-              `font-medium h-10 px-2 flex items-center whitespace-nowrap first:pl-0 last:pr-0 text-black hover:-skew-x-[20deg] ${
-                isActive ? 'font-semibold' : 'font-medium'
-              }`
-            }
-            end
-            style={{textDecoration: 'none'}}
-            key={item.id}
-            onClick={close}
-            prefetch="intent"
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
+          // if the url is internal, we strip the domain
+          const url =
+            item.url.includes('myshopify.com') ||
+            item.url.includes(publicStoreDomain) ||
+            item.url.includes(primaryDomainUrl)
+              ? new URL(item.url).pathname
+              : item.url;
+          return (
+            <NavLink
+              className={({isActive}) =>
+                `font-medium lg:h-10 flex items-center whitespace-nowrap pb-1 lg:pb-0 px-0 lg:px-2 first:pl-0 last:pr-0 text-black hover:-skew-x-[20deg] ${
+                  isActive ? 'font-semibold' : 'font-medium'
+                }`
+              }
+              end
+              style={{textDecoration: 'none'}}
+              key={item.id}
+              onClick={close}
+              prefetch="intent"
+              to={url}
+            >
+              {item.title}
+            </NavLink>
+          );
+        })}
+      </div>
     </nav>
   );
 }
@@ -115,15 +107,18 @@ function HeaderCtas({
   const {open, close, type} = useAside();
 
   return (
-    <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
+    <nav
+      className="header-ctas border-l lg:border-none h-full border-[#e5e7eb]"
+      role="navigation"
+    >
       <SearchToggle />
+
       <Suspense>
         <Await resolve={isLoggedIn}>
           {(isLoggedIn) =>
             isLoggedIn ? (
               <button
-                className="mx-1"
+                className="mx-1 hidden lg:block"
                 onClick={() => (type === 'closed' ? open('account') : close())}
               >
                 <img
@@ -139,7 +134,7 @@ function HeaderCtas({
                 prefetch="intent"
                 to="/account"
                 style={activeLinkStyle}
-                className="mx-1"
+                className="mx-1 hidden lg:block"
               >
                 <img
                   className="hover:cursor-pointer"
@@ -159,22 +154,38 @@ function HeaderCtas({
 }
 
 function HeaderMenuMobileToggle() {
-  const {open} = useAside();
+  const {open, close, type} = useAside();
+
+  const isOpen = type !== 'closed';
+
   return (
     <button
-      className="header-menu-mobile-toggle reset"
-      onClick={() => open('mobile')}
+      className="header-menu-mobile-toggle border-r border-[#e5e7eb] h-full pr-2 hover:cursor-pointer"
+      onClick={() => (isOpen ? close() : open('mobile'))}
     >
-      <h3>☰</h3>
+      <span className="sr-only">Open main menu</span>
+      <svg
+        className="w-6 h-6"
+        aria-hidden="true"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+          clipRule="evenodd"
+        ></path>
+      </svg>
     </button>
   );
 }
 
 function SearchToggle() {
   return (
-    <NavLink className="reset mx-1" to="/search">
+    <NavLink className="reset mx-4 lg:mx-1 " to="/search">
       <img
-        className="inline mx-1"
+        className="inline"
         src={search}
         width="16"
         height="16"

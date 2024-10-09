@@ -42,7 +42,7 @@ async function loadCriticalData({
   const {handle} = params;
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 80,
   });
 
   if (!handle) {
@@ -80,9 +80,9 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="collection ">
+      {/* <h1>{collection.title}</h1>
+      <p className="collection-description">{collection.description}</p> */}
       <PaginatedResourceSection
         connection={collection.products}
         resourcesClassName="products-grid"
@@ -126,16 +126,21 @@ function ProductItem({
       {product.featuredImage && (
         <Image
           alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
+          aspectRatio="4/5"
           data={product.featuredImage}
           loading={loading}
           sizes="(min-width: 45em) 400px, 100vw"
         />
       )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
+      <div className="flex p-1 items-center justify-between">
+        <h4 className="mt-0">{product.title}</h4>
+        <p>
+          <Money
+            withoutTrailingZeros
+            data={product.priceRange.minVariantPrice}
+          />
+        </p>
+      </div>
     </Link>
   );
 }

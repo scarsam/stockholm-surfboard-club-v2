@@ -31,7 +31,7 @@ export function PaginatedResourceSection<NodesType>({
             ) : (
               resoucesMarkup
             )}
-            <NextLink className="inline-block font-medium text-center py-3 px-6 border ease-in-out duration-200 border border-primary/10 bg-contrast text-primary w-full">
+            <NextLink className="inline-block font-medium text-center py-3 px-6 border ease-in-out duration-200 border-primary/10 bg-black text-white w-full">
               {isLoading ? 'Loading...' : <span>Load more products</span>}
             </NextLink>
           </div>

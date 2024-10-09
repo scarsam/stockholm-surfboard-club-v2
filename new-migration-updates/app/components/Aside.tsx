@@ -25,7 +25,7 @@ type AsideContextValue = {
  */
 export function Aside({
   children,
-  heading,
+  // heading,
   type,
 }: {
   children?: React.ReactNode;
@@ -46,11 +46,17 @@ export function Aside({
   return (
     <div
       aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
+      className={`overlay ${expanded ? 'expanded' : ''} ${
+        type === 'mobile' ? 'mobile' : ''
+      }`}
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
-      <aside className="h-screen-dynamic overflow-x-auto max-w-full max-w-lg w-full">
+      <aside
+        className={`h-screen-dynamic overflow-x-auto max-w-full w-full ${
+          type === 'mobile' ? '' : 'max-w-lg'
+        }`}
+      >
         <main className="grid m-0 w-full h-full">{children}</main>
       </aside>
     </div>

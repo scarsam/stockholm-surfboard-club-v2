@@ -42,8 +42,11 @@ function FooterMenu({
   publicStoreDomain: string;
 }) {
   return (
-    <nav className="flex justify-between align-center w-full" role="navigation">
-      <div>
+    <nav
+      className="flex justify-between align-center w-full flex-col md:flex-row py-5 md:py-0"
+      role="navigation"
+    >
+      <div className="py-2 md:py-0">
         {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
           if (!item.url) return null;
           // if the url is internal, we strip the domain

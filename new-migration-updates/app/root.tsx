@@ -32,7 +32,6 @@ import {getLocaleFromRequest} from './lib/utils';
 import {countries} from './data/countries';
 import {CUSTOMER_ORDERS_QUERY} from './graphql/customer-account/CustomerOrdersQuery';
 import {CUSTOMER_DETAILS_QUERY} from './graphql/customer-account/CustomerDetailsQuery';
-import {useAside} from './components/Aside';
 
 export type RootLoader = typeof loader;
 

@@ -26,7 +26,7 @@ export async function loader(args: LoaderFunctionArgs) {
 async function loadCriticalData({context, request}: LoaderFunctionArgs) {
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 80,
   });
 
   const [{products}] = await Promise.all([
@@ -88,16 +88,18 @@ function ProductItem({
       {product.featuredImage && (
         <Image
           alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
+          aspectRatio="4/5"
           data={product.featuredImage}
           loading={loading}
           sizes="(min-width: 45em) 400px, 100vw"
         />
       )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
+      <div className="flex p-1 items-center justify-between">
+        <h4 className="mt-0">{product.title}</h4>
+        <p>
+          <Money data={product.priceRange.minVariantPrice} />
+        </p>
+      </div>
     </Link>
   );
 }
