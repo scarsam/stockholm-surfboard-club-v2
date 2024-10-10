@@ -137,7 +137,7 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
     header: {
       shop: data?.shop,
       errors: data?.errors,
-      header: data?.headerMenu!,
+      headerMenu: data?.headerMenu!,
       filterMenu: data?.filterMenu!,
     },
   };
@@ -160,6 +160,8 @@ function loadDeferredData({context, request}: LoaderFunctionArgs) {
       },
     })
     .catch((error) => {
+      console.log('here');
+
       // Log query errors, but don't throw them so the page can still render
       console.error(error);
       return null;
@@ -174,6 +176,9 @@ function loadDeferredData({context, request}: LoaderFunctionArgs) {
       },
     })
     .catch((error) => {
+      console.log(
+        'this throws an error - maybe because customer is not available, not sure if this is the best way of doing it or not',
+      );
       // Log query errors, but don't throw them so the page can still render
       console.error(error);
       return null;

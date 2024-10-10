@@ -1,5 +1,5 @@
 :root {
-  --aside-width: 512px;
+  --aside-width: 1fr;
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 150px;
@@ -30,10 +30,8 @@ aside {
   background: var(--color-light);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
   height: 100vh;
-  /* max-width: var(--aside-width); */
-  min-width: var(--aside-width);
   position: fixed;
-  right: calc(-1 * var(--aside-width));
+  right: 0;
   top: 0;
   transition: transform 200ms ease-in-out;
 }
@@ -93,8 +91,7 @@ aside li {
   position: fixed;
   right: 0;
   top: 0;
-  transition: opacity 400ms ease-in-out;
-  transition: opacity 400ms;
+  transition: opacity 400ms ease-in-out, transform 400ms;
   visibility: hidden;
   z-index: 100;
 }
@@ -125,16 +122,24 @@ aside li {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
+  transition: opacity 500ms ease-in-out, visibility 500ms;
 }
 /* reveal aside */
 .overlay.expanded aside {
   transform: translateX(calc(var(--aside-width) * -1));
 }
 
+.overlay.mobile aside {
+  transition: transform all 200ms;
+  transform: translateX(calc(-1 * var(--aside-width)));
+  left: 0;
+  right: inherit;
+  box-shadow: none;
+}
+
 .overlay.expanded.mobile aside {
   transform: translateX(calc(var(--aside-width)));
   left: calc(-1 * var(--aside-width));
-  right: inherit;
   box-shadow: none;
 }
 

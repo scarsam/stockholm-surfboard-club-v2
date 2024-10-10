@@ -134,12 +134,7 @@ function ProductItem({
       )}
       <div className="flex p-1 items-center justify-between">
         <h4 className="mt-0">{product.title}</h4>
-        <p>
-          <Money
-            withoutTrailingZeros
-            data={product.priceRange.minVariantPrice}
-          />
-        </p>
+        <Money withoutTrailingZeros data={product.priceRange.minVariantPrice} />
       </div>
     </Link>
   );

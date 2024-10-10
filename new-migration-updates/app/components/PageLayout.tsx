@@ -199,11 +199,13 @@ function MobileMenuAside({
   header: PageLayoutProps['header'];
   publicStoreDomain: PageLayoutProps['publicStoreDomain'];
 }) {
+  console.log('header', header.headerMenu);
   return (
     header.filterMenu &&
     header.shop.primaryDomain?.url && (
       <Aside type="mobile" heading="MENU">
         <HeaderMenu
+          subMenu={header.headerMenu}
           menu={header.filterMenu}
           viewport="mobile"
           primaryDomainUrl={header.shop.primaryDomain.url}

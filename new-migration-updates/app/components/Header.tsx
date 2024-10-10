@@ -24,7 +24,7 @@ export function Header({
   cart,
   publicStoreDomain,
 }: HeaderProps) {
-  const {shop, filterMenu} = header;
+  const {shop, filterMenu, headerMenu} = header;
 
   return (
     <header className="bg-white sticky top-0 z-50 border-[#e5e7eb] border-b">
@@ -41,6 +41,8 @@ export function Header({
         <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
       <HeaderMenu
+        isLoggedIn={isLoggedIn}
+        subMenu={headerMenu}
         menu={filterMenu}
         viewport="desktop"
         primaryDomainUrl={header.shop.primaryDomain.url}
@@ -51,18 +53,31 @@ export function Header({
 }
 
 export function HeaderMenu({
+  isLoggedIn,
+  subMenu,
   menu,
   primaryDomainUrl,
   viewport,
   publicStoreDomain,
 }: {
+  isLoggedIn: HeaderProps['isLoggedIn'];
+  subMenu: HeaderProps['header']['headerMenu'];
   menu: HeaderProps['header']['filterMenu'];
   primaryDomainUrl: HeaderProps['header']['shop']['primaryDomain']['url'];
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
   const className = `header-menu-${viewport} border-t px-2 w-full overflow-x-auto border-[#e5e7eb]`;
-  const {close} = useAside();
+  const {close, type} = useAside();
+
+  const urlHelper = (url: string) =>
+    // if the url is internal, we strip the domain
+
+    url.includes('myshopify.com') ||
+    url.includes(publicStoreDomain) ||
+    url.includes(primaryDomainUrl)
+      ? new URL(url).pathname
+      : url;
 
   return (
     <nav className={className} role="navigation">
@@ -70,13 +85,6 @@ export function HeaderMenu({
         {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
           if (!item.url) return null;
 
-          // if the url is internal, we strip the domain
-          const url =
-            item.url.includes('myshopify.com') ||
-            item.url.includes(publicStoreDomain) ||
-            item.url.includes(primaryDomainUrl)
-              ? new URL(item.url).pathname
-              : item.url;
           return (
             <NavLink
               className={({isActive}) =>
@@ -89,12 +97,60 @@ export function HeaderMenu({
               key={item.id}
               onClick={close}
               prefetch="intent"
-              to={url}
+              to={urlHelper(item.url)}
             >
               {item.title}
             </NavLink>
           );
         })}
+        {viewport === 'mobile' && (
+          <>
+            {subMenu?.items.map((item) =>
+              item.url ? (
+                <NavLink
+                  className="text-black border-t border-[#e5e7eb] font-bold py-1.5"
+                  end
+                  onClick={close}
+                  prefetch="intent"
+                  to={urlHelper(item.url)}
+                >
+                  {item.title}
+                </NavLink>
+              ) : null,
+            )}
+            <button
+              className="text-black border-y border-[#e5e7eb] font-bold py-1.5 text-left"
+              onClick={() => (type === 'closed' ? open('account') : close())}
+            >
+              Newsletter
+            </button>
+            <Suspense>
+              <Await resolve={isLoggedIn}>
+                {(isLoggedIn) =>
+                  isLoggedIn ? (
+                    <button
+                      className="text-black border-b border-[#e5e7eb] font-bold py-1.5"
+                      onClick={() =>
+                        type === 'closed' ? open('account') : close()
+                      }
+                    >
+                      Login
+                    </button>
+                  ) : (
+                    <NavLink
+                      prefetch="render"
+                      to="/account"
+                      style={activeLinkStyle}
+                      className="text-black border-b border-[#e5e7eb] font-bold py-2"
+                    >
+                      Login
+                    </NavLink>
+                  )
+                }
+              </Await>
+            </Suspense>
+          </>
+        )}
       </div>
     </nav>
   );
@@ -131,7 +187,7 @@ function HeaderCtas({
               </button>
             ) : (
               <NavLink
-                prefetch="intent"
+                prefetch="render"
                 to="/account"
                 style={activeLinkStyle}
                 className="mx-1 hidden lg:block"
