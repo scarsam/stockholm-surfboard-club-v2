@@ -31,13 +31,18 @@ function useGTM(gtmId: string) {
       const firstScript = document.getElementsByTagName('script')[0];
       firstScript.parentNode?.insertBefore(script, firstScript);
 
-      const noscript = document.createElement('noscript');
-      noscript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
-      document.body.appendChild(noscript);
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
+      iframe.height = '0';
+      iframe.width = '0';
+      iframe.style.display = 'none';
+      iframe.style.visibility = 'hidden';
+
+      document.body.appendChild(iframe);
 
       return () => {
         script.remove();
-        noscript.remove();
+        iframe.remove();
       };
     }
   }, [gtmId]);
