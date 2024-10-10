@@ -15,28 +15,29 @@ import {CookieConsent, getCookiebotConsent} from '~/lib/utils';
 function useGTM(gtmId: string) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // @ts-ignore
+      window.dataLayer = window.dataLayer || [];
+
+      // @ts-ignore
+      window.dataLayer.push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js',
+      });
+
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
 
       const firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode?.insertBefore(script, firstScript);
 
-      if (firstScript?.parentNode) {
-        firstScript.parentNode.insertBefore(script, firstScript);
-      } else {
-        document.head
-          ? document.head.appendChild(script)
-          : document.body.appendChild(script);
-      }
+      const noscript = document.createElement('noscript');
+      noscript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+      document.body.appendChild(noscript);
 
       return () => {
-        if (firstScript?.parentNode) {
-          firstScript.parentNode?.removeChild(script);
-        } else {
-          document.head
-            ? document.head.removeChild(script)
-            : document.body.removeChild(script);
-        }
+        script.remove();
+        noscript.remove();
       };
     }
   }, [gtmId]);
